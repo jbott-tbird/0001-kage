@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Android mail engine port — Project Command Center</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basecoat-css@1.0.2/dist/basecoat.cdn.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/basecoat-css@1.0.2/dist/js/basecoat.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/basecoat-css@1.0.2/dist/js/accordion.min.js" defer></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #08090a;
+      --panel: #17191c;
+      --panel-strong: #1d2024;
+      --line: #34383e;
+      --line-soft: #292d32;
+      --text: #f4f5f6;
+      --muted: #a7adb6;
+      --accent: #8b93ff;
+      --done: #54d68b;
+      --active: #43d17e;
+      --attention: #f1c453;
+      --blocked: #ff6b6b;
+      --idle: #aeb4bd;
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--bg); }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: clamp(12px, .82vw, 16px);
+    }
+    a { color: inherit; }
+    .dashboard {
+      width: min(100%, 2200px);
+      min-height: 100dvh;
+      margin: 0 auto;
+      padding: clamp(18px, 2vw, 40px);
+      display: grid;
+      gap: clamp(10px, .9vw, 18px);
+      align-content: start;
+    }
+    .panel {
+      border: 1px solid var(--line);
+      background: linear-gradient(145deg, var(--panel), #131518);
+      border-radius: 14px;
+    }
+    header {
+      padding: clamp(16px, 1.5vw, 28px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+    }
+    .eyebrow, .label {
+      color: var(--muted);
+      font-size: .72em;
+      font-weight: 760;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    h1, h2, h3, strong, summary { color: var(--text); }
+    h1 { margin: 4px 0 0; font-size: clamp(24px, 2vw, 40px); line-height: 1.05; }
+    h2 { margin: 0; font-size: 1em; }
+    h3 { margin: 0; font-size: 1em; }
+    p { margin: 0; color: var(--muted); line-height: 1.38; }
+    code {
+      color: #d8dbff;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: .86em;
+    }
+    .overall-status {
+      flex: none;
+      padding: 9px 13px;
+      border: 1px solid color-mix(in srgb, var(--active), transparent 55%);
+      background: color-mix(in srgb, var(--active), transparent 88%);
+      border-radius: 999px;
+      font-weight: 760;
+    }
+    .kpis { display: grid; grid-template-columns: repeat(6, 1fr); gap: clamp(8px, .7vw, 14px); }
+    .kpi { padding: clamp(11px, 1vw, 18px); min-width: 0; }
+    .value {
+      display: block;
+      margin-top: 7px;
+      font-size: clamp(16px, 1.35vw, 26px);
+      font-weight: 780;
+      line-height: 1.05;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .overview { display: block; }
+    .card { padding: clamp(14px, 1.25vw, 22px); min-width: 0; }
+    .card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; margin-bottom: 12px; }
+    .card-head span { color: var(--muted); font-size: .78em; }
+    .phase-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(10px, .9vw, 18px); }
+    .phase-card { padding: clamp(14px, 1.25vw, 22px); display: grid; gap: 12px; min-width: 0; }
+    .phase-head { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
+    .phase-heading { min-width: 0; }
+    .phase-heading .label { display: block; margin-bottom: 4px; }
+    .phase-heading h3 { font-size: 1.08em; }
+    .phase-status { color: var(--muted); font-size: .8em; white-space: nowrap; }
+    .phase-copy, .milestone-copy {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      min-height: 2.7em;
+    }
+    .progress-row {
+      display: grid;
+      grid-template-columns: 1fr 3.2em;
+      align-items: center;
+      gap: 10px;
+    }
+    .track { height: 8px; background: #2a2e33; border-radius: 999px; overflow: hidden; }
+    .fill { height: 100%; width: 0; background: var(--accent); border-radius: inherit; }
+    .fill.done { background: var(--done); }
+    .fill.attention { background: var(--attention); }
+    .percent { color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+    .phase-meta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .meta-block { min-width: 0; padding: 8px 9px; border: 1px solid var(--line-soft); border-radius: 9px; background: rgba(255,255,255,.018); }
+    .meta-block span { display: block; color: var(--muted); font-size: .68em; text-transform: uppercase; letter-spacing: .08em; }
+    .meta-block strong { display: block; margin-top: 3px; font-size: .84em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .phase-detail { display: grid; gap: 7px; padding-top: 2px; }
+    .detail-row { display: grid; grid-template-columns: 6.4em 1fr; gap: 8px; align-items: start; }
+    .detail-row .label { padding-top: .18em; }
+    .detail-row p {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
+    .milestone-list { overflow: hidden; }
+    .milestone {
+      padding: 12px 15px;
+      display: grid;
+      grid-template-columns: minmax(190px, 1.15fr) minmax(300px, 2fr) minmax(145px, .8fr) minmax(170px, .9fr);
+      align-items: center;
+      gap: 18px;
+    }
+    .milestone + .milestone { border-top: 1px solid var(--line-soft); }
+    .milestone-title { min-width: 0; }
+    .milestone-title strong { display: block; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .milestone-title p, .milestone-data p { font-size: .82em; margin-top: 3px; }
+    .milestone-data { min-width: 0; }
+    .milestone-data strong { display: block; margin-top: 3px; font-size: .88em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .focus-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .plain-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 9px; }
+    .plain-list li { display: grid; grid-template-columns: auto 1fr; gap: 9px; color: var(--muted); line-height: 1.34; }
+    .plain-list strong { color: var(--text); }
+    .dot { width: 7px; height: 7px; margin-top: .42em; border-radius: 50%; background: var(--attention); }
+    .dot.blocked { background: var(--blocked); }
+    .section-title { display: flex; justify-content: space-between; align-items: baseline; padding: 2px 2px 0; }
+    .section-title p { font-size: .82em; }
+    .accordion { overflow: hidden; }
+    details + details { border-top: 1px solid var(--line); }
+    summary {
+      list-style: none;
+      min-height: 44px;
+      padding: 11px 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      cursor: pointer;
+      user-select: none;
+      font-weight: 730;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary:hover { background: rgba(255,255,255,.025); }
+    summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+    .trigger-left { display: flex; align-items: center; gap: 10px; }
+    .count {
+      min-width: 1.75em;
+      padding: 2px 7px;
+      border: 1px solid var(--line);
+      background: var(--panel-strong);
+      color: var(--muted);
+      border-radius: 999px;
+      text-align: center;
+      font-size: .78em;
+    }
+    summary svg { width: 16px; height: 16px; color: var(--muted); flex: none; }
+    .feature-list {
+      border-top: 1px solid var(--line-soft);
+      padding: 7px 15px 12px;
+      display: grid;
+      gap: 0;
+    }
+    .feature {
+      padding: 10px 0;
+      display: grid;
+      grid-template-columns: minmax(150px, 1.15fr) minmax(280px, 2.2fr) minmax(130px, .9fr) auto;
+      align-items: center;
+      gap: 16px;
+    }
+    .feature + .feature { border-top: 1px solid var(--line-soft); }
+    .feature-name { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .feature-name strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .summary {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      color: var(--muted);
+      line-height: 1.32;
+    }
+    .branch { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .meta { color: var(--muted); font-size: .82em; white-space: nowrap; }
+    footer { padding: 1px 2px; display: flex; justify-content: space-between; gap: 20px; color: var(--muted); font-size: .8em; }
+    footer a { color: var(--text); text-underline-offset: 3px; }
+    @media (max-width: 1000px) {
+      .kpis { grid-template-columns: repeat(3, 1fr); }
+      .focus-grid { grid-template-columns: 1fr; }
+      .phase-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .milestone { grid-template-columns: minmax(160px, 1fr) 2fr; }
+      .milestone-data { grid-column: 2; }
+      .feature { grid-template-columns: minmax(140px, 1fr) 2fr; }
+      .branch, .meta { grid-column: 2; }
+    }
+    @media (max-width: 620px) {
+      .dashboard { padding: 12px; }
+      header { align-items: flex-start; }
+      .kpis { grid-template-columns: repeat(2, 1fr); }
+      .phase-grid { grid-template-columns: 1fr; }
+      .phase-meta { grid-template-columns: 1fr; }
+      .milestone { display: block; }
+      .milestone > * + * { margin-top: 8px; }
+      .feature { display: block; }
+      .feature > * + * { margin-top: 7px; }
+      footer { display: block; }
+    }
+    @media print {
+      :root { color-scheme: light; --bg: #fff; --panel: #fff; --panel-strong: #f5f5f5; --line: #bbb; --line-soft: #ddd; --text: #111; --muted: #555; }
+      .dashboard { width: auto; min-height: auto; padding: 0; }
+      .panel, details { break-inside: avoid; }
+      details > *:not(summary) { display: block !important; }
+    }
+  
+body{font-size:15px}.dashboard{max-width:1800px}.phase-copy,.detail-row p,.milestone-copy{display:block;overflow:visible;min-height:0}.value{white-space:normal}.phase-meta{grid-template-columns:1fr 1fr}.phase-status{white-space:normal}.milestone{grid-template-columns:1fr 2fr 1fr}.support{padding:18px;line-height:1.6}.support p,.support ul,.support ol{margin:10px 0}.support a{color:var(--accent)}.task{padding:12px 0;border-bottom:1px solid var(--line-soft)}.task p{margin:5px 0}.mapping{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mapping article{padding:12px;border:1px solid var(--line-soft);border-radius:8px}pre{white-space:pre-wrap;overflow-wrap:anywhere;padding:15px;background:var(--panel-strong)}.phase-detail .detail-row{grid-template-columns:6em 1fr}header{flex-wrap:wrap}.overall-status{border-color:var(--attention);background:#30291b}section.accordion>details>section{padding:18px}section.accordion{display:block}@media(max-width:700px){.mapping{grid-template-columns:1fr}.milestone{display:block}}@media print{.panel{background:white}.summary{display:block;overflow:visible}details{content-visibility:visible}}
+</style>
+</head>
+<body><main class="dashboard"><header class="panel"><div><div class="eyebrow">Project Command Center · Updated 2026-09-25 15:22 MDT</div><h1>Android mail engine port</h1><p>Feature: IMAP / SMTP / MIME · Owners: Unknown · Product decisions: the maintainer</p></div><div class="overall-status">🟡 Needs attention</div></header>
+<section class="kpis" aria-label="Delivery indicators"><article class="panel kpi"><span class="label">Progress</span><strong class="value">0% · 0/23 accepted tasks</strong></article><article class="panel kpi"><span class="label">Phase</span><strong class="value">P1 · Architecture</strong></article><article class="panel kpi"><span class="label">Next milestone</span><strong class="value">M1 · Engine decision</strong></article><article class="panel kpi"><span class="label">Forecast ETA</span><strong class="value">Unknown</strong></article><article class="panel kpi"><span class="label">Delivery rate</span><strong class="value">Unknown</strong></article><article class="panel kpi"><span class="label">Target date</span><strong class="value">Unknown</strong></article></section><section class="panel card"><h2>Outcome and present state</h2><p>Bring the existing native UI and Room store onto real mail accounts while preserving recognizable iOS module boundaries. Android is currently a local demo; iOS provides protocol clients, account managers and MIME fixtures. Initial source inspection is complete, but the exhaustive parity audit and engine choice remain open.</p><p><strong>Primary concern:</strong> SwiftNIO replacement includes IMAP parsing/state, TLS and connection lifecycle. Dependency availability alone is not proof of Android compatibility. 🟡 Decisions are pending; discovery can continue.</p><p><strong>Register:</strong> 6 epics · 6 milestones · 23 tasks · Jello: Pending sync (no Jello API/board available in this session). <a href="#tasks">Full register ↓</a></p></section>
+<section class="focus-grid"><article class="panel card"><h2>Key risks / needed decisions</h2><p>High · Provider/OAuth selection changes setup and testing scope (the maintainer; T02). High · UID identity and retries can corrupt sync (owner Unknown; T07/T13–T14). High · SMTP uncertain acceptance can duplicate delivery (owner Unknown; T19). All due dates Unknown.</p></article><article class="panel card"><h2>Immediate next actions</h2><ol><li>T02: resolve the three questions sent with this plan</li><li>T01/T04: finish the parity matrix and reusable fixture inventory</li><li>T03: compare the candidate engines on the emulator</li></ol></article></section>
+<section aria-labelledby="phases"><div class="section-title"><h2 id="phases">Phases</h2><p>Proposed sequence · no implementation started</p></div><div class="phase-grid"><article class="panel phase-card" id="P1"><div class="phase-head"><h3>P1 · Architecture and parity</h3><span class="phase-status">🟡 Needs attention</span></div><p>Establish the behavior to port and select the Android mail engine.</p><p>0/4 accepted tasks · 0%</p><div class="phase-meta"><div class="meta-block"><span>Owner / complexity</span><strong>Unknown · Medium</strong></div><div class="meta-block"><span>Window / forecast</span><strong>Unknown / Unknown</strong></div></div><div class="phase-detail"><div class="detail-row"><span class="label">Why needed</span><p>NIOIMAP supplies protocol machinery as well as I/O; choosing a socket library alone leaves a parser gap.</p></div><div class="detail-row"><span class="label">If omitted</span><p>A close-looking port could miss behavior and multiply maintenance effort.</p></div><div class="detail-row"><span class="label">Current focus</span><p>Initial source survey recorded; provider, authentication and reuse choices pending.</p></div><div class="detail-row"><span class="label">Depends on</span><p>User priorities; iOS baseline 5322c9d.</p></div><div class="detail-row"><span class="label">Exit</span><p>Approved parity matrix and candidate spike with TLS, IMAP fetch and MIME evidence.</p></div></div></article><article class="panel phase-card" id="P2"><div class="phase-head"><h3>P2 · Account and storage foundations</h3><span class="phase-status">⚪ Not started</span></div><p>Connect account setup to credentials and durable protocol identities.</p><p>0/4 accepted tasks · 0%</p><div class="phase-meta"><div class="meta-block"><span>Owner / complexity</span><strong>Unknown · High</strong></div><div class="meta-block"><span>Window / forecast</span><strong>Unknown / Unknown</strong></div></div><div class="phase-detail"><div class="detail-row"><span class="label">Why needed</span><p>Demo UUIDs and in-memory server state cannot identify remote messages after restart.</p></div><div class="detail-row"><span class="label">If omitted</span><p>Sync can duplicate mail, mix accounts, or operate on the wrong UID generation.</p></div><div class="detail-row"><span class="label">Current focus</span><p>Planned: real/demo separation and schema migration.</p></div><div class="detail-row"><span class="label">Depends on</span><p>M1 engine and auth decisions.</p></div><div class="detail-row"><span class="label">Exit</span><p>Emulator tests prove credential lifecycle, schema migration and account isolation.</p></div></div></article><article class="panel phase-card" id="P3"><div class="phase-head"><h3>P3 · Read mail end to end</h3><span class="phase-status">⚪ Not started</span></div><p>Fetch real folders, message lists, bodies and requested attachments.</p><p>0/4 accepted tasks · 0%</p><div class="phase-meta"><div class="meta-block"><span>Owner / complexity</span><strong>Unknown · High</strong></div><div class="meta-block"><span>Window / forecast</span><strong>Unknown / Unknown</strong></div></div><div class="phase-detail"><div class="detail-row"><span class="label">Why needed</span><p>A successful login does not prove the existing reader can consume real MIME and folder data.</p></div><div class="detail-row"><span class="label">If omitted</span><p>The application remains a connected shell with unusable or incomplete messages.</p></div><div class="detail-row"><span class="label">Current focus</span><p>Proposed first vertical slice: one test account → Inbox → message → offline reopen.</p></div><div class="detail-row"><span class="label">Depends on</span><p>M2; deterministic local test server and approved disposable account.</p></div><div class="detail-row"><span class="label">Exit</span><p>Emulator reads fixtures through actual protocol adapters into Room and UI; restart/offline and RTL pass.</p></div></div></article><article class="panel phase-card" id="P4"><div class="phase-head"><h3>P4 · Reliable sync and mutations</h3><span class="phase-status">⚪ Not started</span></div><p>Synchronize changes without losing local intent or corrupting remote identity.</p><p>0/4 accepted tasks · 0%</p><div class="phase-meta"><div class="meta-block"><span>Owner / complexity</span><strong>Unknown · Very high</strong></div><div class="meta-block"><span>Window / forecast</span><strong>Unknown / Unknown</strong></div></div><div class="phase-detail"><div class="detail-row"><span class="label">Why needed</span><p>IMAP mailbox selection, disconnects and server-side edits introduce races absent in a local demo.</p></div><div class="detail-row"><span class="label">If omitted</span><p>Read flags and moves diverge; reconnects can duplicate records or delete unrelated mail.</p></div><div class="detail-row"><span class="label">Current focus</span><p>Foreground refresh first; background behavior awaits a product decision.</p></div><div class="detail-row"><span class="label">Depends on</span><p>M3; background policy and cache budget.</p></div><div class="detail-row"><span class="label">Exit</span><p>Emulator fault matrix passes reconnect, UID reset, concurrent changes, process death and out-of-order retries.</p></div></div></article><article class="panel phase-card" id="P5"><div class="phase-head"><h3>P5 · Compose and real delivery</h3><span class="phase-status">⚪ Not started</span></div><p>Turn local demo sending into durable MIME submission and Sent reconciliation.</p><p>0/4 accepted tasks · 0%</p><div class="phase-meta"><div class="meta-block"><span>Owner / complexity</span><strong>Unknown · High</strong></div><div class="meta-block"><span>Window / forecast</span><strong>Unknown / Unknown</strong></div></div><div class="phase-detail"><div class="detail-row"><span class="label">Why needed</span><p>SMTP acceptance and saving a Sent copy are separate operations with ambiguous failure cases.</p></div><div class="detail-row"><span class="label">If omitted</span><p>Retries can send duplicates or falsely label unsent messages as delivered.</p></div><div class="detail-row"><span class="label">Current focus</span><p>Planned after reader slice unless receive-and-send-together is selected.</p></div><div class="detail-row"><span class="label">Depends on</span><p>M3 and P4 durable operation queue; test recipient/sink.</p></div><div class="detail-row"><span class="label">Exit</span><p>Emulator SMTP failure matrix and recipient-visible MIME assertions pass before live sending.</p></div></div></article><article class="panel phase-card" id="P6"><div class="phase-head"><h3>P6 · Live-provider and device acceptance</h3><span class="phase-status">⚪ Not started</span></div><p>Validate the approved provider matrix and physical-device behavior.</p><p>0/3 accepted tasks · 0%</p><div class="phase-meta"><div class="meta-block"><span>Owner / complexity</span><strong>Unknown · High</strong></div><div class="meta-block"><span>Window / forecast</span><strong>Unknown / Unknown</strong></div></div><div class="phase-detail"><div class="detail-row"><span class="label">Why needed</span><p>OEM power management and real provider policies cannot be established entirely by local emulator fixtures.</p></div><div class="detail-row"><span class="label">If omitted</span><p>A locally correct engine may fail authentication, delivery or background use in daily operation.</p></div><div class="detail-row"><span class="label">Current focus</span><p>Not started; implementation and emulator gates must pass first.</p></div><div class="detail-row"><span class="label">Depends on</span><p>M4 + M5; user-approved disposable accounts, recipient and physical Android device.</p></div><div class="detail-row"><span class="label">Exit</span><p>Named provider/device scenarios and delivery evidence accepted; no unresolved data-loss or emulator defects.</p></div></div></article></div></section><section><div class="section-title"><h2>Milestones</h2><p>Confidence: Low · selection and capacity unresolved</p></div><div class="panel milestone-list"><article class="milestone" id="M1"><div><strong>M1 · Engine decision recorded</strong><p>🟡 Needs attention · P1</p></div><p>Approved parity matrix and candidate spike with TLS, IMAP fetch and MIME evidence.</p><div><p>Owner: Unknown<br>Target: Unknown<br>Forecast: Unknown<br>Confidence: Low</p><p>Depends: User priorities; iOS baseline 5322c9d.</p></div></article><article class="milestone" id="M2"><div><strong>M2 · Real accounts persist safely</strong><p>⚪ Not started · P2</p></div><p>Emulator tests prove credential lifecycle, schema migration and account isolation.</p><div><p>Owner: Unknown<br>Target: Unknown<br>Forecast: Unknown<br>Confidence: Low</p><p>Depends: M1 engine and auth decisions.</p></div></article><article class="milestone" id="M3"><div><strong>M3 · Connected reader accepted</strong><p>⚪ Not started · P3</p></div><p>Emulator reads fixtures through actual protocol adapters into Room and UI; restart/offline and RTL pass.</p><div><p>Owner: Unknown<br>Target: Unknown<br>Forecast: Unknown<br>Confidence: Low</p><p>Depends: M2; deterministic local test server and approved disposable account.</p></div></article><article class="milestone" id="M4"><div><strong>M4 · Sync survives interruptions</strong><p>⚪ Not started · P4</p></div><p>Emulator fault matrix passes reconnect, UID reset, concurrent changes, process death and out-of-order retries.</p><div><p>Owner: Unknown<br>Target: Unknown<br>Forecast: Unknown<br>Confidence: Low</p><p>Depends: M3; background policy and cache budget.</p></div></article><article class="milestone" id="M5"><div><strong>M5 · Sending and drafts accepted</strong><p>⚪ Not started · P5</p></div><p>Emulator SMTP failure matrix and recipient-visible MIME assertions pass before live sending.</p><div><p>Owner: Unknown<br>Target: Unknown<br>Forecast: Unknown<br>Confidence: Low</p><p>Depends: M3 and P4 durable operation queue; test recipient/sink.</p></div></article><article class="milestone" id="M6"><div><strong>M6 · Pilot accepted</strong><p>⚪ Not started · P6</p></div><p>Named provider/device scenarios and delivery evidence accepted; no unresolved data-loss or emulator defects.</p><div><p>Owner: Unknown<br>Target: Unknown<br>Forecast: Unknown<br>Confidence: Low</p><p>Depends: M4 + M5; user-approved disposable accounts, recipient and physical Android device.</p></div></article></div></section><section class="accordion panel" aria-label="Feature register"><details open><summary>Active features (1)<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></summary><section><article class="feature"><strong>🟢 In progress · Parity audit</strong><p class="summary">Initial source survey informs T01/T04. Full command, test and UI integration matrix remains open. P1 · 0 accepted tasks.</p><code>main (planning only)</code></article></section></details><details ><summary>Stalled features (1)<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></summary><section><article class="feature"><strong>🟡 Needs attention · Engine selection</strong><p class="summary">Needs first provider/authentication and reuse preference from the maintainer; T02/T03. Research can continue.</p><code>No branch assigned</code></article></section></details><details ><summary>Wrapped features (0)<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></summary><section><p>No accepted implementation features in this initiative. The existing demo UI is baseline evidence, not port completion.</p></section></details></section><section class="panel" id="planning-details"><h2 class="card">Planning details and evidence</h2><details ><summary>Source map: what exists and where it should go<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></summary><section class="support"><p>Inspected iOS revision <code>5322c9d</code>; Android baseline <code>d172db0</code>. Read-only source review; no iOS build, live login or send was performed. Test files establish available coverage, not passing results in this session.</p><div class="mapping"><article><h3>Account/AccountManager, Account, MailboxManager, FolderManager, EmailManager</h3><p>core:account + domain use cases; retain responsibilities while Room owns durable state and ViewModels own screen state. Account.swift caches clients; do not port that cache without session ownership/cancellation.</p><a href="../../thunderbird-ios/Core/Sources/Account/Account.swift">Sources/Account/Account.swift</a></article><article><h3>IMAP/IMAPClient and command/result handlers</h3><p>core:imap behind MailStore; adapt capabilities, LIST/SELECT/FETCH and IDLE/NOOP. Internal UIDStore/UIDMove command definitions exist; public client wiring and behavior require audit.</p><a href="../../thunderbird-ios/Core/Sources/IMAP/IMAPClient.swift">Sources/IMAP/IMAPClient.swift</a></article><article><h3>SMTP/SMTPClient, SendHandler, RequestEncoder, Email</h3><p>core:smtp behind MailSubmission; iOS uses NIOTransportServices and currently loops over recipients. Review envelope/partial-failure semantics rather than preserving that loop by default.</p><a href="../../thunderbird-ios/Core/Sources/SMTP/SMTPClient.swift">Sources/SMTP/SMTPClient.swift</a></article><article><h3>MIME/Body, Part, Header, ContentType, ContentTransferEncoding</h3><p>core:mime; fixture-driven parser/serializer compatibility. Keep MIME byte data separate from UI strings; nested multipart, charsets, CID and attachment decoding need bounded streaming.</p><a href="../../thunderbird-ios/Core/Sources/MIME/Part.swift">Sources/MIME/Part.swift</a></article><article><h3>Autoconfiguration + EmailAddress</h3><p>core:autoconfig and core:email-address; provider discovery, manual fallback, address parsing and OAuth configuration stay separate from networking.</p><a href="../../thunderbird-ios/Core/Sources/Autoconfiguration/OAuth2.swift">Sources/Autoconfiguration/OAuth2.swift</a></article><article><h3>JMAP and protocol-neutral Account models</h3><p>Reserve a MailStore/MailSubmission adapter boundary for v2.0; do not make the domain depend on JMAP enums merely because iOS Account.Mailbox does.</p><a href="../../thunderbird-ios/Core/Sources/Account/Mailbox.swift">Sources/Account/Mailbox.swift</a></article></div><p><a href="../../thunderbird-ios/Core/Package.swift">Core/Package.swift: actual target and NIO dependency graph</a></p><p><a href="../Android/app/src/main/java/org/foxred/kage/domain/repository/MailRepository.kt">Android MailRepository</a> exposes local actions including sendDemo and resetDemo. <a href="../Android/app/src/main/java/org/foxred/kage/data/repository/RoomMailRepository.kt">RoomMailRepository</a> seeds demo messages on account creation. <a href="../Android/app/src/main/java/org/foxred/kage/data/local/Entities.kt">Room entities</a> lack server UID/UIDVALIDITY and sync state. <a href="../Android/app/src/main/AndroidManifest.xml">Manifest</a> currently declares no INTERNET permission.</p><p>iOS <a href="../../thunderbird-ios/Core/Tests/IMAPTests/IMAPClientTests.swift">IMAP integration tests</a> cover login/list/select/status/fetch/mailbox actions/IDLE; <a href="../../thunderbird-ios/Core/Tests/SMTPTests/SMTPClientTests.swift">SMTP tests</a> include live send-to-self behavior. These must not run against personal accounts implicitly. <a href="../../thunderbird-ios/Core/Tests/MIMETests/Resources">MIME fixture resources</a> are candidates for the golden corpus.</p></section></details><details ><summary>Proposed architecture and SwiftNIO replacement<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></summary><section class="support"><pre>Compose screens / ViewModels
+  → domain use cases + MailRepository contracts
+    → Room-backed repository (observable local source of truth)
+      → SyncCoordinator / operation queue / outbox
+        → MailStore (IMAP now; JMAP v2)
+        → MailSubmission (SMTP now; JMAP v2)
+        → MimeCodec + EmailAddress
+          → chosen protocol engine / TLS transport
+Account setup → Autoconfiguration + CredentialStore → adapters</pre><p>Proposed Gradle modules: :core:account, :core:email-address, :core:mime, :core:imap, :core:smtp, :core:autoconfig; :data:local, :data:sync, :data:credentials; existing :app for UI/composition. Final module granularity belongs to T05. Protocol modules must not import Compose or Room entities.</p><p>Protocol wire identity stays separate from local UUIDs. For IMAP, use account/mailbox/UIDVALIDITY/UID; sequence numbers are transient. Separate message content from folder membership where provider semantics require it. Store pending mutations durably before network execution. The Room flow remains responsive while sync runs.</p><p>Proposed adapters use Kotlin suspend functions and Flow, typed failures, bounded I/O and account-scoped cancellation. Screen navigation must not accidentally close an account session. JMAP remains a future adapter; no implementation work in this initiative.</p></section></details><details ><summary>Engine options and decision criteria<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></summary><section class="support"><div class="mapping"><article><h3>Candidate A · Existing Thunderbird Android components</h3><p>Assess extraction/adaptation of existing IMAP, SMTP and MIME components behind our own interfaces. Potential reuse is attractive, but dependency graph, API stability, notices and maintenance need a spike.</p><a href="https://github.com/thunderbird/thunderbird-android">Official repository</a><p>Local candidate checkout: ../thunderbird-android; mail/protocols/imap, mail/protocols/smtp, mail/common. No changes made there.</p></article><article><h3>Candidate B · Eclipse Angus Mail</h3><p>Provides Jakarta Mail implementation and protocol providers; Android guidance exists. Evaluate real Android build/runtime, TLS/auth, cancellation of blocking calls, IMAP feature access, MIME streaming and dependency footprint.</p><a href="https://eclipse-ee4j.github.io/angus-mail/Android">Official Android guidance</a> · <a href="https://eclipse-ee4j.github.io/angus-mail/">Project documentation</a></article><article><h3>Candidate C · Netty or JVM sockets with a custom engine</h3><p>Netty offers asynchronous transport and a channel/pipeline model similar in shape to SwiftNIO. It does not replace the iOS NIOIMAP parser/state integration automatically. A custom engine adds protocol, TLS, parser and resource-lifecycle maintenance.</p><a href="https://netty.io/">Official Netty documentation</a></article></div><p><strong>Provisional recommendation:</strong> keep iOS-like contracts and module responsibilities, compare A and B first, and choose C only if the measured gaps warrant owning a protocol engine. This is a proposal, not an approved library choice. Pin versions after the spike; do not copy the iOS manifest’s moving main-branch dependency policy.</p></section></details><details ><summary>Scope, open questions, success measures and workstreams<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></summary><section class="support"><p><strong>Established scope:</strong> IMAP/SMTP now; JMAP v2.0. Current account/last folder first, unified inbox later. Single messages first, threading between v1.0 and v2.0. Full message bodies offline, attachments on demand with a changeable policy. Search spans all accounts, selected account, and current message contents.</p><p><strong>Proposed first acceptance:</strong> one disposable IMAP account, secure setup, real folder tree, paginated inbox, rendered message, requested attachment, restart and offline reopen. SMTP follows as a separate milestone unless changed by the maintainer.</p><p><strong>Explicitly unresolved:</strong> first provider; OAuth at first milestone; close protocol port versus library adapters; sending order; foreground-only versus background notifications at first release; mailbox age/count/storage budget; provider matrix; owner capacity and target date. “Complete messages” defines body completeness, not an approved unlimited historical download budget. Search initially covers downloaded content; server-side search is a separate scope decision.</p><p><strong>Deferred:</strong> JMAP implementation, POP3, Exchange-specific protocols, encryption/signing, threading delivery and unrestricted remote-image loading. Unified inbox keeps its existing option; no promise that server-side cross-account search is available.</p><p><strong>Acceptance measures:</strong> all selected iOS fixture cases either pass or have an explicitly accepted difference; emulator protocol/failure cases pass; no known duplicate/lost-message or credential exposure defects; first provider workflows and physical-device scenarios accepted. Numeric performance/battery/storage limits remain Unknown until T02/T03.</p><p><strong>Workstreams:</strong> P1 architecture Medium; P2 account/storage High; P3 IMAP/MIME High; P4 sync Very high (identity, concurrency and reconciliation); P5 SMTP/outbox High (ambiguous acceptance); P6 provider/device High. Implementation owners Unknown for each.</p><p><strong>Planned feature backlog:</strong> secure real accounts (P2), connected reader (P3), resilient sync and cache (P4), real submission/drafts (P5), provider/device acceptance (P6): all ⚪ Not started, No branch assigned, progress 0%, ETA Unknown. No backlog feature is labelled stalled merely because it has not started.</p></section></details><details ><summary>Forecast, test boundaries and delivery evidence<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></summary><section class="support"><p>Progress: 0/23 accepted tasks = 0%. Tasks differ in size, so this is an acceptance count, not an effort estimate. No implementation delivery samples exist for this port; rate Unknown, measurement window none. Forecast ETA Unknown; target date Unknown; confidence Low because engine, provider and capacity are unresolved. Existing UI commits are not comparable protocol-engine delivery samples.</p><p>Each implementation phase includes JVM/unit and emulator integration/regression checks using scripted local servers, controlled certificates and MIME fixtures. Record command, revision, environment and result. Existing demo journeys stay in the regression suite. Any emulator-visible defect stays open in its originating phase; P6 cannot absorb it to mark earlier work complete.</p><p>P6 alone covers approved live-provider and physical-device acceptance, including a named test recipient. Owners and physical device are Unknown. Local tests must use synthetic credentials and a local SMTP sink. No live account access or external messages are authorized by this planning exercise.</p><p>Plan validation: HTML nesting, unique IDs, internal anchors, local source links, task/epic counts and pinned Basecoat versions checked. Visual browser inspection was unavailable: no Helium/ChatGPT-extension automation tool is exposed in this session. No development server was started.</p><p>Jello IDs: Pending sync. No callable Jello tools or project board were available; no cards were created. HTML IDs remain stable for later reconciliation by stored ticket ID, then task ID.</p></section></details><details id="tasks"><summary>Epic → milestone → task register (23 tasks)<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></summary><section class="support"><p>Every task has owner Unknown unless stated; target dates Unknown. Jello mappings all Pending sync. Epic/milestone statuses roll up from children; T02 needs the maintainer’s decisions and does not stop the source audit.</p><section id="E1"><h3>E1 · Architecture and parity · 🟡 Needs attention</h3><p>Jello epic: Pending sync · M1: Engine decision recorded · 🟡 Needs attention</p><article class="task" id="T01"><strong>T01 · Inventory behavior and tests</strong><p>🟢 In progress · Parent E1 · Milestone M1: Engine decision recorded · Jello task: Pending sync</p><p>Acceptance: Map every public client operation and manager call to Android work; distinguish implemented, UI-wired, tested, and unsupported behavior. Include Swift dependency revisions and fixture provenance.</p></article><article class="task" id="T02"><strong>T02 · Confirm product and operational choices</strong><p>🟡 Needs attention · Parent E1 · Milestone M1: Engine decision recorded · Jello task: Pending sync</p><p>Acceptance: Record first provider/OAuth requirement, reuse preference, reading versus sending order, background expectations, sync/storage limits, owners and target date.</p></article><article class="task" id="T03"><strong>T03 · Compare engine candidates</strong><p>⚪ Not started · Parent E1 · Milestone M1: Engine decision recorded · Jello task: Pending sync</p><p>Acceptance: Run a bounded Android emulator spike of Thunderbird Android reuse and Angus; evaluate Netty/custom only if requirements justify it. Compare TLS/STARTTLS, parser coverage, cancellation, MIME correctness, size, license notices and upkeep; record selected versions and rationale.</p></article><article class="task" id="T04"><strong>T04 · Establish protocol contracts and fixture corpus</strong><p>⚪ Not started · Parent E1 · Milestone M1: Engine decision recorded · Jello task: Pending sync</p><p>Acceptance: Define server/domain boundaries and normalized outcomes; preserve attributable iOS MIME fixtures and add scripted IMAP/SMTP transcripts without credentials.</p></article></section><section id="E2"><h3>E2 · Account and storage foundations · ⚪ Not started</h3><p>Jello epic: Pending sync · M2: Real accounts persist safely · ⚪ Not started</p><article class="task" id="T05"><strong>T05 · Create modules and real/demo composition</strong><p>⚪ Not started · Parent E2 · Milestone M2: Real accounts persist safely · Jello task: Pending sync</p><p>Acceptance: Introduce proposed core boundaries and dependency injection; normal add-account never seeds sample mail; explicit demo mode retains existing journeys.</p></article><article class="task" id="T06"><strong>T06 · Persist credentials and authentication state</strong><p>⚪ Not started · Parent E2 · Milestone M2: Real accounts persist safely · Jello task: Pending sync</p><p>Acceptance: Keystore-protected secret storage outside Room; separate incoming/outgoing usernames; required OAuth browser flow/refresh if selected; logout/removal and backup exclusions verified; logs redact secrets.</p></article><article class="task" id="T07"><strong>T07 · Migrate Room for remote identity</strong><p>⚪ Not started · Parent E2 · Milestone M2: Real accounts persist safely · Jello task: Pending sync</p><p>Acceptance: Persist account + mailbox + UIDVALIDITY + UID identity, folder delimiter/roles/subscriptions, body download state, sync cursor, MIME-part references and pending-operation tables; migration and restart tests pass.</p></article><article class="task" id="T08"><strong>T08 · Wire discovery and server validation</strong><p>⚪ Not started · Parent E2 · Milestone M2: Real accounts persist safely · Jello task: Pending sync</p><p>Acceptance: Adapt Autoconfiguration behavior with manual fallback; add INTERNET permission and network handling; validate TLS/STARTTLS and incoming/outgoing independently; setup shows actionable failures without committing broken credentials.</p></article></section><section id="E3"><h3>E3 · Read mail end to end · ⚪ Not started</h3><p>Jello epic: Pending sync · M3: Connected reader accepted · ⚪ Not started</p><article class="task" id="T09"><strong>T09 · Implement folder discovery and header sync</strong><p>⚪ Not started · Parent E3 · Milestone M3: Connected reader accepted · Jello task: Pending sync</p><p>Acceptance: LIST/namespace/select/status and paginated UID fetch populate the drawer/list; special-use folders, nested names, empty folders and unread versus new-since-visit are verified.</p></article><article class="task" id="T10"><strong>T10 · Adapt MIME and address decoding</strong><p>⚪ Not started · Parent E3 · Milestone M3: Connected reader accepted · Jello task: Pending sync</p><p>Acceptance: Golden tests cover nested multipart/alternative/mixed/related, quoted-printable/base64, encoded headers, charsets, missing/broken headers, international addresses and RTL; preserve raw data and explicit parse failures.</p></article><article class="task" id="T11"><strong>T11 · Connect body and attachment downloads</strong><p>⚪ Not started · Parent E3 · Milestone M3: Connected reader accepted · Jello task: Pending sync</p><p>Acceptance: Fetch full text/HTML bodies separately from attachment parts where possible; stream to private files; record progress/cancellation/retry; offline cached reads and configurable attachment policy work.</p></article><article class="task" id="T12"><strong>T12 · Integrate reader and scoped search</strong><p>⚪ Not started · Parent E3 · Milestone M3: Connected reader accepted · Jello task: Pending sync</p><p>Acceptance: Room flows drive loading/empty/error/retry states; sanitize HTML and resolve allowed CID resources with remote images blocked by default; local all-account/current-account search and in-message find cover downloaded content with scope limits visible.</p></article></section><section id="E4"><h3>E4 · Reliable sync and mutations · ⚪ Not started</h3><p>Jello epic: Pending sync · M4: Sync survives interruptions · ⚪ Not started</p><article class="task" id="T13"><strong>T13 · Build session lifecycle and incremental reconciliation</strong><p>⚪ Not started · Parent E4 · Milestone M4: Sync survives interruptions · Jello task: Pending sync</p><p>Acceptance: Account-scoped serialization/session ownership; timeouts and cancellation close resources; UIDVALIDITY resets and expunges reconciled; capability-dependent deltas with baseline fallback; IDLE/NOOP interruption and reconnect tested.</p></article><article class="task" id="T14"><strong>T14 · Queue read/flag/move/delete operations</strong><p>⚪ Not started · Parent E4 · Milestone M4: Sync survives interruptions · Jello task: Pending sync</p><p>Acceptance: Persist intent transactionally; retry/reconcile failed operations; use UID actions and capability-aware MOVE/COPY/delete handling; avoid broad expunge surprises; keep pin local unless an explicit mapping is approved.</p></article><article class="task" id="T15"><strong>T15 · Implement background scheduling and notifications</strong><p>⚪ Not started · Parent E4 · Milestone M4: Sync survives interruptions · Jello task: Pending sync</p><p>Acceptance: Use Android lifecycle-appropriate work for sync, notification permission/channel behavior and privacy; define refresh latency without promising permanent background sockets; emulator Doze/reboot/process-death checks pass.</p></article><article class="task" id="T16"><strong>T16 · Enforce cache policy and multi-account behavior</strong><p>⚪ Not started · Parent E4 · Milestone M4: Sync survives interruptions · Jello task: Pending sync</p><p>Acceptance: Full message bodies offline within an explicit selectable sync scope; attachment-on-demand default with future auto-download policy; quota/low-disk/cancellation/account removal tested; verify last-folder restore and unified-inbox behavior behind the existing option.</p></article></section><section id="E5"><h3>E5 · Compose and real delivery · ⚪ Not started</h3><p>Jello epic: Pending sync · M5: Sending and drafts accepted · ⚪ Not started</p><article class="task" id="T17"><strong>T17 · Serialize composed MIME and drafts</strong><p>⚪ Not started · Parent E5 · Milestone M5: Sending and drafts accepted · Jello task: Pending sync</p><p>Acceptance: Build text/HTML, address lists, encoded headers, attachments, Message-ID and reply References/In-Reply-To; Bcc remains envelope-only; local drafts survive restart; add capability-based remote draft APPEND/replacement.</p></article><article class="task" id="T18"><strong>T18 · Implement SMTP submission</strong><p>⚪ Not started · Parent E5 · Milestone M5: Sending and drafts accepted · Jello task: Pending sync</p><p>Acceptance: Connect/EHLO, secure negotiation, selected authentication, envelope recipients, DATA framing/dot-stuffing and response mapping; partial recipient rejection tested with a local sink.</p></article><article class="task" id="T19"><strong>T19 · Connect persistent outbox to UI</strong><p>⚪ Not started · Parent E5 · Milestone M5: Sending and drafts accepted · Jello task: Pending sync</p><p>Acceptance: Replace sendDemo in real mode; show queued/sending/failed/uncertain/sent; keep user intent on restart; distinguish explicit failure from unknown acceptance and never blindly resend after ambiguous disconnect.</p></article><article class="task" id="T20"><strong>T20 · Reconcile Sent copies and reply workflows</strong><p>⚪ Not started · Parent E5 · Milestone M5: Sending and drafts accepted · Jello task: Pending sync</p><p>Acceptance: Save/reconcile Sent separately from delivery, tolerate server auto-file behavior, avoid duplicate copies, test reply/reply-all/forward attachment selection and HTML/plain text output.</p></article></section><section id="E6"><h3>E6 · Live-provider and device acceptance · ⚪ Not started</h3><p>Jello epic: Pending sync · M6: Pilot accepted · ⚪ Not started</p><article class="task" id="T21"><strong>T21 · Validate real provider interoperability</strong><p>⚪ Not started · Parent E6 · Milestone M6: Pilot accepted · Jello task: Pending sync</p><p>Acceptance: Owner Unknown; approved test accounts only; verify provider auth renewal, folders, large mailbox, Unicode/MIME, read flags, moving and test-recipient delivery; capture redacted evidence and server outcomes.</p></article><article class="task" id="T22"><strong>T22 · Validate physical-device lifecycle</strong><p>⚪ Not started · Parent E6 · Milestone M6: Pilot accepted · Jello task: Pending sync</p><p>Acceptance: Owner Unknown; selected physical Android device; Wi-Fi/cellular changes, background restrictions, overnight idle, reboot, revoked credentials, low storage and battery behavior meet agreed targets.</p></article><article class="task" id="T23"><strong>T23 · Prepare pilot recovery and release evidence</strong><p>⚪ Not started · Parent E6 · Milestone M6: Pilot accepted · Jello task: Pending sync</p><p>Acceptance: Document known limits, account removal/credential revocation, data/backup handling, schema recovery and operational diagnostics; evaluate privacy-safe support logs; all acceptance evidence linked.</p></article></section></section></details><details ><summary>Planning change log<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></summary><section class="support"><p>2026-09-25 15:22 MDT — Created the initial protocol-port command center from iOS 5322c9d and Android d172db0. Recorded library-selection alternatives, six phases, 23 tasks, emulator gates and separate live/device acceptance. Product decisions remain open; no engine selection or schedule has been approved.</p><p>Existing Android architecture and port-audit documents describe the completed demo/UI work. They have not been superseded or migrated; this file is the sole maintained plan for the new protocol-port initiative.</p></section></details></section><footer><span>Target: Unknown · Forecast: Unknown · Updated 2026-09-25 15:22 MDT</span><a href="#tasks">Task register</a></footer></main></body></html>

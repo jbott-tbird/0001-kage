@@ -1769,3 +1769,30 @@ select {
     scroll-behavior: auto !important;
   }
 }
+
+.filter-active {
+  color: #1376dc;
+  background: #eaf3ff;
+}
+.menu-label {
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #697383;
+}
+.filter-check {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: #1376dc;
+}
+.message-status {
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+}
+.message-marker {
+  flex-shrink: 0;
+  color: #d27b12;
+}

@@ -7,7 +7,10 @@ import {
   MoreHorizontal,
   Paperclip,
   Search,
-  SlidersHorizontal,
+  ListFilter,
+  Flag,
+  Pin,
+  Check,
   SquarePen,
   WifiOff,
   X,
@@ -17,6 +20,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuCheckboxItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { IconButton } from "./shared";
@@ -33,6 +37,9 @@ export function MailList() {
   const [searching, setSearching] = useState(!!query);
   const [unread, setUnread] = useState(false);
   const [attachments, setAttachments] = useState(false);
+  const [flagged, setFlagged] = useState(false);
+  const [pinned, setPinned] = useState(false);
+  const filtering = unread || flagged || pinned || attachments;
   const [oldest, setOldest] = useState(false);
   const [selecting, setSelecting] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
@@ -51,8 +58,19 @@ export function MailList() {
         scope,
         unread,
         attachments,
+        flagged,
+        pinned,
       }),
-    [state, effectiveFolder, query, scope, unread, attachments],
+    [
+      state,
+      effectiveFolder,
+      query,
+      scope,
+      unread,
+      attachments,
+      flagged,
+      pinned,
+    ],
   );
   const displayed = oldest ? [...messages].reverse() : messages;
   function search(q: string, s = scope) {
@@ -99,20 +117,39 @@ export function MailList() {
           </IconButton>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label="Filter and sort">
-                <SlidersHorizontal size={23} />
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Filter messages"
+                className={filtering ? "filter-active" : undefined}
+              >
+                <ListFilter size={23} />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onSelect={() => setUnread((v) => !v)}>
-                {unread ? "✓ " : ""}Unread only
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => setAttachments((v) => !v)}>
-                {attachments ? "✓ " : ""}Has attachments
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => setOldest((v) => !v)}>
-                {oldest ? "Newest first" : "Oldest first"}
-              </DropdownMenuItem>
+            <DropdownMenuContent aria-label="Filter messages">
+              <div className="menu-label">Filter</div>
+              {[
+                { label: "Unread", checked: unread, change: setUnread },
+                { label: "Flagged", checked: flagged, change: setFlagged },
+                { label: "Pinned", checked: pinned, change: setPinned },
+                {
+                  label: "Has attachments",
+                  checked: attachments,
+                  change: setAttachments,
+                },
+              ].map(({ label, checked, change }) => (
+                <DropdownMenuCheckboxItem
+                  key={label}
+                  checked={checked}
+                  onCheckedChange={change}
+                  onSelect={(event) => event.preventDefault()}
+                >
+                  <span className="filter-check">
+                    {checked && <Check size={16} />}
+                  </span>
+                  {label}
+                </DropdownMenuCheckboxItem>
+              ))}
             </DropdownMenuContent>
           </DropdownMenu>
           <DropdownMenu>
@@ -130,6 +167,9 @@ export function MailList() {
               >
                 <CheckSquare size={17} />
                 {selecting ? "Cancel selection" : "Select messages"}
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => setOldest((v) => !v)}>
+                {oldest ? "Newest first" : "Oldest first"}
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={markRead}>
                 <CheckCheck size={17} />
@@ -177,7 +217,7 @@ export function MailList() {
           </IconButton>
         </div>
       )}
-      {(unread || attachments || query) && (
+      {(filtering || query) && (
         <div className="filter-summary">
           <span>
             {messages.length} result{messages.length === 1 ? "" : "s"}
@@ -185,6 +225,16 @@ export function MailList() {
           {unread && (
             <button onClick={() => setUnread(false)}>
               Unread <X size={13} />
+            </button>
+          )}
+          {flagged && (
+            <button onClick={() => setFlagged(false)}>
+              Flagged <X size={13} />
+            </button>
+          )}
+          {pinned && (
+            <button onClick={() => setPinned(false)}>
+              Pinned <X size={13} />
             </button>
           )}
           {attachments && (
@@ -272,6 +322,20 @@ export function MailList() {
               }}
             >
               <span className="message-status">
+                {message.isPinned && (
+                  <Pin
+                    size={13}
+                    className="message-marker"
+                    aria-label="Pinned"
+                  />
+                )}
+                {message.isFlagged && (
+                  <Flag
+                    size={13}
+                    className="message-marker"
+                    aria-label="Flagged"
+                  />
+                )}
                 {message.isNewSinceLastVisit ? (
                   <span
                     className="dot new-dot"
@@ -331,15 +395,17 @@ export function MailList() {
             <p>
               {query
                 ? "Try a different phrase or search all accounts."
-                : unread || attachments
+                : filtering
                   ? "No messages match these filters."
                   : "Messages in this folder will appear here."}
             </p>
-            {(unread || attachments) && (
+            {filtering && (
               <Button
                 variant="outline"
                 onClick={() => {
                   setUnread(false);
+                  setFlagged(false);
+                  setPinned(false);
                   setAttachments(false);
                 }}
               >

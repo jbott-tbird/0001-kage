@@ -46,6 +46,8 @@ export type Message = {
   attachments: Attachment[];
   relatedGroupId: string | null;
   isDraft?: boolean;
+  isFlagged?: boolean;
+  isPinned?: boolean;
 };
 export type MailState = {
   demoDataVersion?: number;
@@ -174,6 +176,8 @@ export function populateDemoMailbox(
       bodyHtml: i === 1 ? `<h1>${subject}</h1><p>${body}</p>` : null,
       receivedAt: `2026-09-${24 - i}T10:30:00Z`,
       isRead: i > 1,
+      isFlagged: i === 2,
+      isPinned: i === 0,
       isNewSinceLastVisit: i === 0,
       isDraft: folder === "drafts",
       relatedGroupId: null,
@@ -204,6 +208,8 @@ export function populateDemoMailbox(
         sample.receivedAt ||
         `2026-09-23T${String(18 - i).padStart(2, "0")}:11:00Z`,
       isRead: i % 3 === 0,
+      isFlagged: i === 3,
+      isPinned: i === 0,
       isNewSinceLastVisit: i === 2,
       attachments:
         i === 3
@@ -232,13 +238,23 @@ export function populateDemoMailbox(
 }
 
 function upgradeDemoData(state: MailState): MailState {
-  if (state.demoDataVersion === 3) return state;
+  if (state.demoDataVersion === 4) return state;
+  if (state.demoDataVersion === 3)
+    return {
+      ...state,
+      demoDataVersion: 4,
+      messages: state.messages.map((m) => ({
+        ...m,
+        isFlagged: m.isFlagged ?? /-(sample-2|design-3)$/.test(m.id),
+        isPinned: m.isPinned ?? /-(sample-0|design-0)$/.test(m.id),
+      })),
+    };
   let next = { ...state, demoDataVersion: 3 };
   if (!next.accounts.some((a) => a.id === communityAccount.id))
     next = { ...next, accounts: [...next.accounts, communityAccount] };
   for (const account of next.accounts)
     next = { ...populateDemoMailbox(next, account), demoDataVersion: 3 };
-  return next;
+  return upgradeDemoData(next);
 }
 
 export function initialState(): MailState {
@@ -331,12 +347,16 @@ export function filterMessages(
     scope = "account",
     unread = false,
     attachments = false,
+    flagged = false,
+    pinned = false,
   }: {
     folderId: string;
     query?: string;
     scope?: string;
     unread?: boolean;
     attachments?: boolean;
+    flagged?: boolean;
+    pinned?: boolean;
   },
 ) {
   const account =
@@ -363,6 +383,8 @@ export function filterMessages(
         inLocation &&
         (!unread || !m.isRead) &&
         (!attachments || m.attachments.length > 0) &&
+        (!flagged || m.isFlagged) &&
+        (!pinned || m.isPinned) &&
         haystack.includes(query.trim().toLocaleLowerCase())
       );
     })

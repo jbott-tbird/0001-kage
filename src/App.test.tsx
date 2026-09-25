@@ -35,6 +35,33 @@ describe("mail prototype journeys", () => {
     expect(saved).not.toContain("sample-password");
     expect(JSON.parse(saved).accounts).toHaveLength(4);
   });
+  it("filters pinned and flagged mail and combines filters", async () => {
+    const user = start();
+    await user.click(screen.getByRole("button", { name: "Filter messages" }));
+    expect(screen.getAllByRole("menuitemcheckbox")).toHaveLength(4);
+    await user.click(screen.getByRole("menuitemcheckbox", { name: "Pinned" }));
+    expect(
+      screen.getByRole("menuitemcheckbox", { name: "Pinned" }),
+    ).toHaveAttribute("aria-checked", "true");
+    await user.keyboard("{Escape}");
+    expect(screen.getByText("2 results")).toBeInTheDocument();
+    expect(screen.getByText("Coffee this weekend?")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Filter messages" }));
+    await user.click(screen.getByRole("menuitemcheckbox", { name: "Flagged" }));
+    await user.keyboard("{Escape}");
+    expect(screen.getByText("0 results")).toBeInTheDocument();
+    await user.click(
+      screen.getByRole("button", { name: "Pinned" }),
+    );
+    expect(screen.getByText("2 results")).toBeInTheDocument();
+    expect(screen.getByText("Your trip confirmation")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Filter messages" }));
+    await user.click(screen.getByRole("menuitemcheckbox", { name: "Unread" }));
+    await user.keyboard("{Escape}");
+    expect(screen.getByText("0 results")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Clear filters" }));
+    expect(screen.queryByText("0 results")).not.toBeInTheDocument();
+  });
   it("opens a message, marks it read, and preserves its independent new state", async () => {
     const user = start();
     await user.click(

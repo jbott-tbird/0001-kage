@@ -24,3 +24,12 @@ export function DropdownMenuItem({
 }: React.ComponentPropsWithoutRef<typeof Primitive.Item>) {
   return <Primitive.Item className={cn("menu-item", className)} {...props} />;
 }
+
+export function DropdownMenuCheckboxItem({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof Primitive.CheckboxItem>) {
+  return (
+    <Primitive.CheckboxItem className={cn("menu-item", className)} {...props} />
+  );
+}

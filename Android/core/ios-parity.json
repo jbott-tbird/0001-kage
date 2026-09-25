@@ -14103,5 +14103,54 @@
     "androidCommitForPriorImplementation": "bc91c1b",
     "originatingUpstreamPR": "Unknown; exact source revision is retained",
     "pendingDifferences": "Per-symbol task plus entity/behavior records; intentionally different engine helpers do not imply every underlying Swift behavior is implemented"
+  },
+  "databaseMappings": {
+    "schemaVersion": 3,
+    "schemaPath": "Android/app/schemas/org.foxred.kage.data.local.MailDatabase/3.json",
+    "status": "persistence_schema_available; repository_population_pending",
+    "entities": {
+      "Account": [
+        "AccountEntity",
+        "ServerEntity"
+      ],
+      "Server": [
+        "ServerEntity"
+      ],
+      "Mailbox": [
+        "FolderEntity"
+      ],
+      "Folder": [
+        "FolderEntity"
+      ],
+      "Email": [
+        "MessageEntity"
+      ],
+      "EmailBody": [
+        "MessageEntity.body",
+        "MessageEntity.html",
+        "MessageEntity.bodyDownloaded"
+      ],
+      "EmailAttachment": [
+        "AttachmentEntity"
+      ],
+      "MessageIdentity": [
+        "MessageEntity.accountId",
+        "MessageEntity.folderId",
+        "MessageEntity.uidValidity",
+        "MessageEntity.uid"
+      ],
+      "MessageCursor": [
+        "SyncCursorEntity"
+      ]
+    },
+    "tests": [
+      "MailMigrationTest",
+      "RemoteMailDatabaseTest"
+    ],
+    "remaining": [
+      "Keystore credential provider (T06)",
+      "core/entity mappers and protocol-backed repositories (T31)",
+      "UI integration (M3)"
+    ]
   }
 }

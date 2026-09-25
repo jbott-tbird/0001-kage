@@ -11,12 +11,18 @@ import androidx.room.RoomDatabase
             MessageEntity::class,
             AttachmentEntity::class,
             PreferencesEntity::class,
+            ServerEntity::class,
+            SyncCursorEntity::class,
+            PendingOperationEntity::class,
+            OutboxEntity::class,
         ],
-    version = 2,
+    version = 3,
     exportSchema = true,
 )
 abstract class MailDatabase : RoomDatabase() {
     abstract fun mailDao(): MailDao
+
+    abstract fun remoteMailDao(): RemoteMailDao
 }
 
 /** Preserve existing installed prototypes when adding attachment storage and SMTP preferences. */

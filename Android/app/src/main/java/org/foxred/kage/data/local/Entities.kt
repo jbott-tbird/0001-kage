@@ -14,6 +14,11 @@ data class AccountEntity(
     val security: String,
     val outgoingSecurity: String,
     @ColumnInfo(defaultValue = "1") val requireAuth: Boolean = true,
+    @ColumnInfo(defaultValue = "'DEMO'") val mode: String = "DEMO",
+    @ColumnInfo(defaultValue = "'[]'") val identitiesJson: String = "[]",
+    @ColumnInfo(defaultValue = "'never'") val deletePolicy: String = "never",
+    @ColumnInfo(defaultValue = "'user-blue'") val avatarColor: String = "user-blue",
+    val oauthConfigurationJson: String? = null,
 )
 
 @Entity(
@@ -27,7 +32,12 @@ data class AccountEntity(
                 onDelete = ForeignKey.CASCADE,
             )
         ],
-    indices = [Index("accountId")],
+    indices =
+        [
+            Index("accountId"),
+            Index(value = ["id", "accountId"], unique = true),
+            Index(value = ["accountId", "remotePath"], unique = true),
+        ],
 )
 data class FolderEntity(
     @PrimaryKey val id: String,
@@ -35,6 +45,16 @@ data class FolderEntity(
     val name: String,
     val role: String,
     val parentId: String?,
+    val remotePath: String? = null,
+    @ColumnInfo(defaultValue = "'/'") val delimiter: String = "/",
+    @ColumnInfo(defaultValue = "1") val subscribed: Boolean = true,
+    @ColumnInfo(defaultValue = "'[]'") val attributesJson: String = "[]",
+    val rightsJson: String? = null,
+    val uidValidity: Long? = null,
+    val uidNext: Long? = null,
+    val serverUnreadCount: Int? = null,
+    val serverTotalCount: Int? = null,
+    val lastVisitedUid: Long? = null,
 )
 
 @Entity(
@@ -43,12 +63,19 @@ data class FolderEntity(
         [
             ForeignKey(
                 entity = FolderEntity::class,
-                parentColumns = ["id"],
-                childColumns = ["folderId"],
+                parentColumns = ["id", "accountId"],
+                childColumns = ["folderId", "accountId"],
                 onDelete = ForeignKey.CASCADE,
             )
         ],
-    indices = [Index("accountId"), Index("folderId")],
+    indices =
+        [
+            Index("accountId"),
+            Index("folderId"),
+            Index(value = ["folderId", "accountId"]),
+            Index(value = ["folderId", "uidValidity", "uid"], unique = true),
+            Index(value = ["id", "accountId"], unique = true),
+        ],
 )
 data class MessageEntity(
     @PrimaryKey val id: String,
@@ -70,6 +97,12 @@ data class MessageEntity(
     val draft: Boolean,
     val relatedGroup: String?,
     @ColumnInfo(defaultValue = "''") val preview: String = "",
+    val uidValidity: Long? = null,
+    val uid: Long? = null,
+    val remoteEmailId: String? = null,
+    @ColumnInfo(defaultValue = "'{}'") val envelopeJson: String = "{}",
+    @ColumnInfo(defaultValue = "1") val bodyDownloaded: Boolean = true,
+    val rawMessagePath: String? = null,
 )
 
 @Entity(
@@ -94,6 +127,11 @@ data class AttachmentEntity(
     val cached: Boolean,
     val asset: String,
     val localFile: String? = null,
+    val partId: String? = null,
+    val contentId: String? = null,
+    @ColumnInfo(defaultValue = "0") val inline: Boolean = false,
+    @ColumnInfo(defaultValue = "'NOT_DOWNLOADED'") val downloadState: String = "NOT_DOWNLOADED",
+    @ColumnInfo(defaultValue = "0") val downloadedBytes: Long = 0,
 )
 
 @Entity(tableName = "preferences")

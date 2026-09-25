@@ -8,6 +8,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.foxred.kage.data.local.MIGRATION_1_2
+import org.foxred.kage.data.local.MIGRATION_2_3
 import org.foxred.kage.data.local.MailDatabase
 import org.json.JSONObject
 import org.junit.Assert.*
@@ -15,16 +16,23 @@ import org.junit.Test
 
 class MailMigrationTest {
     @Test
-    fun migrationPreservesAccountsAndAddsSafeDefaults() = runBlocking {
+    fun migrationFromV1PreservesAccountsAndAddsSafeDefaults() = runBlocking { verifyMigration(1) }
+
+    @Test
+    fun migrationFromV2PreservesCachedAttachmentsAndSmtpSettings() = runBlocking {
+        verifyMigration(2)
+    }
+
+    private suspend fun verifyMigration(version: Int) {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val name = "migration-test"
+        val name = "migration-test-$version"
         context.deleteDatabase(name)
         val schema =
             JSONObject(
                     InstrumentationRegistry.getInstrumentation()
                         .context
                         .assets
-                        .open("org.foxred.kage.data.local.MailDatabase/1.json")
+                        .open("org.foxred.kage.data.local.MailDatabase/$version.json")
                         .bufferedReader()
                         .use { it.readText() }
                 )
@@ -46,32 +54,56 @@ class MailMigrationTest {
             val queries = schema.getJSONArray("setupQueries")
             for (i in 0 until queries.length()) db.execSQL(queries.getString(i))
             db.execSQL(
-                "INSERT INTO accounts VALUES ('personal', 'Rhea', 'rhea@example.com', 'imap.example.com', 'smtp.example.com', 993, 465, 'SSL/TLS', 'SSL/TLS')"
+                "INSERT INTO accounts (id, name, address, incoming, outgoing, incomingPort, outgoingPort, security, outgoingSecurity) VALUES ('personal', 'Rhea', 'rhea@example.com', 'imap.example.com', 'smtp.example.com', 993, 465, 'SSL/TLS', 'SSL/TLS')"
             )
             db.execSQL(
                 "INSERT INTO folders VALUES ('personal-inbox', 'personal', 'Inbox', 'inbox', NULL)"
             )
             db.execSQL(
-                "INSERT INTO messages VALUES ('kept', 'personal', 'personal-inbox', 'Roc', 'roc@example.net', 'rhea@example.com', '', '', 'Preserve me', 'Stored before update', NULL, '2026-09-24', 1, 0, 1, 0, 0, NULL)"
+                "INSERT INTO messages (id, accountId, folderId, sender, senderAddress, `to`, cc, bcc, subject, body, html, receivedAt, isRead, isNew, flagged, pinned, draft, relatedGroup) VALUES ('kept', 'personal', 'personal-inbox', 'Roc', 'roc@example.net', 'rhea@example.com', '', '', 'Preserve me', 'Stored before update', NULL, '2026-09-24', 1, 0, 1, 0, 0, NULL)"
             )
             db.execSQL(
-                "INSERT INTO attachments VALUES ('kept-pdf', 'kept', 'ticket.pdf', 'application/pdf', 2400, 0, 'sample-ticket.pdf')"
+                "INSERT INTO attachments (id, messageId, filename, mimeType, sizeBytes, cached, asset) VALUES ('kept-pdf', 'kept', 'ticket.pdf', 'application/pdf', 2400, 0, 'sample-ticket.pdf')"
             )
-            db.version = 1
+            if (version == 2) {
+                db.execSQL("UPDATE accounts SET requireAuth = 0")
+                db.execSQL("UPDATE attachments SET cached = 1, localFile = '/private/kept.pdf'")
+            }
+            db.version = version
         }
         val upgraded =
             Room.databaseBuilder(context, MailDatabase::class.java, name)
-                .addMigrations(MIGRATION_1_2)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                 .build()
         try {
             val account = upgraded.mailDao().accounts().first().single()
             assertEquals("rhea@example.com", account.address)
-            assertTrue(account.requireAuth)
+            assertEquals(version == 1, account.requireAuth)
+            assertEquals("DEMO", account.mode)
+            val servers = upgraded.remoteMailDao().servers("personal")
+            assertEquals(2, servers.size)
+            assertEquals("rhea@example.com", servers.first().username)
+            assertEquals("TLS", servers.first().security)
+            assertEquals(
+                if (version == 1) "PASSWORD" else "NONE",
+                servers.first { it.protocol == "SMTP" }.authenticationType,
+            )
             val message = upgraded.mailDao().message("kept")!!
             assertEquals("Preserve me", message.subject)
             assertTrue(message.isRead)
             assertTrue(message.flagged)
-            assertNull(upgraded.mailDao().attachment("kept-pdf")!!.localFile)
+            assertTrue(message.bodyDownloaded)
+            assertNull(message.uid)
+            val attachment = upgraded.mailDao().attachment("kept-pdf")!!
+            assertEquals(if (version == 2) "/private/kept.pdf" else null, attachment.localFile)
+            assertEquals(
+                if (version == 2) "DOWNLOADED" else "NOT_DOWNLOADED",
+                attachment.downloadState,
+            )
+            assertEquals(if (version == 2) 2400L else 0L, attachment.downloadedBytes)
+            upgraded.openHelper.writableDatabase.query("PRAGMA foreign_key_check").use {
+                assertFalse(it.moveToFirst())
+            }
         } finally {
             upgraded.close()
             context.deleteDatabase(name)

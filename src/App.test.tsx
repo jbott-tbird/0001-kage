@@ -16,9 +16,8 @@ describe("mail prototype journeys", () => {
   it("completes manual setup and never persists the password", async () => {
     const user = start("/");
     await user.click(screen.getByRole("button", { name: "Get started" }));
-    await user.click(
-      screen.getByRole("button", { name: "Fill in demo credentials" }),
-    );
+    expect(screen.getByDisplayValue("skye@example.net")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("sample-password")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Next" }));
     expect(screen.getByText("Planned for v2.0")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Next" }));

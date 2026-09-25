@@ -33,7 +33,15 @@ class MailJourneyTest {
     fun start() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         db = Room.inMemoryDatabaseBuilder(context, MailDatabase::class.java).build()
-        vm = MailViewModel(RoomMailRepository(db, context, DemoMail(context)))
+        vm =
+            MailViewModel(
+                RoomMailRepository(
+                    db,
+                    context,
+                    DemoMail(context),
+                    org.foxred.kage.data.security.AndroidCredentialStore(context, "repository-test"),
+                )
+            )
         restoration.setContent { KageTheme { KageApp(vm) } }
         compose.waitUntil(10000) { vm.ready.value }
     }

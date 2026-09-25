@@ -23,7 +23,13 @@ class RoomMailRepositoryTest {
     fun open() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         db = Room.inMemoryDatabaseBuilder(context, MailDatabase::class.java).build()
-        repo = RoomMailRepository(db, context, DemoMail(context))
+        repo =
+            RoomMailRepository(
+                db,
+                context,
+                DemoMail(context),
+                org.foxred.kage.data.security.AndroidCredentialStore(context, "repository-test"),
+            )
     }
 
     @After
@@ -170,7 +176,13 @@ class RoomMailRepositoryTest {
         context.deleteDatabase(name)
         var disk = Room.databaseBuilder(context, MailDatabase::class.java, name).build()
         try {
-            var stored = RoomMailRepository(disk, context, DemoMail(context))
+            var stored =
+                RoomMailRepository(
+                    disk,
+                    context,
+                    DemoMail(context),
+                    org.foxred.kage.data.security.AndroidCredentialStore(context, "repository-test"),
+                )
             stored.initialize()
             stored.markRead("m01", true)
             stored.flag("m01", true)
@@ -184,7 +196,13 @@ class RoomMailRepositoryTest {
             )
             disk.close()
             disk = Room.databaseBuilder(context, MailDatabase::class.java, name).build()
-            stored = RoomMailRepository(disk, context, DemoMail(context))
+            stored =
+                RoomMailRepository(
+                    disk,
+                    context,
+                    DemoMail(context),
+                    org.foxred.kage.data.security.AndroidCredentialStore(context, "repository-test"),
+                )
             stored.initialize()
             val reopened = stored.mailbox.first()
             assertEquals("work-design", reopened.preferences.selectedFolder)

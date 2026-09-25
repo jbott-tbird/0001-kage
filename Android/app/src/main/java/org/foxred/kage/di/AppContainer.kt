@@ -15,10 +15,13 @@ class AppContainer(context: Context) {
         Room.databaseBuilder(context.applicationContext, MailDatabase::class.java, "kage-mail.db")
             .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
             .build()
+    private val credentials =
+        org.foxred.kage.data.security.AndroidCredentialStore(context.applicationContext)
     val mailRepository: MailRepository =
         RoomMailRepository(
             database,
             context.applicationContext,
             DemoMail(context.applicationContext),
+            credentials,
         )
 }

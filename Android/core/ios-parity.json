@@ -181,23 +181,25 @@
               "declarationIndex": 12
             },
             {
-              "status": "pending_port",
-              "androidTarget": null,
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
-              "task": "T31",
-              "reason": "Credential provider will own secrets outside Room under T06",
+              "status": "intentionally_different",
+              "androidTarget": "CredentialProvider.authorization / CredentialStore.removeAccount",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Credentials.kt",
+              "task": "T06",
+              "reason": "Credential lifetime belongs to a replaceable provider instead of account model side effects",
               "tests": [
-                "AccountModelTest"
+                "CredentialStoreTest"
               ],
               "declarationIndex": 13
             },
             {
-              "status": "pending_port",
-              "androidTarget": ":core:account / repository mapping",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
-              "task": "T31",
-              "reason": "Account manager, platform credential/storage helper or unmapped domain utility requires repository/platform adoption review; source presence is not implementation evidence",
-              "tests": [],
+              "status": "intentionally_different",
+              "androidTarget": "CredentialProvider.authorization / CredentialStore.removeAccount",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Credentials.kt",
+              "task": "T06",
+              "reason": "Credential lifetime belongs to a replaceable provider instead of account model side effects",
+              "tests": [
+                "CredentialStoreTest"
+              ],
               "declarationIndex": 14
             },
             {
@@ -12515,13 +12517,13 @@
     {
       "iosPath": "Core/Sources/Account/Account.swift",
       "iosSymbol": "Account.authorization",
-      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
-      "androidSymbol": null,
-      "status": "pending_port",
-      "implemented": false,
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Credentials.kt",
+      "androidSymbol": "CredentialProvider.authorization",
+      "status": "intentionally_different",
+      "implemented": true,
       "uiWired": false,
-      "acceptance": "Not yet implemented",
-      "notes": "Credential provider will own secrets outside Room under T06"
+      "acceptance": "Credential provider tested on Android; real setup/repository population remains later integration",
+      "notes": "Secrets remain outside Room and Account; account removal clears the Keystore entries"
     },
     {
       "iosPath": "Core/Sources/Account/Account.swift",
@@ -14152,5 +14154,18 @@
       "core/entity mappers and protocol-backed repositories (T31)",
       "UI integration (M3)"
     ]
+  },
+  "credentialStorage": {
+    "provider": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Credentials.kt",
+    "implementation": "Android/app/src/main/java/org/foxred/kage/data/security/AndroidCredentialStore.kt",
+    "status": "implemented_and_emulator_tested",
+    "mechanism": "AES-256-GCM; random nonce; account/protocol binding; non-exportable per-account/protocol Android Keystore keys",
+    "location": "Context.noBackupFilesDir/mail-credentials",
+    "backup": "Platform no-backup directory plus explicit cloud/device-transfer XML exclusions",
+    "lifecycle": "Repository account removal deletes corresponding keys/files; reset deletes namespace keys/files; active network sessions will be owned by T31/T13",
+    "tests": [
+      "CredentialStoreTest"
+    ],
+    "liveProviderVerified": false
   }
 }

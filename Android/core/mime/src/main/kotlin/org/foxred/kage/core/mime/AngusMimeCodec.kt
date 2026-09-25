@@ -9,8 +9,11 @@ import java.util.Date
 import java.util.Properties
 import org.foxred.kage.core.account.*
 
-class AngusMimeCodec(private val maxBytes: Int = 25 * 1024 * 1024, private val maxDepth: Int = 32) :
-    MimeCodec {
+class AngusMimeCodec(
+    private val maxBytes: Int = 25 * 1024 * 1024,
+    private val maxDepth: Int = 32,
+    private val boundary: (String) -> String = { "kage_" + java.util.UUID.randomUUID().toString() },
+) : MimeCodec {
     init {
         require(maxBytes > 0 && maxDepth > 0)
     }
@@ -23,88 +26,15 @@ class AngusMimeCodec(private val maxBytes: Int = 25 * 1024 * 1024, private val m
 
     override fun decode(raw: ByteArray): Email {
         val message = parse(raw)
-        val texts = mutableListOf<String>()
-        val html = mutableListOf<String>()
-        val attachments = mutableListOf<EmailAttachment>()
-        fun visit(part: Part, path: String, depth: Int) {
-            if (depth > maxDepth)
-                throw MailFailure(FailureKind.LIMIT_EXCEEDED, "MIME nesting exceeds limit")
-            val type = ContentType(part.contentType).baseType.lowercase()
-            val cid = part.getHeader("Content-ID")?.firstOrNull()?.trim('<', '>')
-            if (
-                part.disposition.equals(Part.ATTACHMENT, true) ||
-                    part.fileName != null ||
-                    (!part.isMimeType("multipart/*") &&
-                        !part.isMimeType("text/plain") &&
-                        !part.isMimeType("text/html"))
-            ) {
-                attachments +=
-                    EmailAttachment(
-                        path,
-                        part.fileName?.let { MimeUtility.decodeText(it) } ?: "attachment",
-                        type,
-                        part.size.toLong(),
-                        cid,
-                        part.disposition.equals(Part.INLINE, true),
-                    )
-            } else if (part.isMimeType("multipart/*")) {
-                val multipart = part.content as Multipart
-                for (i in 0 until multipart.count) visit(
-                    multipart.getBodyPart(i),
-                    "$path.${i + 1}",
-                    depth + 1,
-                )
-            } else if (part.isMimeType("text/html")) html += part.content as String
-            else if (part.isMimeType("text/plain")) texts += part.content as String
-        }
-        visit(message, "1", 0)
-        fun addresses(values: Array<Address>?) =
-            values.orEmpty().map {
-                val a = it as InternetAddress
-                EmailAddress(a.address, a.personal ?: "")
-            }
-        return Email(
-            null,
-            message.messageID,
-            message.subject ?: "",
-            addresses(message.from),
-            addresses(message.getRecipients(Message.RecipientType.TO)),
-            addresses(message.getRecipients(Message.RecipientType.CC)),
-            (message.receivedDate ?: message.sentDate)?.toInstant(),
-            EmailBody(
-                texts.takeIf { it.isNotEmpty() }?.joinToString("\n"),
-                html.takeIf { it.isNotEmpty() }?.joinToString("\n"),
-            ),
-            attachments,
-        )
+        val content = AngusPartReader(maxBytes, maxDepth).read(message)
+        return AngusEnvelopeReader.read(message)
+            .copy(body = content.body, attachments = content.attachments)
     }
 
-    override fun attachment(raw: ByteArray, partId: String): ByteArray {
-        val indices =
-            partId.split('.').map {
-                it.toIntOrNull() ?: throw IllegalArgumentException("Invalid part ID")
-            }
-        require(indices.firstOrNull() == 1 && indices.size <= maxDepth + 1)
-        var part: Part = parse(raw)
-        for (index in indices.drop(1)) {
-            val multipart =
-                part.content as? Multipart ?: throw IllegalArgumentException("Not a multipart")
-            require(index in 1..multipart.count)
-            part = multipart.getBodyPart(index - 1)
-        }
-        return part.inputStream.use { input ->
-            val out = ByteArrayOutputStream()
-            val buffer = ByteArray(8192)
-            while (true) {
-                val n = input.read(buffer)
-                if (n < 0) break
-                if (out.size() + n > maxBytes)
-                    throw MailFailure(FailureKind.LIMIT_EXCEEDED, "Attachment exceeds limit")
-                out.write(buffer, 0, n)
-            }
-            out.toByteArray()
-        }
-    }
+    override fun attachment(raw: ByteArray, partId: String): ByteArray =
+        ByteArrayOutputStream()
+            .also { AngusPartReader(maxBytes, maxDepth).attachment(parse(raw), partId, it) }
+            .toByteArray()
 
     override fun encode(email: OutgoingEmail): ByteArray {
         fun safe(value: String): String {
@@ -114,6 +44,26 @@ class AngusMimeCodec(private val maxBytes: Int = 25 * 1024 * 1024, private val m
         fun address(a: EmailAddress) =
             InternetAddress(safe(a.address), safe(a.name), "UTF-8").apply { validate() }
         require(email.to.isNotEmpty() || email.cc.isNotEmpty() || email.bcc.isNotEmpty())
+        if (email.attachments.sumOf { it.data.size.toLong() } > maxBytes)
+            throw MailFailure(FailureKind.LIMIT_EXCEEDED, "Attachments exceed message limit")
+        val usedBoundaries = mutableSetOf<String>()
+        fun multipart(subtype: String): MimeMultipart {
+            val value = boundary(subtype)
+            require(value.matches(Regex("[A-Za-z0-9_=-]{1,70}")) && usedBoundaries.add(value)) {
+                "Invalid or duplicate MIME boundary"
+            }
+            return object : MimeMultipart(subtype) {
+                init {
+                    contentType =
+                        ContentType(
+                                "multipart",
+                                subtype,
+                                ParameterList().apply { set("boundary", value) },
+                            )
+                            .toString()
+                }
+            }
+        }
         val msg = MimeMessage(Session.getInstance(Properties()))
         msg.setFrom(address(email.from))
         msg.setRecipients(Message.RecipientType.TO, email.to.map(::address).toTypedArray())
@@ -124,7 +74,7 @@ class AngusMimeCodec(private val maxBytes: Int = 25 * 1024 * 1024, private val m
         fun body(): MimeBodyPart =
             MimeBodyPart().apply {
                 if (email.body.html != null && email.body.text != null) {
-                    val alt = MimeMultipart("alternative")
+                    val alt = multipart("alternative")
                     alt.addBodyPart(MimeBodyPart().apply { setText(email.body.text, "UTF-8") })
                     alt.addBodyPart(
                         MimeBodyPart().apply { setText(email.body.html, "UTF-8", "html") }
@@ -133,7 +83,7 @@ class AngusMimeCodec(private val maxBytes: Int = 25 * 1024 * 1024, private val m
                 } else if (email.body.html != null) setText(email.body.html, "UTF-8", "html")
                 else setText(email.body.text ?: "", "UTF-8")
             }
-        val mixed = MimeMultipart("mixed")
+        val mixed = multipart("mixed")
         mixed.addBodyPart(body())
         email.attachments.forEach { attachment ->
             require(attachment.data.size <= maxBytes)
@@ -154,12 +104,27 @@ class AngusMimeCodec(private val maxBytes: Int = 25 * 1024 * 1024, private val m
             msg.setHeader("References", email.references.joinToString(" ") { safe(it) })
         msg.saveChanges()
         msg.setHeader("Message-ID", safe(email.messageId))
-        return ByteArrayOutputStream()
-            .also { msg.writeTo(it) }
-            .toByteArray()
-            .also {
-                if (it.size > maxBytes)
-                    throw MailFailure(FailureKind.LIMIT_EXCEEDED, "Encoded message exceeds limit")
+        val out =
+            object : ByteArrayOutputStream() {
+                private fun checkSize(addition: Int) {
+                    if (count.toLong() + addition > maxBytes)
+                        throw MailFailure(
+                            FailureKind.LIMIT_EXCEEDED,
+                            "Encoded message exceeds limit",
+                        )
+                }
+
+                override fun write(value: Int) {
+                    checkSize(1)
+                    super.write(value)
+                }
+
+                override fun write(bytes: ByteArray, offset: Int, length: Int) {
+                    checkSize(length)
+                    super.write(bytes, offset, length)
+                }
             }
+        msg.writeTo(out)
+        return out.toByteArray()
     }
 }

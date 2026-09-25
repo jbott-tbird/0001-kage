@@ -1,3 +1,6 @@
 *.png binary
 *.pdf binary
 *.bat text eol=crlf
+
+# MIME fixture hashes require original bytes and line endings.
+*.eml binary

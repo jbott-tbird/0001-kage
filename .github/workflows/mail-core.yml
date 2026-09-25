@@ -1,0 +1,25 @@
+name: Mail core
+on:
+  pull_request:
+    paths: ['Android/**', '.github/workflows/mail-core.yml']
+  push:
+    branches: [main]
+    paths: ['Android/**', '.github/workflows/mail-core.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  core-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Test standalone mail libraries without Android SDK or external mail accounts
+        working-directory: Android
+        run: ./gradlew -PmailCoreOnly=true :core:mime:test :core:transport:test :core:integration:test --no-daemon

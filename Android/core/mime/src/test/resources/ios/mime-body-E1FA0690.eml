@@ -1,0 +1,2623 @@
+Delivered-To: fixture-author@example.test
+Received: by 2002:a05:6214:5503:b0:8b4:eb00:b62f with SMTP id mb3csp1324436qvb;
+        Mon, 13 Jul 2026 09:48:04 -0700 (PDT)
+X-Forwarded-Encrypted: i=5; AHgh+RphyTPxGYl4+6VCSvkqe+cUFxM9/4+HO8Yajx22upAQvqWV3iCXBSGckOKaoRoZGaFz1X0TDzODSg==@thunderbird.net
+X-Received: by 2002:a53:eb83:0:b0:662:8349:3b7b with SMTP id 956f58d0204a3-66802a6d079mr207101d50.46.1783961284554;
+        Mon, 13 Jul 2026 09:48:04 -0700 (PDT)
+ARC-Seal: i=4; a=rsa-sha256; t=1783961284; cv=pass;
+        d=google.com; s=arc-20260327;
+        b=oi6NUVdg1/c4zv0+g7PPVU6da6hULUUWf6pz/7dcdAXkAgIBG+qrQ9f03yE2yGE+3U
+         3Fj56dTEa/FLCLXm4SI1zuUpfltfKE7VcOi+tEPRCx/DmPmxH/6hdzS+lA37BgHHojX2
+         JQWEe/Q4KTGYnYdivcOnpbSWtp1tubrfzG56KhXdHF3eOqvrt2tZcMVLLWyYqQZUfwXY
+         VnWOvAVzUSCliJaCzNh7gjnTFpLQ//P2/ZyUc2noLCaEBY1LUQfcrqoUV2VriL4SQ/jy
+         3XNzNeJFHM7b2Fe18D2OoXOlUBHnifR3Y5GZHX3OhHgASvAP7qE8eo887ARrQeeoqpJ9
+         Z2Iw==
+ARC-Message-Signature: i=4; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=list-unsubscribe:list-archive:list-help:list-post:list-id
+         :mailing-list:precedence:to:subject:message-id:date:from
+         :mime-version:dkim-signature;
+        bh=xWVTzauiFOA1d8RRD4htIAuzBwtNDJZ0b6CDV/4SKTg=;
+        fh=PgJ0LpJJV3uYKnQfhwM7KIkcacrGMvdE3zaiqSuzWDo=;
+        b=is/VtSAhZXoWau2nCMryjkBuci7T/Hl3B0pVpUBpLYK72EmohBeSyEi858Savx6iCW
+         VbQHPgDXYF402icpYZtBQvaIpKWYRYHSR/Ao7LNxvgPW/tCKJYtbkiVPeO9CPUAxk/BT
+         I58vapUWfLIzUalTBn0MC2p/74rGItYcTJqJ5B3n7pvxKC40JQAK+lkWcWW5wAc5905C
+         6PBVyoOXepF7Wd3RQ3AvoKT+uIQEBoYdoBxRKr83ef6usNScNN2TnQb9UIW7Y+Gjhl0O
+         R9sXG53hyO6X156dEYuA2TrR3LlnQDeGm+35NZeNRqdgLcfevTnb/pmksizQdAf9zhhV
+         44Aw==;
+        dara=google.com
+ARC-Authentication-Results: i=4; mx.google.com;
+       dkim=pass header.i=@thunderbird.net header.s=google header.b=V1S9UEbN;
+       arc=pass (i=3 spf=pass spfdomain=thunderbird.net dkim=pass dkdomain=thunderbird.net dmarc=pass fromdomain=thunderbird.net);
+       spf=pass (google.com: domain of mzla-team+bncbdsivv7z3yibbq5n2tjamgqetqeh4xq@thunderbird.net designates 209.85.220.69 as permitted sender) smtp.mailfrom=mzla-team+bncBDSIVV7Z3YIBBQ5N2TJAMGQETQEH4XQ@thunderbird.net;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=thunderbird.net;
+       dara=neutral header.i=@thunderbird.net
+Return-Path: <mzla-team+bncBDSIVV7Z3YIBBQ5N2TJAMGQETQEH4XQ@thunderbird.net>
+Received: from mail-sor-f69.google.com (mail-sor-f69.google.com. [209.85.220.69])
+        by mx.google.com with SMTPS id 956f58d0204a3-667e9db1687sor1274173d50.14.2026.07.13.09.48.04
+        for <fixture-author@example.test>
+        (Google Transport Security);
+        Mon, 13 Jul 2026 09:48:04 -0700 (PDT)
+Received-SPF: pass (google.com: domain of mzla-team+bncbdsivv7z3yibbq5n2tjamgqetqeh4xq@thunderbird.net designates 209.85.220.69 as permitted sender) client-ip=209.85.220.69;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@thunderbird.net header.s=google header.b=V1S9UEbN;
+       arc=pass (i=3 spf=pass spfdomain=thunderbird.net dkim=pass dkdomain=thunderbird.net dmarc=pass fromdomain=thunderbird.net);
+       spf=pass (google.com: domain of mzla-team+bncbdsivv7z3yibbq5n2tjamgqetqeh4xq@thunderbird.net designates 209.85.220.69 as permitted sender) smtp.mailfrom=mzla-team+bncBDSIVV7Z3YIBBQ5N2TJAMGQETQEH4XQ@thunderbird.net;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=thunderbird.net;
+       dara=neutral header.i=@thunderbird.net
+ARC-Seal: i=3; a=rsa-sha256; t=1783961284; cv=pass;
+        d=google.com; s=arc-20260327;
+        b=elTCvlZqNWnj8RqbI71OpFRuxw6GjnwEKULmLfMDzygZh6Tf3EM/ovyNTh2j1RZ2eC
+         UV29Vhd+g0Kc0NE8B1P52A9G16zpVjx45NYm9vwQk7eI1LgbiAejD+JNz+8UQyKrBuyI
+         +vgxWEFgux7FGJa755hRSk5XKbSe/KCWp+PWjzNBokD6dlhWNdzwpZ9y1tv4MhOijx3w
+         gFltUiuZp2tpSHr8+0Lj6ES51ct7sfqUu8kAZwBO+WwM3ny0jm2wn8/q5iruVdRfjHA6
+         uoH+27UFvXGjJfsxK+/6Vkzxau5ZM1cxLrOVqG45XGQcwVPo/y8hNj7XSfFi58gAqzOt
+         YCrQ==
+ARC-Message-Signature: i=3; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=list-unsubscribe:list-archive:list-help:list-post:list-id
+         :mailing-list:precedence:to:subject:message-id:date:from
+         :mime-version:dkim-signature;
+        bh=xWVTzauiFOA1d8RRD4htIAuzBwtNDJZ0b6CDV/4SKTg=;
+        fh=PgJ0LpJJV3uYKnQfhwM7KIkcacrGMvdE3zaiqSuzWDo=;
+        b=S/zIiE9XmnO+rxvMarT8VG/mjAtrIIJFQZdqfOCJwMidvx3caO9i+d3903lYbqrQGe
+         hdz1vXtc1GsnkgI1X+PWGMeAw6DXlTVoF9DJHvfW2b4o65T5ivrb1kWDt2kpC/L/tdks
+         I0wlKYBNYOA/sLRVbTagRGRkMNaW1DXYyM1qk4jxirT+qZ8TN0wf7IhIvCaCb9E6p8qA
+         eN5S92lt7456CmUy5Dk2XBYjPNUfXna9w2FxnHyRjlJADU4fN7AWtjTLswcdj+r8qCPp
+         uNOw1x2XI6h+4lCu2cnyz1YiCUIeS0LQ7CD0CGzt60ff9J1TBCytAjyem/I1rZEHW+dk
+         DyMA==;
+        darn=thunderbird.net
+ARC-Authentication-Results: i=3; mx.google.com;
+       dkim=pass header.i=@thunderbird.net header.s=google header.b=nVV4aPl4;
+       arc=pass (i=1);
+       spf=pass (google.com: domain of kelly@thunderbird.net designates 209.85.220.41 as permitted sender) smtp.mailfrom=kelly@thunderbird.net;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=thunderbird.net;
+       dara=neutral header.i=@thunderbird.net
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=thunderbird.net; s=google; t=1783961284; x=1784566084; darn=thunderbird.net;
+        h=list-unsubscribe:list-archive:list-help:list-post:list-id
+         :mailing-list:precedence:x-original-authentication-results
+         :x-original-sender:content-type:to:subject:message-id:date:from
+         :mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=xWVTzauiFOA1d8RRD4htIAuzBwtNDJZ0b6CDV/4SKTg=;
+        b=V1S9UEbNfFT0KU4zZiAyTb/bjkvyrms78Mn7huSIp41GMNjNXAIWQ59kqgz8j3MWkU
+         eKq70zL454EzduA26WXMsC+73shK0v1gsiGxqOGHlaiNpJhfeJThyEW6Q2FVit8Ds+HO
+         V9hPgX/I8FtnvrvOiDFz9AolBQLgF4F/WvfYHGB10ZKWUlM0YoBsl/YjrvWLGAzQfYPj
+         h08LgwWeGcOLCzRcm7h2Dhgno79PdFQtKCoayQlnDNxLxkum5okwqjaR5bVjZwb14X0y
+         u0VsBi2GxPdBgr+m4704iAF5Fh7W45dHZj86mitFQjnlsA+C7wShz9mFXewxULCiqk9y
+         Pp7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783961284; x=1784566084;
+        h=list-unsubscribe:list-archive:list-help:list-post
+         :x-spam-checked-in-group:list-id:mailing-list:precedence
+         :x-original-authentication-results:x-original-sender:content-type:to
+         :subject:message-id:date:from:mime-version:x-gm-gg:x-beenthere
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=xWVTzauiFOA1d8RRD4htIAuzBwtNDJZ0b6CDV/4SKTg=;
+        b=MjwDN5r/VK6/yxn5LZZjtdm3iHHsQ6nKLRgRGkDu7d5NalHKHlU8brrzVIaGx4suOt
+         j6V304BP41RU9yRkPzdBovs7MCDl1TTQBC2UWXrAEjC8T5DpGN2t1e5BamJg2UVvZoI8
+         qCNPE5B1ERcg9HXbJnSxqCrD2+aVrVRKiEKb8uOIpKDa+1cyLUHOcWqPJNjpFu6VaRYc
+         Dn+NceewESMF+8kRM8Th5tzxwHmVGxI2g0H6wLkKxYa8IaGFs3sOwGgENrFHlaKMJtcs
+         fu8avsu6rZjXVszDQJgFU0YKYen/VNVA8CMKH2V02Cdp9bZkqMe0OHnmrui5mK3PeEny
+         urTQ==
+X-Forwarded-Encrypted: i=3; AHgh+RoRm2ywDOLdqn4tpDSE2IqmR9KrpZw1pE2975IR8TS13vnunVfEE74PFRgNl5V8YwCXZ36Z6j4Rig==@thunderbird.net
+X-Gm-Message-State: AOJu0YyWUOl9ZO2l6UBtZ8SaBOmTn41UJh/+LXVhI/nNcOizFe9N2jcO
+	YUNsoQAbgQI5Te1Y5WVmgCP3xc6FpmkyJS9Z5LbnKW4WZ7vlVLS7Wk3MceORujkcvn0=
+X-Received: by 2002:a05:690e:c49:b0:667:8b95:31b5 with SMTP id 956f58d0204a3-66802c2922bmr235901d50.108.1783961283747;
+        Mon, 13 Jul 2026 09:48:03 -0700 (PDT)
+X-BeenThere: mzla-team@thunderbird.net; h="Aa7YSPQZ+OB5IrNaf37JTEGKpzEUZmHnhfD8rq8dVzbXJTDraw=="
+Received: by 2002:a05:690e:13cf:b0:660:e9ea:208 with SMTP id
+ 956f58d0204a3-6679bc460b6ls9030153d50.3.-pod-prod-01-us; Mon, 13 Jul 2026
+ 09:48:02 -0700 (PDT)
+X-Received: by 2002:a53:d387:0:b0:667:911c:54eb with SMTP id 956f58d0204a3-66802b5c599mr173417d50.74.1783961282436;
+        Mon, 13 Jul 2026 09:48:02 -0700 (PDT)
+ARC-Seal: i=2; a=rsa-sha256; t=1783961282; cv=pass;
+        d=google.com; s=arc-20260327;
+        b=btGXf9JDJFfDFTB/8G6VnPeVZRCP3MPodEA/5IofhXPKDXUfVdRdAUk2THP3a4kFXP
+         um7BRMHd0hI7pHLDbfxMGjyGNd0X4jhPJBJtwzWmk8LTXPqDshnuDKNfi2bPTwMpekQe
+         UD5gPhMojLrtiZg5KNrn6vbsIWUTjWvjN+DNnVOdlyQviEf+oizkki8odkRxXngK1Hzk
+         e8IVVAKjrjcacK0Q+Viaq7vsBsQZRpnd4jvmVph6oiwEBKVpcuRRcG1rg0y27zOlM2pv
+         0eR3DNqt2ZRskkdJUCc4wqVmlvmbc2fiJsbqPsh+hG9VeZGkz8SaP9DxcXdG5pQo8IEZ
+         FWPg==
+ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=HVPwtT6t3Zoze094EMjfCwXkt1LTF8rJSGlnk1qXohQ=;
+        fh=WSCLfr1+eTl7jvaB89zSLye8amrBsscL7pFh1TV11HI=;
+        b=a86GWW2BEFujTBuD22/foG7KxSiSD31C+b/yHGvfNvLObzMGJGSx8j94cxid6A4Xy8
+         xMZRgyhUVi8qDs93lIPS7UYDBvn55wIUuJ83RWl/1irF3H/+UuudzcaouO6wyqP/T8fb
+         tJP4jun5/o1U403wgQ3I2qErUOAcO5lmNZ4QFo+aZdREKRHWsV89AX5bfl6YV91QnI03
+         i1uUTa9NUTt9EzpSL3Ko9hMe+TDsxXTLRPS4gjViTGmdxL2J3T24COfLe6HYo+6vboE4
+         QTQWzZ54YkO1pWrhu5WKxDHSosP1R59v0qMsVhVMAjdKfEplGueyykHl7ZJBQK/swBeX
+         aBuQ==;
+        dara=google.com
+ARC-Authentication-Results: i=2; mx.google.com;
+       dkim=pass header.i=@thunderbird.net header.s=google header.b=nVV4aPl4;
+       arc=pass (i=1);
+       spf=pass (google.com: domain of kelly@thunderbird.net designates 209.85.220.41 as permitted sender) smtp.mailfrom=kelly@thunderbird.net;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=thunderbird.net;
+       dara=neutral header.i=@thunderbird.net
+Received: from mail-sor-f41.google.com (mail-sor-f41.google.com. [209.85.220.41])
+        by mx.google.com with SMTPS id 956f58d0204a3-667d8f9279esor2986308d50.2.2026.07.13.09.48.02
+        for <mzla-team@thunderbird.net>
+        (Google Transport Security);
+        Mon, 13 Jul 2026 09:48:02 -0700 (PDT)
+Received-SPF: pass (google.com: domain of kelly@thunderbird.net designates 209.85.220.41 as permitted sender) client-ip=209.85.220.41;
+ARC-Seal: i=1; a=rsa-sha256; t=1783961282; cv=none;
+        d=google.com; s=arc-20260327;
+        b=A/O1QxYXSECouMq2ykIrTF1YPtwKPC+eLnGSFlNKEmLK9kGX6I4mQFSWbvM56Dq4Un
+         nwuwS21EP+hdWl15dU8DimnX7V9iU/zSe5zuci/ob0Z/JBrrLj2kyzL4J60ekt3mLI6q
+         T5AngQQszu7u5f+S3fuDmyEn1fuKOX1YX9n7c7kPGTBerrNXElssPPYG6MZPN3X2cVVk
+         MkS0puv0lh8jKcLa9z9fRafxiboYalTZSOydfq8GmTMGWAYnDAlU0C8cBQME9VzzrTFW
+         iOnY0MSTH1BNpq4OYVtKVwi+5p4CnBUDqGzQJVycs0vKRAinxHHAc9W4Vtwx+MJOWvn/
+         MEoA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=HVPwtT6t3Zoze094EMjfCwXkt1LTF8rJSGlnk1qXohQ=;
+        fh=WSCLfr1+eTl7jvaB89zSLye8amrBsscL7pFh1TV11HI=;
+        b=ilgGTA5Mj+LYT6+epY9ea2J6HDS2hGGwFc31VWZkgn93GMxEt7A8keZCK4o8DyiCWE
+         LKYXpl5IhDOTUI6kAWPSu5rwsZF+2Oz7coWqAcg7hhK2ysdDFQ/UkiUBx6rAVNv+MtuE
+         cEDL9y1qH09xOSWRxk6KlRO5prk+9Q033qOyVadWGHa9qPxPPGy21e2XH5lpVEMFFmA9
+         u+ZRbWjhe/kvRG22Ysu6W61ziunXJLILvlNRGmN+7ejWQGkD8PW8E+uUx3FpCYdxoNRk
+         1x2L2XZ/F2265UxhIqzNVcwIZEl15KBb31sC4LMhyxjB+lHo+R6cTmdzXEdFNtQ/YScD
+         4MVg==;
+        darn=thunderbird.net
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+X-Gm-Gg: AfdE7cn9ooKSxkyOaui81/a/3NoN2EAcy1BDj1Rmy+lJn5p9EDwPow11zM9wdfF9WWu
+	QIwwlzijb5/L+VIpdMWsh9t3IRML/qPwS7th8jerFYMAKgG6Q7Cfby73iPi09xoIlqioxCkN/ZT
+	XmdO9k55aRLnu7sZBPhHl/gMYeTQZ1jVMzvJUUZ4xUA61a0vXr794U9qt7Rt0LpaSs0MYHSrtZC
+	WD9jaDCUJWsUhagAIoS6ZRwx9jCJcGYSRNZy1m2P70uDRYr3I3jicqj3/n7Um6vptKsPNAeDFpq
+	NjFKnaiHgU5LObATdFEtTuRY8UWlIRvWZgZUYoQJaaQ09EcgqKCYIU4jOjT/wYOqzVYtRISvI7Z
+	b4GDhPpx1aFanC/vq12tlmUOjjvaIXkH0kH41mw==
+X-Received: by 2002:a53:dccc:0:b0:666:3710:f31b with SMTP id
+ 956f58d0204a3-66802b13b7fmr178397d50.67.1783961281402; Mon, 13 Jul 2026
+ 09:48:01 -0700 (PDT)
+MIME-Version: 1.0
+From: Kelly McSweeney <kelly@thunderbird.net>
+Date: Mon, 13 Jul 2026 12:47:49 -0400
+X-Gm-Features: AUfX_mxs8oRy4DFOpMAEGa_cjFy0E6ifFVyBWyingrd3hKqfS-l-7vfSblE3Y20
+Message-ID: <CAGmtRCNkd4ROQwkS-GdR5-NR0ZwCjVWBf-7jtqeyhWh20Bnb7g@mail.gmail.com>
+Subject: What's Happening @ MZLA - July 10th, 2026
+To: "MZLA Team (Staff Only)" <mzla-team@thunderbird.net>, 
+	Thunderbird Council <council@thunderbird.net>
+Content-Type: multipart/alternative; boundary="00000000000078b8e7065680da17"
+X-Original-Sender: kelly@thunderbird.net
+X-Original-Authentication-Results: mx.google.com;       dkim=pass
+ header.i=@thunderbird.net header.s=google header.b=nVV4aPl4;       arc=pass
+ (i=1);       spf=pass (google.com: domain of kelly@thunderbird.net designates
+ 209.85.220.41 as permitted sender) smtp.mailfrom=kelly@thunderbird.net;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=thunderbird.net;
+       dara=neutral header.i=@thunderbird.net
+Precedence: list
+Mailing-list: list mzla-team@thunderbird.net; contact mzla-team+owners@thunderbird.net
+List-ID: <mzla-team.thunderbird.net>
+X-Spam-Checked-In-Group: mzla-team@thunderbird.net
+X-Google-Group-Id: 15692825831
+List-Post: <https://groups.google.com/a/thunderbird.net/group/mzla-team/post>, <mailto:mzla-team@thunderbird.net>
+List-Help: <https://support.google.com/a/thunderbird.net/bin/topic.py?topic=25838>,
+ <mailto:mzla-team+help@thunderbird.net>
+List-Archive: <https://groups.google.com/a/thunderbird.net/group/mzla-team/>
+List-Unsubscribe: <mailto:googlegroups-manage+15692825831+unsubscribe@googlegroups.com>,
+ <https://groups.google.com/a/thunderbird.net/group/mzla-team/subscribe>
+
+--00000000000078b8e7065680da17
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Here is what happened over the past two weeks at MZLA.
+=F0=9F=96=A5=EF=B8=8F Desktop
+
+   -
+
+   Exchange: Graph & EWS
+   -
+
+      Turned on Graph in Daily =F0=9F=A5=B3
+      -
+
+      Started Calendar! =F0=9F=A5=B3=F0=9F=A5=B3
+      -
+
+      Team splitting up a little to focus on Security & Panorama
+      -
+
+   Account Hub Manual Config
+   -
+
+      Back on track and hoping to deliver for 154. Lots of patches are
+      landing this week after solid teamwork and collaboration with Design.
+      -
+
+      Taking the opportunity to refine ages old UX and enable Oauth2 for
+      organizations that have been legislated to implement MFA in regions t=
+hat
+      are impacted by NIS2 and similar.
+      -
+
+      Working with the Support team to provide content that describes the
+      options available.
+      -
+
+   OAuth
+   -
+
+      Still waiting for responses from:
+      -
+
+         Yahoo!/AOL
+         -
+
+      Heard back that server side changes are underway and will be landed
+      soon:
+      -
+
+         Comcast/Xfinity
+         -
+
+         Yandex
+         -
+
+      Plan Bs are in place for each provider which provides functionality
+      similar to previous years.
+      -
+
+      As the new PKCE Yahoo!/AOL client IDs make their appearance in ESR,
+      support volume may increase so our response has been:
+      -
+
+         Updated support articles
+         -
+
+         Uplift preparation
+         -
+
+   Panorama / Global Message Database
+   -
+
+      Team steadily moving forwards and Brendan
+
+=F0=9F=8E=A8 Design
+
+   -
+
+   Desktop:
+   -
+
+      Calendar: design almost complete! Prototype
+      <https://www.figma.com/proto/dHBhjR7RFrbmQC0WcAhSq3/tb_desktop_2026-Q=
+2_CalendarViews_v001?node-id=3D2196-15480&t=3D8kuTKwLHhhkr2Azb-1&scaling=3D=
+min-zoom&content-scaling=3Dfixed&page-id=3D2196%3A15479&starting-point-node=
+-id=3D2196%3A15480>
+      -
+
+         Topic box post
+         <https://thunderbird.topicbox.com/groups/ux/T138723c621dd257d/uxd-=
+07-06-calendar-redesign-update>:
+         received positive community feedback, with users responding well
+         to the cleaner layout, improved visual hierarchy, and clearer
+event styling.
+         -
+
+            Feedback themes:
+            -
+
+               Date navigation, including the mini calendar and jumping
+               across months or years
+               -
+
+               Calendar views and layout, including month, multiweek, and
+               standalone window use
+               -
+
+               Event display, including multi-day events, overlapping
+               events, and event colour options
+               -
+
+      Settings
+      -
+
+         Initial User Research community shareout
+         <https://blog.thunderbird.net/2026/07/desktopsettings/>
+         -
+
+         Project kick-off scheduled
+         -
+
+      Account hub Manual config <https://zpl.io/BwjQ3qm> - a few minor
+      revisions
+      -
+
+   Mobile:
+   -
+
+      iOS: account drawer ready for dev <https://zpl.io/GnpB7w4> (including
+      dark mode)
+      -
+
+      Android:
+      -
+
+         UX quick wins in-progress for msg list, msg view and account drawe=
+r
+         -
+
+         SOW for Android Calendar in-progress
+         -
+
+   Thundermail
+   -
+
+      SOW for Webmail beta in progress
+      -
+
+      Custom domain iteration in progress
+      -
+
+      Send, File manager:
+      -
+
+         Light mode build near complete
+         -
+
+   Design Operations:
+   -
+
+      Migration planning for Figma to Penpot in-progress
+      -
+
+   Accessibility Standards & Compliance Committee
+   <https://docs.google.com/document/d/1I9jJWxJZpnGKDdy_gyNutOexmjE6kERYa84=
+r6xCYzO0/edit?tab=3Dt.0>
+   :
+   -
+
+      July meeting will be posted to YouTube and TILVids soon
+      -
+
+      Accessibility Statement posted
+      <https://bolt.thunderbird.net/8b179dbfd/p/33ddcb-accessibility>
+      -
+
+      Design Annotations Discussion.
+      -
+
+         =E2=80=9CWhat is the smallest amount of annotation needed to suppo=
+rt a
+         correct, accessible implementation?=E2=80=9D
+         -
+
+         Guidelines for design in-progress, along with refined a11y DS
+         components
+         -
+
+      Desktop update on a11y automatic testing integration with axe
+      -
+
+   Design System Governance Committee:
+   -
+
+      Next meeting: July 28th
+
+=F0=9F=92=B9 Marketing/Comms
+
+   -
+
+   Thundermail
+   -
+
+      Wave 3 - Conversion rate is at 9.7% since June 22-24 send (252/6,500)
+      -
+
+      Wave 4 - Conversion rate is at 8.45% since June 29-30 send
+      (328/10,000)
+      -
+
+         Largest reasons for declining invite: pricing, tiers (free is most
+         requested) and a trial
+         -
+
+         54% of subscribers surveyed rated Thundermail experience as
+         positive at the 3 day mark
+         -
+
+         Most common feature requests: webmail, 2FA, increased
+         alias/domain/mailbox limits
+         -
+
+      June update blog published June 23
+      <https://blog.thunderbird.net/2026/06/thundermail-june-2026-update-wh=
+at-we-learned-after-the-first-few-waves-of-invites/>
+      -
+
+      Working on social posts focused on positive early feedback to drive
+      users to the waitlist.
+
+
+
+   -
+
+   Desktop CSAT Surveys released w/o June 1 Ongoing Satisfaction Survey -
+   Scope of Work
+   <https://docs.google.com/document/d/1ycNN8860E_cYAoYu-g9PK5M-gJrCnSJWnq1=
+GjJxWD54/edit?usp=3Dsharing>
+   -
+
+      20k responses over June-July
+      -
+
+      75% of respondents rated Thunderbird 7/10 or higher
+      -
+
+      Users identifying themselves as using Thundermail for 3 years or less
+      are among the least satisfied (i.e. new-user experience)
+      -
+
+      Core satisfaction is stable but the top end (9-10 out of 10) is
+      softening indicating waning enthusiasm.
+
+
+
+   -
+
+   ESR 153: ESR 153 What's in - What's out
+   <https://docs.google.com/document/d/1XXOICwycTvagllSuVpFh2wKNm7E4DbwW9uc=
+CO0D0DJ8/edit?tab=3Dt.edxmhu60a2cu>
+
+   -
+
+      Blog (Complete: ESR 153 Meadow - Copy Deck - June 2026
+      <https://docs.google.com/document/d/1YHYYx2_QsEJAEzZXwamU6-5qtzBhl1fK=
+fVRUjGclhrI/edit?tab=3Dt.sd8hei5icoua>
+      )
+      -
+
+      Newsletter (Complete)
+      -
+
+      What=E2=80=99s new page (Complete)
+      <https://docs.google.com/document/d/1YHYYx2_QsEJAEzZXwamU6-5qtzBhl1fK=
+fVRUjGclhrI/edit?tab=3Dt.lnn5fe33z0bx>
+      -
+
+      Reddit megathread (To launch at time of ESR)
+      -
+
+      Website front page copy (Complete)
+      <https://docs.google.com/document/d/1YHYYx2_QsEJAEzZXwamU6-5qtzBhl1fK=
+fVRUjGclhrI/edit?tab=3Dt.toi0ql99yd5y>
+      -
+
+      Design elements received for blog/newsletter: ESR 153 Blog Post Image=
+s
+      <https://drive.google.com/drive/folders/13TsVxF__G-QjLB9n1hUlL83VcfOa=
+FHhW?usp=3Ddrive_link>
+
+=F0=9F=93=B1 MobileiOSCurrent Tasks
+
+   -
+
+   UI
+   -
+
+      Compose
+      -
+
+         Forked WYSIWYG Repo
+         <https://github.com/jbott-tbird/swift-rich-html-editor> for
+         reading/compose
+         -
+
+         WYSIWYG issue where links are not being applied properly to the DO=
+M
+         -
+
+         Added Compose View Headers (sender email, recipient(s), CC, BCC,
+         Subject)
+         -
+
+         Now porting the Proof of Concept over to the main App.
+         -
+
+      Account Drawer
+      -
+
+         Wrapped up initial Design Handover Scope of Work - iOS Account
+         Drawer
+         <https://docs.google.com/document/d/1sBw6f5BT6vKauMYodcV7kOb230d0n=
+ygBhVpfAEvb5N4/edit?tab=3Dt.mz68jfgp22ri#heading=3Dh.cy8qo459hck5>
+         -
+
+         Now in the Tech Design phase
+         -
+
+   Backend
+   -
+
+      OAuth
+      -
+
+         Made progress with the app review - got it to accept the website
+         given, and sent a video recording
+         -
+
+         Paused because Google responded, we need the app to be able to
+         show how we will use the permissions we asked for (send,
+write, move, etc.)
+         -
+
+         Necessary engineering work defined
+         -
+
+      Account Data
+      -
+
+         Unified data model for IMAP & JMAP
+         -
+
+         Working on media attachments for view & compose
+         -
+
+         Added benchmarks for competitor analysis  (web gmail and other
+         email clients) for view/compose inlining media attachments -
+using base64
+         will likely be the better approach.
+
+Android
+
+   -
+
+   Current Focus:
+   -
+
+      Projects
+      -
+
+         Database
+         -
+
+            Explored different DB options, landed on Android Room (SQLite
+            wrapper - ORM)
+            -
+
+               Chose Room for performance
+               -
+
+               Can use entities to write instead of SQLite
+               -
+
+               Next steps, technical foundation, then start porting over to
+               the new database
+               -
+
+               Complex: need to consider migration for our users
+               -
+
+            Unblock Database Project
+            -
+
+               Team Knowledge Transfer
+               -
+
+               Team Ownership of Bugs / PRs
+               -
+
+         Remote Feature Flags
+         -
+
+            RFC
+            <https://github.com/thunderbird/thunderbird-android/pull/11223>
+            - common schema, setting up internal architecture vs.
+phase 2, which will
+            include the remote capabilities (security, privacy, Copy
+for why we are
+            using this for our users, etc.)
+            -
+
+            Out of scope - percentage rollout, experiments, could build
+            this in later if we want.
+            -
+
+            <3 Sprints
+            -
+
+         Bolt
+         -
+
+            Goal - have Bolt as a standalone library, managed w/o the app
+            -
+
+            Provide a view to show each design piece (atom, molecule,
+            components, etc.)
+            -
+
+            Web Asm app  to render the design system
+            -
+
+            Currently the foundational layer defined for mobile (Fonts,
+            colors, spacing, etc.).
+            -
+
+         Notifications Phase 1 (solving for major bugs)
+         -
+
+            Exploring sync redesign ideas. Will be presenting Settings
+            Issues and proposals to design team likely next week
+            -
+
+            Notification and Sync Improvements Technical Documentation
+            <https://docs.google.com/document/d/1kPy5I7-IUZIvaOgStt_bnIuT7t=
+gsk7jkMZX54OklT8Y/edit?tab=3Dt.0#heading=3Dh.lok9c7xadhew>
+            -
+
+         Other
+         -
+
+            Fixed the top two Beta crashes
+            -
+
+               Relative Date Format crash
+               -
+
+               WebView on long messages crash
+               <https://play.google.com/console/u/0/developers/869626254461=
+3553264/app/4972364310826617121/vitals/crashes/ff040600f98987ee330d8bc335bc=
+b535/details?days=3D28&versionCode=3D55&isUserPerceived=3Dtrue>
+
+=F0=9F=AB=82 Community
+
+   -
+
+   Finishing up Q2 roadmap reviews and will send all changes to the council
+   by the end of Friday
+   -
+
+   Topicbox to discourse transition is progressing and we will be reaching
+   out to gather testers soon
+   -
+
+   We are working with the Council to plan some communications around
+   education, with the goal of driving more folks to run for election next
+   spring.
+   -
+
+   Contributor journey work on DTN is progressing but needs more time.
+
+=F0=9F=9A=A2 Releases
+
+   -
+
+   Desktop Release Upcoming Milestones
+   -
+
+      July 8: 153.0b7
+      <https://stage.thunderbird.net/en-US/thunderbird/153.0beta/releasenot=
+es/>
+      -
+
+      July 13: 153.0b8
+      -
+
+      July 15: 153.0b9
+      -
+
+      July 15: merge 153.0 beta->release
+      -
+
+      July 20: merge 154.0a1 main->beta
+      -
+
+      Jul 21: 153.0, 153.0esr, 140.13.0esr
+      -
+
+   Android Release Upcoming Milestones
+   -
+
+      July 6: 20.1
+      <https://github.com/thunderbird/thunderbird-android/releases/tag/THUN=
+DERBIRD_20_1>
+      -
+
+   iOS
+   -
+
+      Weekly alpha release every Friday on TestFlight
+      -
+
+   Desktop ADI:
+   -
+
+      63% on 140esr, 35% on Release, 2% on other (does not include 115)
+      -
+
+   Desktop Release Metrics
+   <https://docs.google.com/spreadsheets/d/e/2PACX-1vTtg0WzNuEoh5_VzIY7eux9=
+K2CfVImViAdNihVrsYg1tt4ho4diQDtmFkiC8DkWghqUDUbV5YMI2QAZ/pubhtml>
+   -
+
+   Deliverables
+   -
+
+      Git migration:
+      -
+
+         Completed. Wrapping up loose ends (mach try, artifact builds,
+         searchfox, lando-cli).
+         -
+
+      Linux Release channel by default:
+      -
+
+         Debs are available for all channels except ESR (uplifts incoming
+         for ESR)
+         -
+
+         Snap default will switch to Release channel at 153.0
+         -
+
+      153esr enablement
+      -
+
+         In progress
+         -
+
+      TB iOS beta/stable release automation
+      -
+
+         In progress
+         -
+
+      mozilla-taskgraph enablement (enables pinned versions of taskgraph
+      reducing bustage)
+      -
+
+         In progress
+         -
+
+   QA
+   -
+
+      Tested all recent desktop and android releases, several unconfirmed
+      issues and need infos, appeals, Thundermail, 153 regressions.
+
+=F0=9F=9B=9F Customer Support
+
+   -
+
+   General
+   -
+
+      Reporting a bit delayed, will have these delivered by end of week.
+      Roland worked around the API madness, just need to finalize the
+reports and
+      send them.
+      -
+
+         We=E2=80=99ll include a roundup from the July 1 Ideas sync in the =
+June
+         report
+         -
+
+         New: will include analysis of mobile repo to reviews and sumo: are
+         we working on the right things?
+         -
+
+      Getting closer to the offer stage for our next hire, exciting times!
+      -
+
+   Infra
+   -
+
+      Need to get the ticket spike monitor plugged into Pagerduty when
+      Matthew is back
+      -
+
+      Need to get the Pagerduty support team rotation in place
+      -
+
+      Rolled out pilot of AutoQA for tickets in our QA tool Kaizo
+      <https://kaizo.com/>
+      -
+
+   Thundermail
+   -
+
+      Friday wellness days will have one support team member working, who
+      will TOIL another day. Customers will be covered, but we still need t=
+o be
+      careful of invite numbers during this period, especially with
+Donor appeals
+      in late July
+      -
+
+      Figuring out the incident escalation process (how do we ping
+      PagerDuty) in case there=E2=80=99s a fire
+      -
+
+      Reports
+      <https://thunderbird.github.io/thunderbird-support-reports/lisa/daily=
+/launch_overview.html#waves>
+      -
+
+         Overall CSAT: 93%
+         -
+
+            The good: fast, help replies across onboarding, account access,
+            aliases, and Appointment.
+            -
+
+            The bad: Pricing tiers remain a strong signal, DKIM issues are
+            painful but flipped. We get good ratings on pricing
+complaints, but the
+            pricing complaint itself stands.
+            -
+
+         Contact rate: 1.4%, slowing down at scale to .66%
+         -
+
+         Average Handle Time: 47.5 hours
+         -
+
+         Reply times: 4.2 hrs
+         -
+
+         Github escalations: 8%
+         -
+
+         87 ideas, more in the monthly report
+         -
+
+         tl;dr: we=E2=80=99ve been increasing the number of invites as the =
+launch
+         is going well.
+
+
+Thank you,
+Kelly
+--=20
+*Kelly McSweeney* *(she, her) [@kellymcs]*
+Sr TPM, Engineering
+Thunderbird <https://www.thunderbird.net>
+
+--=20
+You received this message because you are subscribed to the Google Groups "=
+MZLA Team (Staff Only)" group.
+To unsubscribe from this group and stop receiving emails from it, send an e=
+mail to mzla-team+unsubscribe@thunderbird.net.
+To view this discussion visit https://groups.google.com/a/thunderbird.net/d=
+/msgid/mzla-team/CAGmtRCNkd4ROQwkS-GdR5-NR0ZwCjVWBf-7jtqeyhWh20Bnb7g%40mail=
+.gmail.com.
+
+--00000000000078b8e7065680da17
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div>Here is what happened over the past two weeks at MZLA=
+.=C2=A0</div><div><h3 dir=3D"ltr" style=3D"line-height:1.38;margin-top:16pt=
+;margin-bottom:4pt" id=3D"gmail-docs-internal-guid-d0bb5bf5-7fff-a581-0d88-=
+466f942ba4ce"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;=
+color:rgb(67,67,67);background-color:transparent;font-weight:400;font-style=
+:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;wh=
+ite-space:pre-wrap">=F0=9F=96=A5=EF=B8=8F Desktop</span></font></h3><ul sty=
+le=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-style=
+-type:disc;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:t=
+ransparent;font-weight:700;font-style:normal;font-variant:normal;text-decor=
+ation:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D=
+"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><=
+font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0=
+);background-color:transparent;font-weight:700;font-style:normal;font-varia=
+nt:normal;text-decoration:none;vertical-align:baseline;white-space:pre-wrap=
+">Exchange: Graph &amp; EWS</span></font></p></li><ul style=3D"margin-top:0=
+px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-style-type:circle;font-=
+family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-=
+weight:400;font-style:normal;font-variant:normal;text-decoration:none;verti=
+cal-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.3=
+8;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2">=
+<span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-col=
+or:transparent;font-weight:400;font-style:normal;font-variant:normal;text-d=
+ecoration:none;vertical-align:baseline;white-space:pre-wrap">Turned on Grap=
+h in Daily =F0=9F=A5=B3</span></font></p></li><li dir=3D"ltr" style=3D"list=
+-style-type:circle;font-family:Arial,sans-serif;color:rgb(0,0,0);background=
+-color:transparent;font-weight:400;font-style:normal;font-variant:normal;te=
+xt-decoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" =
+style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"present=
+ation"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:r=
+gb(0,0,0);background-color:transparent;font-weight:400;font-style:normal;fo=
+nt-variant:normal;text-decoration:none;vertical-align:baseline;white-space:=
+pre-wrap">Started Calendar! =F0=9F=A5=B3=F0=9F=A5=B3</span></font></p></li>=
+<li dir=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,sans-seri=
+f;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:=
+normal;font-variant:normal;text-decoration:none;vertical-align:baseline;whi=
+te-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margi=
+n-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-fa=
+mily:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-we=
+ight:400;font-style:normal;font-variant:normal;text-decoration:none;vertica=
+l-align:baseline;white-space:pre-wrap">Team splitting up a little to focus =
+on Security &amp; Panorama</span></font></p></li></ul><li dir=3D"ltr" style=
+=3D"list-style-type:disc;font-family:Arial,sans-serif;color:rgb(0,0,0);back=
+ground-color:transparent;font-weight:700;font-style:normal;font-variant:nor=
+mal;text-decoration:none;vertical-align:baseline;white-space:pre"><p dir=3D=
+"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"p=
+resentation"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;c=
+olor:rgb(0,0,0);background-color:transparent;font-weight:700;font-style:nor=
+mal;font-variant:normal;text-decoration:none;vertical-align:baseline;white-=
+space:pre-wrap">Account Hub Manual Config</span></font></p></li><ul style=
+=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-style-t=
+ype:circle;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:t=
+ransparent;font-weight:400;font-style:normal;font-variant:normal;text-decor=
+ation:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D=
+"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><=
+font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0=
+);background-color:transparent;font-weight:400;font-style:normal;font-varia=
+nt:normal;text-decoration:none;vertical-align:baseline;white-space:pre-wrap=
+">Back on track and hoping to deliver for 154. Lots of patches are landing =
+this week after solid teamwork and collaboration with Design.</span></font>=
+</p></li><li dir=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,=
+sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;fo=
+nt-style:normal;font-variant:normal;text-decoration:none;vertical-align:bas=
+eline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:=
+0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=
+=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transpar=
+ent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:n=
+one;vertical-align:baseline;white-space:pre-wrap">Taking the opportunity to=
+ refine ages old UX and enable Oauth2 for organizations that have been legi=
+slated to implement MFA in regions that are impacted by NIS2 and similar.</=
+span></font></p></li><li dir=3D"ltr" style=3D"list-style-type:circle;font-f=
+amily:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-w=
+eight:400;font-style:normal;font-variant:normal;text-decoration:none;vertic=
+al-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38=
+;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><=
+span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-colo=
+r:transparent;font-weight:400;font-style:normal;font-variant:normal;text-de=
+coration:none;vertical-align:baseline;white-space:pre-wrap">Working with th=
+e Support team to provide content that describes the options available.</sp=
+an></font></p></li></ul><li dir=3D"ltr" style=3D"list-style-type:disc;font-=
+family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-=
+weight:700;font-style:normal;font-variant:normal;text-decoration:none;verti=
+cal-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.3=
+8;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2">=
+<span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-col=
+or:transparent;font-weight:700;font-style:normal;font-variant:normal;text-d=
+ecoration:none;vertical-align:baseline;white-space:pre-wrap">OAuth</span></=
+font></p></li><ul style=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr=
+" style=3D"list-style-type:circle;font-family:Arial,sans-serif;color:rgb(0,=
+0,0);background-color:transparent;font-weight:700;font-style:normal;font-va=
+riant:normal;text-decoration:none;vertical-align:baseline;white-space:pre">=
+<p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" =
+role=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,san=
+s-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-=
+style:normal;font-variant:normal;text-decoration:none;vertical-align:baseli=
+ne;white-space:pre-wrap">Still waiting for responses from:</span></font></p=
+></li><ul style=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=
+=3D"list-style-type:square;font-family:Arial,sans-serif;color:rgb(0,0,0);ba=
+ckground-color:transparent;font-weight:400;font-style:normal;font-variant:n=
+ormal;text-decoration:none;vertical-align:baseline;white-space:pre"><p dir=
+=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=
+=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,sans-se=
+rif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-styl=
+e:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;w=
+hite-space:pre-wrap">Yahoo!/AOL</span></font></p></li></ul><li dir=3D"ltr" =
+style=3D"list-style-type:circle;font-family:Arial,sans-serif;color:rgb(0,0,=
+0);background-color:transparent;font-weight:400;font-style:normal;font-vari=
+ant:normal;text-decoration:none;vertical-align:baseline;white-space:pre"><p=
+ dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" ro=
+le=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,sans-=
+serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-st=
+yle:normal;font-variant:normal;text-decoration:none;vertical-align:baseline=
+;white-space:pre-wrap">Heard back that server side changes are underway and=
+ will be landed soon:</span></font></p></li><ul style=3D"margin-top:0px;mar=
+gin-bottom:0px"><li dir=3D"ltr" style=3D"list-style-type:square;font-family=
+:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight=
+:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-al=
+ign:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;marg=
+in-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span =
+style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:tra=
+nsparent;font-weight:400;font-style:normal;font-variant:normal;text-decorat=
+ion:none;vertical-align:baseline;white-space:pre-wrap">Comcast/Xfinity</spa=
+n></font></p></li><li dir=3D"ltr" style=3D"list-style-type:square;font-fami=
+ly:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weig=
+ht:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-=
+align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;ma=
+rgin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><spa=
+n style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:t=
+ransparent;font-weight:400;font-style:normal;font-variant:normal;text-decor=
+ation:none;vertical-align:baseline;white-space:pre-wrap">Yandex</span></fon=
+t></p></li></ul><li dir=3D"ltr" style=3D"list-style-type:circle;font-family=
+:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight=
+:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-al=
+ign:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;marg=
+in-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span =
+style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:tra=
+nsparent;font-weight:400;font-style:normal;font-variant:normal;text-decorat=
+ion:none;vertical-align:baseline;white-space:pre-wrap">Plan Bs are in place=
+ for each provider which provides functionality similar to previous years.=
+=C2=A0</span></font></p></li><li dir=3D"ltr" style=3D"list-style-type:circl=
+e;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparen=
+t;font-weight:700;font-style:normal;font-variant:normal;text-decoration:non=
+e;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-hei=
+ght:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=
+=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);backgro=
+und-color:transparent;font-weight:400;font-style:normal;font-variant:normal=
+;text-decoration:none;vertical-align:baseline;white-space:pre-wrap">As the =
+new PKCE Yahoo!/AOL client IDs make their appearance in ESR, support volume=
+ may increase so our response has been:</span></font></p></li><ul style=3D"=
+margin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-style-type:=
+square;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:trans=
+parent;font-weight:400;font-style:normal;font-variant:normal;text-decoratio=
+n:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"lin=
+e-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font=
+ size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);ba=
+ckground-color:transparent;font-weight:400;font-style:normal;font-variant:n=
+ormal;text-decoration:none;vertical-align:baseline;white-space:pre-wrap">Up=
+dated support articles</span></font></p></li><li dir=3D"ltr" style=3D"list-=
+style-type:square;font-family:Arial,sans-serif;color:rgb(0,0,0);background-=
+color:transparent;font-weight:400;font-style:normal;font-variant:normal;tex=
+t-decoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" s=
+tyle=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presenta=
+tion"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rg=
+b(0,0,0);background-color:transparent;font-weight:400;font-style:normal;fon=
+t-variant:normal;text-decoration:none;vertical-align:baseline;white-space:p=
+re-wrap">Uplift preparation</span></font></p></li></ul></ul><li dir=3D"ltr"=
+ style=3D"list-style-type:disc;font-family:Arial,sans-serif;color:rgb(0,0,0=
+);background-color:transparent;font-weight:700;font-style:normal;font-varia=
+nt:normal;text-decoration:none;vertical-align:baseline;white-space:pre"><p =
+dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" rol=
+e=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,sans-s=
+erif;color:rgb(0,0,0);background-color:transparent;font-weight:700;font-sty=
+le:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;=
+white-space:pre-wrap">Panorama / Global Message Database</span></font></p><=
+/li><ul style=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D=
+"list-style-type:circle;font-family:Arial,sans-serif;color:rgb(0,0,0);backg=
+round-color:transparent;font-weight:400;font-style:normal;font-variant:norm=
+al;text-decoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"=
+ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"pr=
+esentation"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;co=
+lor:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:norm=
+al;font-variant:normal;text-decoration:none;vertical-align:baseline;white-s=
+pace:pre-wrap">Team steadily moving forwards and Brendan</span></font></p><=
+/li></ul></ul><h3 dir=3D"ltr" style=3D"line-height:1.38;margin-top:16pt;mar=
+gin-bottom:4pt"><font size=3D"2"><span style=3D"font-family:Arial,sans-seri=
+f;color:rgb(67,67,67);background-color:transparent;font-weight:400;font-sty=
+le:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;=
+white-space:pre-wrap">=F0=9F=8E=A8 Design</span></font></h3><ul style=3D"ma=
+rgin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-style-type:di=
+sc;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transpare=
+nt;font-weight:700;font-style:normal;font-variant:normal;text-decoration:no=
+ne;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-he=
+ight:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font siz=
+e=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);backgr=
+ound-color:transparent;font-weight:700;font-style:normal;font-variant:norma=
+l;text-decoration:none;vertical-align:baseline;white-space:pre-wrap">Deskto=
+p:</span></font></p></li><ul style=3D"margin-top:0px;margin-bottom:0px"><li=
+ dir=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,sans-serif;c=
+olor:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:nor=
+mal;font-variant:normal;text-decoration:none;vertical-align:baseline;white-=
+space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-b=
+ottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-famil=
+y:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weigh=
+t:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-a=
+lign:baseline;white-space:pre-wrap">Calendar: design almost complete! </spa=
+n><a href=3D"https://www.figma.com/proto/dHBhjR7RFrbmQC0WcAhSq3/tb_desktop_=
+2026-Q2_CalendarViews_v001?node-id=3D2196-15480&amp;t=3D8kuTKwLHhhkr2Azb-1&=
+amp;scaling=3Dmin-zoom&amp;content-scaling=3Dfixed&amp;page-id=3D2196%3A154=
+79&amp;starting-point-node-id=3D2196%3A15480" style=3D"text-decoration:none=
+"><span style=3D"font-family:Arial,sans-serif;color:rgb(17,85,204);backgrou=
+nd-color:transparent;font-weight:400;font-style:normal;font-variant:normal;=
+text-decoration:underline;vertical-align:baseline;white-space:pre-wrap">Pro=
+totype</span></a></font></p></li><ul style=3D"margin-top:0px;margin-bottom:=
+0px"><li dir=3D"ltr" style=3D"list-style-type:square;font-family:Arial,sans=
+-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-s=
+tyle:normal;font-variant:normal;text-decoration:none;vertical-align:baselin=
+e;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;=
+margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><a href=3D"https:=
+//thunderbird.topicbox.com/groups/ux/T138723c621dd257d/uxd-07-06-calendar-r=
+edesign-update" style=3D"text-decoration:none"><span style=3D"font-family:A=
+rial,sans-serif;color:rgb(17,85,204);background-color:transparent;font-weig=
+ht:700;font-style:normal;font-variant:normal;text-decoration:underline;vert=
+ical-align:baseline;white-space:pre-wrap">Topic box post</span></a><span st=
+yle=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:trans=
+parent;font-weight:700;font-style:normal;font-variant:normal;text-decoratio=
+n:none;vertical-align:baseline;white-space:pre-wrap">: </span><span style=
+=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transpar=
+ent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:n=
+one;vertical-align:baseline;white-space:pre-wrap">received positive communi=
+ty feedback, with users responding well to the cleaner layout, improved vis=
+ual hierarchy, and clearer event styling.</span></font></p></li><ul style=
+=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-style-t=
+ype:disc;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:tra=
+nsparent;font-weight:400;font-style:normal;font-variant:normal;text-decorat=
+ion:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"l=
+ine-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><fo=
+nt size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);=
+background-color:transparent;font-weight:400;font-style:normal;font-variant=
+:normal;text-decoration:none;vertical-align:baseline;white-space:pre-wrap">=
+Feedback themes:</span></font></p></li><ul style=3D"margin-top:0px;margin-b=
+ottom:0px"><li dir=3D"ltr" style=3D"list-style-type:circle;font-family:Aria=
+l,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;=
+font-style:normal;font-variant:normal;text-decoration:none;vertical-align:b=
+aseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-to=
+p:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=
+=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transpar=
+ent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:n=
+one;vertical-align:baseline;white-space:pre-wrap">Date navigation, includin=
+g the mini calendar and jumping across months or years</span></font></p></l=
+i><li dir=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,sans-se=
+rif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-styl=
+e:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;w=
+hite-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;mar=
+gin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-=
+family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-=
+weight:400;font-style:normal;font-variant:normal;text-decoration:none;verti=
+cal-align:baseline;white-space:pre-wrap">Calendar views and layout, includi=
+ng month, multiweek, and standalone window use</span></font></p></li><li di=
+r=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,sans-serif;colo=
+r:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:normal=
+;font-variant:normal;text-decoration:none;vertical-align:baseline;white-spa=
+ce:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bott=
+om:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-family:A=
+rial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:4=
+00;font-style:normal;font-variant:normal;text-decoration:none;vertical-alig=
+n:baseline;white-space:pre-wrap">Event display, including multi-day events,=
+ overlapping events, and event colour options</span></font></p></li></ul></=
+ul></ul><li dir=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,s=
+ans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;fon=
+t-style:normal;font-variant:normal;text-decoration:none;vertical-align:base=
+line;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0=
+pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D=
+"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent=
+;font-weight:400;font-style:normal;font-variant:normal;text-decoration:none=
+;vertical-align:baseline;white-space:pre-wrap">Settings</span></font></p></=
+li><ul style=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"=
+list-style-type:square;font-family:Arial,sans-serif;color:rgb(0,0,0);backgr=
+ound-color:transparent;font-weight:400;font-style:normal;font-variant:norma=
+l;text-decoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"l=
+tr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"pre=
+sentation"><font size=3D"2"><a href=3D"https://blog.thunderbird.net/2026/07=
+/desktopsettings/" style=3D"text-decoration:none"><span style=3D"font-famil=
+y:Arial,sans-serif;color:rgb(17,85,204);background-color:transparent;font-w=
+eight:400;font-style:normal;font-variant:normal;text-decoration:underline;v=
+ertical-align:baseline;white-space:pre-wrap">Initial User Research communit=
+y shareout=C2=A0</span></a></font></p></li><li dir=3D"ltr" style=3D"list-st=
+yle-type:square;font-family:Arial,sans-serif;color:rgb(0,0,0);background-co=
+lor:transparent;font-weight:400;font-style:normal;font-variant:normal;text-=
+decoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" sty=
+le=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentati=
+on"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(=
+0,0,0);background-color:transparent;font-weight:400;font-style:normal;font-=
+variant:normal;text-decoration:none;vertical-align:baseline;white-space:pre=
+-wrap">Project kick-off scheduled</span></font></p></li></ul><li dir=3D"ltr=
+" style=3D"list-style-type:circle;font-family:Arial,sans-serif;color:rgb(0,=
+0,0);background-color:transparent;font-weight:400;font-style:normal;font-va=
+riant:normal;text-decoration:none;vertical-align:baseline;white-space:pre">=
+<p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" =
+role=3D"presentation"><font size=3D"2"><a href=3D"https://zpl.io/BwjQ3qm" s=
+tyle=3D"text-decoration:none"><span style=3D"font-family:Arial,sans-serif;c=
+olor:rgb(17,85,204);background-color:transparent;font-weight:400;font-style=
+:normal;font-variant:normal;text-decoration:underline;vertical-align:baseli=
+ne;white-space:pre-wrap">Account hub Manual config</span></a><span style=3D=
+"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent=
+;font-weight:400;font-style:normal;font-variant:normal;text-decoration:none=
+;vertical-align:baseline;white-space:pre-wrap"> - a few minor revisions</sp=
+an></font></p></li></ul><li dir=3D"ltr" style=3D"list-style-type:disc;font-=
+family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-=
+weight:400;font-style:normal;font-variant:normal;text-decoration:none;verti=
+cal-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.3=
+8;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2">=
+<span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-col=
+or:transparent;font-weight:700;font-style:normal;font-variant:normal;text-d=
+ecoration:none;vertical-align:baseline;white-space:pre-wrap">Mobile:</span>=
+</font></p></li><ul style=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"l=
+tr" style=3D"list-style-type:circle;font-family:Arial,sans-serif;color:rgb(=
+0,0,0);background-color:transparent;font-weight:400;font-style:normal;font-=
+variant:normal;text-decoration:none;vertical-align:baseline;white-space:pre=
+"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt=
+" role=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,s=
+ans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;fon=
+t-style:normal;font-variant:normal;text-decoration:none;vertical-align:base=
+line;white-space:pre-wrap">iOS: </span><a href=3D"https://zpl.io/GnpB7w4" s=
+tyle=3D"text-decoration:none"><span style=3D"font-family:Arial,sans-serif;c=
+olor:rgb(17,85,204);background-color:transparent;font-weight:400;font-style=
+:normal;font-variant:normal;text-decoration:underline;vertical-align:baseli=
+ne;white-space:pre-wrap">account drawer ready for dev</span></a><span style=
+=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transpar=
+ent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:n=
+one;vertical-align:baseline;white-space:pre-wrap"> (including dark mode)</s=
+pan></font></p></li><li dir=3D"ltr" style=3D"list-style-type:circle;font-fa=
+mily:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-we=
+ight:400;font-style:normal;font-variant:normal;text-decoration:none;vertica=
+l-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;=
+margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><s=
+pan style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color=
+:transparent;font-weight:400;font-style:normal;font-variant:normal;text-dec=
+oration:none;vertical-align:baseline;white-space:pre-wrap">Android:</span><=
+/font></p></li><ul style=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"lt=
+r" style=3D"list-style-type:square;font-family:Arial,sans-serif;color:rgb(0=
+,0,0);background-color:transparent;font-weight:400;font-style:normal;font-v=
+ariant:normal;text-decoration:none;vertical-align:baseline;white-space:pre"=
+><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt"=
+ role=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,sa=
+ns-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font=
+-style:normal;font-variant:normal;text-decoration:none;vertical-align:basel=
+ine;white-space:pre-wrap">UX quick wins in-progress for msg list, msg view =
+and account drawer</span></font></p></li><li dir=3D"ltr" style=3D"list-styl=
+e-type:square;font-family:Arial,sans-serif;color:rgb(0,0,0);background-colo=
+r:transparent;font-weight:400;font-style:normal;font-variant:normal;text-de=
+coration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=
+=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation=
+"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,=
+0,0);background-color:transparent;font-weight:400;font-style:normal;font-va=
+riant:normal;text-decoration:none;vertical-align:baseline;white-space:pre-w=
+rap">SOW for Android Calendar in-progress</span></font></p></li></ul></ul><=
+li dir=3D"ltr" style=3D"list-style-type:disc;font-family:Arial,sans-serif;c=
+olor:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:nor=
+mal;font-variant:normal;text-decoration:none;vertical-align:baseline;white-=
+space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-b=
+ottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-famil=
+y:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weigh=
+t:700;font-style:normal;font-variant:normal;text-decoration:none;vertical-a=
+lign:baseline;white-space:pre-wrap">Thundermail</span></font></p></li><ul s=
+tyle=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-sty=
+le-type:circle;font-family:Arial,sans-serif;color:rgb(0,0,0);background-col=
+or:transparent;font-weight:400;font-style:normal;font-variant:normal;text-d=
+ecoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" styl=
+e=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentatio=
+n"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0=
+,0,0);background-color:transparent;font-weight:400;font-style:normal;font-v=
+ariant:normal;text-decoration:none;vertical-align:baseline;white-space:pre-=
+wrap">SOW for Webmail beta in progress</span></font></p></li><li dir=3D"ltr=
+" style=3D"list-style-type:circle;font-family:Arial,sans-serif;color:rgb(0,=
+0,0);background-color:transparent;font-weight:400;font-style:normal;font-va=
+riant:normal;text-decoration:none;vertical-align:baseline;white-space:pre">=
+<p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" =
+role=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,san=
+s-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-=
+style:normal;font-variant:normal;text-decoration:none;vertical-align:baseli=
+ne;white-space:pre-wrap">Custom domain iteration in progress</span></font><=
+/p></li><li dir=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,s=
+ans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:700;fon=
+t-style:normal;font-variant:normal;text-decoration:none;vertical-align:base=
+line;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0=
+pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D=
+"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent=
+;font-weight:700;font-style:normal;font-variant:normal;text-decoration:none=
+;vertical-align:baseline;white-space:pre-wrap">Send, File manager:</span></=
+font></p></li><ul style=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr=
+" style=3D"list-style-type:square;font-family:Arial,sans-serif;color:rgb(0,=
+0,0);background-color:transparent;font-weight:400;font-style:normal;font-va=
+riant:normal;text-decoration:none;vertical-align:baseline;white-space:pre">=
+<p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" =
+role=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,san=
+s-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-=
+style:normal;font-variant:normal;text-decoration:none;vertical-align:baseli=
+ne;white-space:pre-wrap">Light mode build near complete</span></font></p></=
+li></ul></ul><li dir=3D"ltr" style=3D"list-style-type:disc;font-family:Aria=
+l,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:700;=
+font-style:normal;font-variant:normal;text-decoration:none;vertical-align:b=
+aseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-to=
+p:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=
+=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transpar=
+ent;font-weight:700;font-style:normal;font-variant:normal;text-decoration:n=
+one;vertical-align:baseline;white-space:pre-wrap">Design Operations:</span>=
+</font></p></li><ul style=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"l=
+tr" style=3D"list-style-type:circle;font-family:Arial,sans-serif;color:rgb(=
+0,0,0);background-color:transparent;font-weight:400;font-style:normal;font-=
+variant:normal;text-decoration:none;vertical-align:baseline;white-space:pre=
+"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt=
+" role=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,s=
+ans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;fon=
+t-style:normal;font-variant:normal;text-decoration:none;vertical-align:base=
+line;white-space:pre-wrap">Migration planning for Figma to Penpot in-progre=
+ss</span></font></p></li></ul><li dir=3D"ltr" style=3D"list-style-type:disc=
+;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent=
+;font-weight:400;font-style:normal;font-variant:normal;text-decoration:none=
+;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-heig=
+ht:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=
+=3D"2"><a href=3D"https://docs.google.com/document/d/1I9jJWxJZpnGKDdy_gyNut=
+OexmjE6kERYa84r6xCYzO0/edit?tab=3Dt.0" style=3D"text-decoration:none"><span=
+ style=3D"font-family:Arial,sans-serif;color:rgb(17,85,204);background-colo=
+r:transparent;font-weight:700;font-style:normal;font-variant:normal;text-de=
+coration:underline;vertical-align:baseline;white-space:pre-wrap">Accessibil=
+ity Standards &amp; Compliance Committee</span></a><span style=3D"font-fami=
+ly:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weig=
+ht:700;font-style:normal;font-variant:normal;text-decoration:none;vertical-=
+align:baseline;white-space:pre-wrap">:</span></font></p></li><ul style=3D"m=
+argin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-style-type:c=
+ircle;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transp=
+arent;font-weight:400;font-style:normal;font-variant:normal;text-decoration=
+:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line=
+-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font =
+size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);bac=
+kground-color:transparent;font-weight:400;font-style:normal;font-variant:no=
+rmal;text-decoration:none;vertical-align:baseline;white-space:pre-wrap">Jul=
+y meeting will be posted to YouTube and TILVids soon</span></font></p></li>=
+<li dir=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,sans-seri=
+f;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:=
+normal;font-variant:normal;text-decoration:none;vertical-align:baseline;whi=
+te-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margi=
+n-bottom:0pt" role=3D"presentation"><font size=3D"2"><a href=3D"https://bol=
+t.thunderbird.net/8b179dbfd/p/33ddcb-accessibility" style=3D"text-decoratio=
+n:none"><span style=3D"font-family:Arial,sans-serif;color:rgb(17,85,204);ba=
+ckground-color:transparent;font-weight:400;font-style:normal;font-variant:n=
+ormal;text-decoration:underline;vertical-align:baseline;white-space:pre-wra=
+p">Accessibility Statement posted=C2=A0</span></a></font></p></li><li dir=
+=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,sans-serif;color=
+:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:normal;=
+font-variant:normal;text-decoration:none;vertical-align:baseline;white-spac=
+e:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-botto=
+m:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-family:Ar=
+ial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:70=
+0;font-style:normal;font-variant:normal;text-decoration:none;vertical-align=
+:baseline;white-space:pre-wrap">Design Annotations Discussion.=C2=A0</span>=
+</font></p></li><ul style=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"l=
+tr" style=3D"list-style-type:square;font-family:Arial,sans-serif;color:rgb(=
+0,0,0);background-color:transparent;font-weight:400;font-style:italic;font-=
+variant:normal;text-decoration:none;vertical-align:baseline;white-space:pre=
+"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt=
+" role=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,s=
+ans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;fon=
+t-style:italic;font-variant:normal;text-decoration:none;vertical-align:base=
+line;white-space:pre-wrap">=E2=80=9CWhat is the smallest amount of annotati=
+on needed to support a correct, accessible implementation?=E2=80=9D</span><=
+/font></p></li><li dir=3D"ltr" style=3D"list-style-type:square;font-family:=
+Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:=
+400;font-style:italic;font-variant:normal;text-decoration:none;vertical-ali=
+gn:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margi=
+n-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span s=
+tyle=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:tran=
+sparent;font-weight:400;font-style:normal;font-variant:normal;text-decorati=
+on:none;vertical-align:baseline;white-space:pre-wrap">Guidelines for design=
+ in-progress, along with refined a11y DS components</span></font></p></li><=
+/ul><li dir=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,sans-=
+serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-st=
+yle:normal;font-variant:normal;text-decoration:none;vertical-align:baseline=
+;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;m=
+argin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"fon=
+t-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;fon=
+t-weight:400;font-style:normal;font-variant:normal;text-decoration:none;ver=
+tical-align:baseline;white-space:pre-wrap">Desktop update on a11y automatic=
+ testing integration with axe</span></font></p></li></ul><li dir=3D"ltr" st=
+yle=3D"list-style-type:disc;font-family:Arial,sans-serif;color:rgb(0,0,0);b=
+ackground-color:transparent;font-weight:400;font-style:normal;font-variant:=
+normal;text-decoration:none;vertical-align:baseline;white-space:pre"><p dir=
+=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=
+=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,sans-se=
+rif;color:rgb(0,0,0);background-color:transparent;font-weight:700;font-styl=
+e:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;w=
+hite-space:pre-wrap">Design System Governance Committee:</span></font></p><=
+/li><ul style=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D=
+"list-style-type:circle;font-family:Arial,sans-serif;color:rgb(0,0,0);backg=
+round-color:transparent;font-weight:400;font-style:normal;font-variant:norm=
+al;text-decoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"=
+ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"pr=
+esentation"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;co=
+lor:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:norm=
+al;font-variant:normal;text-decoration:none;vertical-align:baseline;white-s=
+pace:pre-wrap">Next meeting: July 28th</span></font></p></li></ul></ul><h3 =
+dir=3D"ltr" style=3D"line-height:1.38;margin-top:16pt;margin-bottom:4pt"><f=
+ont size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(67,67,=
+67);background-color:transparent;font-weight:400;font-style:normal;font-var=
+iant:normal;text-decoration:none;vertical-align:baseline;white-space:pre-wr=
+ap">=F0=9F=92=B9 Marketing/Comms</span></font></h3><ul style=3D"margin-top:=
+0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-style-type:disc;font-f=
+amily:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-w=
+eight:400;font-style:normal;font-variant:normal;text-decoration:none;vertic=
+al-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38=
+;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><=
+span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-colo=
+r:transparent;font-weight:400;font-style:normal;font-variant:normal;text-de=
+coration:none;vertical-align:baseline;white-space:pre-wrap">Thundermail</sp=
+an></font></p></li><ul style=3D"margin-top:0px;margin-bottom:0px"><li dir=
+=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,sans-serif;color=
+:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:normal;=
+font-variant:normal;text-decoration:none;vertical-align:baseline;white-spac=
+e:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-botto=
+m:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-family:Ar=
+ial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:40=
+0;font-style:normal;font-variant:normal;text-decoration:none;vertical-align=
+:baseline;white-space:pre-wrap">Wave 3 - Conversion rate is at 9.7% since J=
+une 22-24 send (252/6,500)</span></font></p></li><li dir=3D"ltr" style=3D"l=
+ist-style-type:circle;font-family:Arial,sans-serif;color:rgb(0,0,0);backgro=
+und-color:transparent;font-weight:400;font-style:normal;font-variant:normal=
+;text-decoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"lt=
+r" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"pres=
+entation"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;colo=
+r:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:normal=
+;font-variant:normal;text-decoration:none;vertical-align:baseline;white-spa=
+ce:pre-wrap">Wave 4 - Conversion rate is at 8.45% since June 29-30 send (32=
+8/10,000)</span></font></p></li><ul style=3D"margin-top:0px;margin-bottom:0=
+px"><li dir=3D"ltr" style=3D"list-style-type:square;font-family:Arial,sans-=
+serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-st=
+yle:normal;font-variant:normal;text-decoration:none;vertical-align:baseline=
+;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;m=
+argin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"fon=
+t-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;fon=
+t-weight:400;font-style:normal;font-variant:normal;text-decoration:none;ver=
+tical-align:baseline;white-space:pre-wrap">Largest reasons for declining in=
+vite: pricing, tiers (free is most requested) and a trial</span></font></p>=
+</li><li dir=3D"ltr" style=3D"list-style-type:square;font-family:Arial,sans=
+-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-s=
+tyle:normal;font-variant:normal;text-decoration:none;vertical-align:baselin=
+e;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;=
+margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"fo=
+nt-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;fo=
+nt-weight:400;font-style:normal;font-variant:normal;text-decoration:none;ve=
+rtical-align:baseline;white-space:pre-wrap">54% of subscribers surveyed rat=
+ed Thundermail experience as positive at the 3 day mark</span></font></p></=
+li><li dir=3D"ltr" style=3D"list-style-type:square;font-family:Arial,sans-s=
+erif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-sty=
+le:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;=
+white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;ma=
+rgin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font=
+-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font=
+-weight:400;font-style:normal;font-variant:normal;text-decoration:none;vert=
+ical-align:baseline;white-space:pre-wrap">Most common feature requests: web=
+mail, 2FA, increased alias/domain/mailbox limits</span></font></p></li></ul=
+><li dir=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,sans-ser=
+if;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-style=
+:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;wh=
+ite-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;marg=
+in-bottom:0pt" role=3D"presentation"><font size=3D"2"><a href=3D"https://bl=
+og.thunderbird.net/2026/06/thundermail-june-2026-update-what-we-learned-aft=
+er-the-first-few-waves-of-invites/" style=3D"text-decoration:none"><span st=
+yle=3D"font-family:Arial,sans-serif;color:rgb(17,85,204);background-color:t=
+ransparent;font-weight:400;font-style:normal;font-variant:normal;text-decor=
+ation:underline;vertical-align:baseline;white-space:pre-wrap">June update b=
+log published June 23</span></a></font></p></li><li dir=3D"ltr" style=3D"li=
+st-style-type:circle;font-family:Arial,sans-serif;color:rgb(0,0,0);backgrou=
+nd-color:transparent;font-weight:400;font-style:normal;font-variant:normal;=
+text-decoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr=
+" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"prese=
+ntation"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color=
+:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:normal;=
+font-variant:normal;text-decoration:none;vertical-align:baseline;white-spac=
+e:pre-wrap">Working on social posts focused on positive early feedback to d=
+rive users to the waitlist.</span></font></p></li></ul></ul><font size=3D"2=
+"><br></font><ul style=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr"=
+ style=3D"list-style-type:disc;font-family:Arial,sans-serif;color:rgb(0,0,0=
+);background-color:transparent;font-weight:400;font-style:normal;font-varia=
+nt:normal;text-decoration:none;vertical-align:baseline;white-space:pre"><p =
+dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" rol=
+e=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,sans-s=
+erif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-sty=
+le:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;=
+white-space:pre-wrap">Desktop CSAT Surveys released w/o June 1 </span><a hr=
+ef=3D"https://docs.google.com/document/d/1ycNN8860E_cYAoYu-g9PK5M-gJrCnSJWn=
+q1GjJxWD54/edit?usp=3Dsharing" style=3D"text-decoration:none"><span style=
+=3D"font-family:Arial,sans-serif;color:rgb(17,85,204);background-color:tran=
+sparent;font-weight:400;font-style:normal;font-variant:normal;text-decorati=
+on:underline;vertical-align:baseline;white-space:pre-wrap">Ongoing Satisfac=
+tion Survey - Scope of Work</span></a></font></p></li><ul style=3D"margin-t=
+op:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-style-type:circle;f=
+ont-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;f=
+ont-weight:400;font-style:normal;font-variant:normal;text-decoration:none;v=
+ertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height=
+:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D=
+"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background=
+-color:transparent;font-weight:400;font-style:normal;font-variant:normal;te=
+xt-decoration:none;vertical-align:baseline;white-space:pre-wrap">20k respon=
+ses over June-July=C2=A0</span></font></p></li><li dir=3D"ltr" style=3D"lis=
+t-style-type:circle;font-family:Arial,sans-serif;color:rgb(0,0,0);backgroun=
+d-color:transparent;font-weight:400;font-style:normal;font-variant:normal;t=
+ext-decoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr"=
+ style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presen=
+tation"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:=
+rgb(0,0,0);background-color:transparent;font-weight:400;font-style:normal;f=
+ont-variant:normal;text-decoration:none;vertical-align:baseline;white-space=
+:pre-wrap">75% of respondents rated Thunderbird 7/10 or higher</span></font=
+></p></li><li dir=3D"ltr" style=3D"list-style-type:circle;font-family:Arial=
+,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;f=
+ont-style:normal;font-variant:normal;text-decoration:none;vertical-align:ba=
+seline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top=
+:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=
+=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transpar=
+ent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:n=
+one;vertical-align:baseline;white-space:pre-wrap">Users identifying themsel=
+ves as using Thundermail for 3 years or less are among the least satisfied =
+(i.e. new-user experience)</span></font></p></li><li dir=3D"ltr" style=3D"l=
+ist-style-type:circle;font-family:Arial,sans-serif;color:rgb(0,0,0);backgro=
+und-color:transparent;font-weight:400;font-style:normal;font-variant:normal=
+;text-decoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"lt=
+r" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"pres=
+entation"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;colo=
+r:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:normal=
+;font-variant:normal;text-decoration:none;vertical-align:baseline;white-spa=
+ce:pre-wrap">Core satisfaction is stable but the top end (9-10 out of 10) i=
+s softening indicating waning enthusiasm.</span></font></p></li></ul></ul><=
+font size=3D"2"><br></font><ul style=3D"margin-top:0px;margin-bottom:0px"><=
+li dir=3D"ltr" style=3D"list-style-type:disc;font-family:Arial,sans-serif;c=
+olor:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:nor=
+mal;font-variant:normal;text-decoration:none;vertical-align:baseline;white-=
+space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-b=
+ottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-famil=
+y:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weigh=
+t:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-a=
+lign:baseline;white-space:pre-wrap">ESR 153: </span><a href=3D"https://docs=
+.google.com/document/d/1XXOICwycTvagllSuVpFh2wKNm7E4DbwW9ucCO0D0DJ8/edit?ta=
+b=3Dt.edxmhu60a2cu" style=3D"text-decoration:none"><span style=3D"font-fami=
+ly:Arial,sans-serif;color:rgb(17,85,204);background-color:transparent;font-=
+weight:400;font-style:normal;font-variant:normal;text-decoration:underline;=
+vertical-align:baseline;white-space:pre-wrap">ESR 153 What&#39;s in - What&=
+#39;s out</span></a><span style=3D"font-family:Arial,sans-serif;color:rgb(0=
+,0,0);background-color:transparent;font-weight:400;font-style:normal;font-v=
+ariant:normal;text-decoration:none;vertical-align:baseline;white-space:pre-=
+wrap">=C2=A0</span></font></p></li><ul style=3D"margin-top:0px;margin-botto=
+m:0px"><li dir=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,sa=
+ns-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font=
+-style:normal;font-variant:normal;text-decoration:none;vertical-align:basel=
+ine;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0p=
+t;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"=
+font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;=
+font-weight:400;font-style:normal;font-variant:normal;text-decoration:none;=
+vertical-align:baseline;white-space:pre-wrap">Blog (Complete: </span><a hre=
+f=3D"https://docs.google.com/document/d/1YHYYx2_QsEJAEzZXwamU6-5qtzBhl1fKfV=
+RUjGclhrI/edit?tab=3Dt.sd8hei5icoua" style=3D"text-decoration:none"><span s=
+tyle=3D"font-family:Arial,sans-serif;color:rgb(17,85,204);background-color:=
+transparent;font-weight:400;font-style:normal;font-variant:normal;text-deco=
+ration:underline;vertical-align:baseline;white-space:pre-wrap">ESR 153 Mead=
+ow - Copy Deck - June 2026</span></a><span style=3D"font-family:Arial,sans-=
+serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-st=
+yle:normal;font-variant:normal;text-decoration:none;vertical-align:baseline=
+;white-space:pre-wrap">)</span></font></p></li><li dir=3D"ltr" style=3D"lis=
+t-style-type:circle;font-family:Arial,sans-serif;color:rgb(0,0,0);backgroun=
+d-color:transparent;font-weight:400;font-style:normal;font-variant:normal;t=
+ext-decoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr"=
+ style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presen=
+tation"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:=
+rgb(0,0,0);background-color:transparent;font-weight:400;font-style:normal;f=
+ont-variant:normal;text-decoration:none;vertical-align:baseline;white-space=
+:pre-wrap">Newsletter (Complete)</span></font></p></li><li dir=3D"ltr" styl=
+e=3D"list-style-type:circle;font-family:Arial,sans-serif;color:rgb(0,0,0);b=
+ackground-color:transparent;font-weight:400;font-style:normal;font-variant:=
+normal;text-decoration:none;vertical-align:baseline;white-space:pre"><p dir=
+=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=
+=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,sans-se=
+rif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-styl=
+e:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;w=
+hite-space:pre-wrap">What=E2=80=99s new page </span><a href=3D"https://docs=
+.google.com/document/d/1YHYYx2_QsEJAEzZXwamU6-5qtzBhl1fKfVRUjGclhrI/edit?ta=
+b=3Dt.lnn5fe33z0bx" style=3D"text-decoration:none"><span style=3D"font-fami=
+ly:Arial,sans-serif;color:rgb(17,85,204);background-color:transparent;font-=
+weight:400;font-style:normal;font-variant:normal;text-decoration:underline;=
+vertical-align:baseline;white-space:pre-wrap">(Complete)</span></a></font><=
+/p></li><li dir=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,s=
+ans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;fon=
+t-style:normal;font-variant:normal;text-decoration:none;vertical-align:base=
+line;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0=
+pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D=
+"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent=
+;font-weight:400;font-style:normal;font-variant:normal;text-decoration:none=
+;vertical-align:baseline;white-space:pre-wrap">Reddit megathread (To launch=
+ at time of ESR)</span></font></p></li><li dir=3D"ltr" style=3D"list-style-=
+type:circle;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:=
+transparent;font-weight:400;font-style:normal;font-variant:normal;text-deco=
+ration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=
+=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation=
+"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,=
+0,0);background-color:transparent;font-weight:400;font-style:normal;font-va=
+riant:normal;text-decoration:none;vertical-align:baseline;white-space:pre-w=
+rap">Website front page copy </span><a href=3D"https://docs.google.com/docu=
+ment/d/1YHYYx2_QsEJAEzZXwamU6-5qtzBhl1fKfVRUjGclhrI/edit?tab=3Dt.toi0ql99yd=
+5y" style=3D"text-decoration:none"><span style=3D"font-family:Arial,sans-se=
+rif;color:rgb(17,85,204);background-color:transparent;font-weight:400;font-=
+style:normal;font-variant:normal;text-decoration:underline;vertical-align:b=
+aseline;white-space:pre-wrap">(Complete)</span></a></font></p></li><li dir=
+=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,sans-serif;color=
+:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:normal;=
+font-variant:normal;text-decoration:none;vertical-align:baseline;white-spac=
+e:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-botto=
+m:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-family:Ar=
+ial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:40=
+0;font-style:normal;font-variant:normal;text-decoration:none;vertical-align=
+:baseline;white-space:pre-wrap">Design elements received for blog/newslette=
+r: </span><a href=3D"https://drive.google.com/drive/folders/13TsVxF__G-QjLB=
+9n1hUlL83VcfOaFHhW?usp=3Ddrive_link" style=3D"text-decoration:none"><span s=
+tyle=3D"font-family:Arial,sans-serif;color:rgb(17,85,204);background-color:=
+transparent;font-weight:400;font-style:normal;font-variant:normal;text-deco=
+ration:underline;vertical-align:baseline;white-space:pre-wrap">ESR 153 Blog=
+ Post Images</span></a></font></p></li></ul></ul><h3 dir=3D"ltr" style=3D"l=
+ine-height:1.38;margin-top:16pt;margin-bottom:4pt"><font size=3D"2"><span s=
+tyle=3D"font-family:Arial,sans-serif;color:rgb(67,67,67);background-color:t=
+ransparent;font-weight:400;font-style:normal;font-variant:normal;text-decor=
+ation:none;vertical-align:baseline;white-space:pre-wrap">=F0=9F=93=B1 Mobil=
+e</span></font></h3><h4 dir=3D"ltr" style=3D"line-height:1.38;margin-top:14=
+pt;margin-bottom:4pt"><font size=3D"2"><span style=3D"font-family:Arial,san=
+s-serif;color:rgb(102,102,102);background-color:transparent;font-weight:400=
+;font-style:normal;font-variant:normal;text-decoration:none;vertical-align:=
+baseline;white-space:pre-wrap">iOS</span></font></h4><h5 dir=3D"ltr" style=
+=3D"line-height:1.38;margin-top:12pt;margin-bottom:4pt"><font size=3D"2"><s=
+pan style=3D"font-family:Arial,sans-serif;color:rgb(102,102,102);background=
+-color:transparent;font-weight:400;font-style:normal;font-variant:normal;te=
+xt-decoration:none;vertical-align:baseline;white-space:pre-wrap">Current Ta=
+sks</span></font></h5><ul style=3D"margin-top:0px;margin-bottom:0px"><li di=
+r=3D"ltr" style=3D"list-style-type:disc;font-family:Arial,sans-serif;color:=
+rgb(0,0,0);background-color:transparent;font-weight:400;font-style:normal;f=
+ont-variant:normal;text-decoration:none;vertical-align:baseline;white-space=
+:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom=
+:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-family:Ari=
+al,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400=
+;font-style:normal;font-variant:normal;text-decoration:none;vertical-align:=
+baseline;white-space:pre-wrap">UI</span></font></p></li><ul style=3D"margin=
+-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-style-type:circle=
+;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent=
+;font-weight:400;font-style:normal;font-variant:normal;text-decoration:none=
+;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-heig=
+ht:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=
+=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);backgro=
+und-color:transparent;font-weight:400;font-style:normal;font-variant:normal=
+;text-decoration:none;vertical-align:baseline;white-space:pre-wrap">Compose=
+</span></font></p></li><ul style=3D"margin-top:0px;margin-bottom:0px"><li d=
+ir=3D"ltr" style=3D"list-style-type:square;font-family:Arial,sans-serif;col=
+or:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:norma=
+l;font-variant:normal;text-decoration:none;vertical-align:baseline;white-sp=
+ace:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bot=
+tom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-family:=
+Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:=
+400;font-style:normal;font-variant:normal;text-decoration:none;vertical-ali=
+gn:baseline;white-space:pre-wrap">Forked </span><a href=3D"https://github.c=
+om/jbott-tbird/swift-rich-html-editor" style=3D"text-decoration:none"><span=
+ style=3D"font-family:Arial,sans-serif;color:rgb(17,85,204);background-colo=
+r:transparent;font-weight:400;font-style:normal;font-variant:normal;text-de=
+coration:underline;vertical-align:baseline;white-space:pre-wrap">WYSIWYG Re=
+po</span></a><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);b=
+ackground-color:transparent;font-weight:400;font-style:normal;font-variant:=
+normal;text-decoration:none;vertical-align:baseline;white-space:pre-wrap"> =
+for reading/compose</span></font></p></li><li dir=3D"ltr" style=3D"list-sty=
+le-type:square;font-family:Arial,sans-serif;color:rgb(0,0,0);background-col=
+or:transparent;font-weight:400;font-style:normal;font-variant:normal;text-d=
+ecoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" styl=
+e=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentatio=
+n"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0=
+,0,0);background-color:transparent;font-weight:400;font-style:normal;font-v=
+ariant:normal;text-decoration:none;vertical-align:baseline;white-space:pre-=
+wrap">WYSIWYG issue where links are not being applied properly to the DOM</=
+span></font></p></li><li dir=3D"ltr" style=3D"list-style-type:square;font-f=
+amily:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-w=
+eight:400;font-style:normal;font-variant:normal;text-decoration:none;vertic=
+al-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38=
+;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><=
+span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-colo=
+r:transparent;font-weight:400;font-style:normal;font-variant:normal;text-de=
+coration:none;vertical-align:baseline;white-space:pre-wrap">Added Compose V=
+iew Headers (sender email, recipient(s), CC, BCC, Subject)</span></font></p=
+></li><li dir=3D"ltr" style=3D"list-style-type:square;font-family:Arial,san=
+s-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-=
+style:normal;font-variant:normal;text-decoration:none;vertical-align:baseli=
+ne;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt=
+;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"f=
+ont-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;f=
+ont-weight:400;font-style:normal;font-variant:normal;text-decoration:none;v=
+ertical-align:baseline;white-space:pre-wrap">Now porting the Proof of Conce=
+pt over to the main App.</span></font></p></li></ul><li dir=3D"ltr" style=
+=3D"list-style-type:circle;font-family:Arial,sans-serif;color:rgb(0,0,0);ba=
+ckground-color:transparent;font-weight:400;font-style:normal;font-variant:n=
+ormal;text-decoration:none;vertical-align:baseline;white-space:pre"><p dir=
+=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=
+=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,sans-se=
+rif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-styl=
+e:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;w=
+hite-space:pre-wrap">Account Drawer</span></font></p></li><ul style=3D"marg=
+in-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-style-type:squa=
+re;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transpare=
+nt;font-weight:400;font-style:normal;font-variant:normal;text-decoration:no=
+ne;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-he=
+ight:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font siz=
+e=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);backgr=
+ound-color:transparent;font-weight:400;font-style:normal;font-variant:norma=
+l;text-decoration:none;vertical-align:baseline;white-space:pre-wrap">Wrappe=
+d up initial Design Handover </span><a href=3D"https://docs.google.com/docu=
+ment/d/1sBw6f5BT6vKauMYodcV7kOb230d0nygBhVpfAEvb5N4/edit?tab=3Dt.mz68jfgp22=
+ri#heading=3Dh.cy8qo459hck5" style=3D"text-decoration:none"><span style=3D"=
+font-family:Arial,sans-serif;color:rgb(17,85,204);background-color:transpar=
+ent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:u=
+nderline;vertical-align:baseline;white-space:pre-wrap">Scope of Work - iOS =
+Account Drawer</span></a></font></p></li><li dir=3D"ltr" style=3D"list-styl=
+e-type:square;font-family:Arial,sans-serif;color:rgb(0,0,0);background-colo=
+r:transparent;font-weight:400;font-style:normal;font-variant:normal;text-de=
+coration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=
+=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation=
+"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,=
+0,0);background-color:transparent;font-weight:400;font-style:normal;font-va=
+riant:normal;text-decoration:none;vertical-align:baseline;white-space:pre-w=
+rap">Now in the Tech Design phase</span></font></p></li></ul></ul><li dir=
+=3D"ltr" style=3D"list-style-type:disc;font-family:Arial,sans-serif;color:r=
+gb(0,0,0);background-color:transparent;font-weight:400;font-style:normal;fo=
+nt-variant:normal;text-decoration:none;vertical-align:baseline;white-space:=
+pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:=
+0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-family:Aria=
+l,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;=
+font-style:normal;font-variant:normal;text-decoration:none;vertical-align:b=
+aseline;white-space:pre-wrap">Backend</span></font></p></li><ul style=3D"ma=
+rgin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-style-type:ci=
+rcle;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transpa=
+rent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:=
+none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-=
+height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font s=
+ize=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);back=
+ground-color:transparent;font-weight:400;font-style:normal;font-variant:nor=
+mal;text-decoration:none;vertical-align:baseline;white-space:pre-wrap">OAut=
+h</span></font></p></li><ul style=3D"margin-top:0px;margin-bottom:0px"><li =
+dir=3D"ltr" style=3D"list-style-type:square;font-family:Arial,sans-serif;co=
+lor:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:norm=
+al;font-variant:normal;text-decoration:none;vertical-align:baseline;white-s=
+pace:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bo=
+ttom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-family=
+:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight=
+:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-al=
+ign:baseline;white-space:pre-wrap">Made progress with the app review - got =
+it to accept the website given, and sent a video recording</span></font></p=
+></li><li dir=3D"ltr" style=3D"list-style-type:square;font-family:Arial,san=
+s-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-=
+style:normal;font-variant:normal;text-decoration:none;vertical-align:baseli=
+ne;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt=
+;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"f=
+ont-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;f=
+ont-weight:400;font-style:normal;font-variant:normal;text-decoration:none;v=
+ertical-align:baseline;white-space:pre-wrap">Paused because Google responde=
+d, we need the app to be able to show how we will use the permissions we as=
+ked for (send, write, move, etc.)</span></font></p></li><li dir=3D"ltr" sty=
+le=3D"list-style-type:square;font-family:Arial,sans-serif;color:rgb(0,0,0);=
+background-color:transparent;font-weight:400;font-style:normal;font-variant=
+:normal;text-decoration:none;vertical-align:baseline;white-space:pre"><p di=
+r=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=
+=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,sans-se=
+rif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-styl=
+e:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;w=
+hite-space:pre-wrap">Necessary engineering work defined</span></font></p></=
+li></ul><li dir=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,s=
+ans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;fon=
+t-style:normal;font-variant:normal;text-decoration:none;vertical-align:base=
+line;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0=
+pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D=
+"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent=
+;font-weight:400;font-style:normal;font-variant:normal;text-decoration:none=
+;vertical-align:baseline;white-space:pre-wrap">Account Data</span></font></=
+p></li><ul style=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=
+=3D"list-style-type:square;font-family:Arial,sans-serif;color:rgb(0,0,0);ba=
+ckground-color:transparent;font-weight:400;font-style:normal;font-variant:n=
+ormal;text-decoration:none;vertical-align:baseline;white-space:pre"><p dir=
+=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=
+=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,sans-se=
+rif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-styl=
+e:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;w=
+hite-space:pre-wrap">Unified data model for IMAP &amp; JMAP</span></font></=
+p></li><li dir=3D"ltr" style=3D"list-style-type:square;font-family:Arial,sa=
+ns-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font=
+-style:normal;font-variant:normal;text-decoration:none;vertical-align:basel=
+ine;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0p=
+t;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"=
+font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;=
+font-weight:400;font-style:normal;font-variant:normal;text-decoration:none;=
+vertical-align:baseline;white-space:pre-wrap">Working on media attachments =
+for view &amp; compose</span></font></p></li><li dir=3D"ltr" style=3D"list-=
+style-type:square;font-family:Arial,sans-serif;color:rgb(0,0,0);background-=
+color:transparent;font-weight:400;font-style:normal;font-variant:normal;tex=
+t-decoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" s=
+tyle=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presenta=
+tion"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rg=
+b(0,0,0);background-color:transparent;font-weight:400;font-style:normal;fon=
+t-variant:normal;text-decoration:none;vertical-align:baseline;white-space:p=
+re-wrap">Added benchmarks for competitor analysis=C2=A0 (web gmail and othe=
+r email clients) for view/compose inlining media attachments - using base64=
+ will likely be the better approach.</span></font></p></li></ul></ul></ul><=
+h4 dir=3D"ltr" style=3D"line-height:1.38;margin-top:14pt;margin-bottom:4pt"=
+><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(102=
+,102,102);background-color:transparent;font-weight:400;font-style:normal;fo=
+nt-variant:normal;text-decoration:none;vertical-align:baseline;white-space:=
+pre-wrap">Android</span></font></h4><ul style=3D"margin-top:0px;margin-bott=
+om:0px"><li dir=3D"ltr" style=3D"list-style-type:disc;font-family:Arial,san=
+s-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-=
+style:normal;font-variant:normal;text-decoration:none;vertical-align:baseli=
+ne;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt=
+;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"f=
+ont-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;f=
+ont-weight:400;font-style:normal;font-variant:normal;text-decoration:none;v=
+ertical-align:baseline;white-space:pre-wrap">Current Focus:</span></font></=
+p></li><ul style=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=
+=3D"list-style-type:circle;font-family:Arial,sans-serif;color:rgb(0,0,0);ba=
+ckground-color:transparent;font-weight:400;font-style:normal;font-variant:n=
+ormal;text-decoration:none;vertical-align:baseline;white-space:pre"><p dir=
+=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=
+=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,sans-se=
+rif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-styl=
+e:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;w=
+hite-space:pre-wrap">Projects</span></font></p></li><ul style=3D"margin-top=
+:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-style-type:square;fon=
+t-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;fon=
+t-weight:400;font-style:normal;font-variant:normal;text-decoration:none;ver=
+tical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1=
+.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2=
+"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-c=
+olor:transparent;font-weight:400;font-style:normal;font-variant:normal;text=
+-decoration:none;vertical-align:baseline;white-space:pre-wrap">Database</sp=
+an></font></p></li><ul style=3D"margin-top:0px;margin-bottom:0px"><li dir=
+=3D"ltr" style=3D"list-style-type:disc;font-family:Arial,sans-serif;color:r=
+gb(0,0,0);background-color:transparent;font-weight:400;font-style:normal;fo=
+nt-variant:normal;text-decoration:none;vertical-align:baseline;white-space:=
+pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:=
+0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-family:Aria=
+l,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;=
+font-style:normal;font-variant:normal;text-decoration:none;vertical-align:b=
+aseline;white-space:pre-wrap">Explored different DB options, landed on Andr=
+oid Room (SQLite wrapper - ORM)</span></font></p></li><ul style=3D"margin-t=
+op:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-style-type:circle;f=
+ont-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;f=
+ont-weight:400;font-style:normal;font-variant:normal;text-decoration:none;v=
+ertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height=
+:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D=
+"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background=
+-color:transparent;font-weight:400;font-style:normal;font-variant:normal;te=
+xt-decoration:none;vertical-align:baseline;white-space:pre-wrap">Chose Room=
+ for performance</span></font></p></li><li dir=3D"ltr" style=3D"list-style-=
+type:circle;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:=
+transparent;font-weight:400;font-style:normal;font-variant:normal;text-deco=
+ration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=
+=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation=
+"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,=
+0,0);background-color:transparent;font-weight:400;font-style:normal;font-va=
+riant:normal;text-decoration:none;vertical-align:baseline;white-space:pre-w=
+rap">Can use entities to write instead of SQLite</span></font></p></li><li =
+dir=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,sans-serif;co=
+lor:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:norm=
+al;font-variant:normal;text-decoration:none;vertical-align:baseline;white-s=
+pace:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bo=
+ttom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-family=
+:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight=
+:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-al=
+ign:baseline;white-space:pre-wrap">Next steps, technical foundation, then s=
+tart porting over to the new database</span></font></p></li><li dir=3D"ltr"=
+ style=3D"list-style-type:circle;font-family:Arial,sans-serif;color:rgb(0,0=
+,0);background-color:transparent;font-weight:400;font-style:normal;font-var=
+iant:normal;text-decoration:none;vertical-align:baseline;white-space:pre"><=
+p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" r=
+ole=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,sans=
+-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-s=
+tyle:normal;font-variant:normal;text-decoration:none;vertical-align:baselin=
+e;white-space:pre-wrap">Complex: need to consider migration for our users</=
+span></font></p></li></ul><li dir=3D"ltr" style=3D"list-style-type:disc;fon=
+t-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;fon=
+t-weight:400;font-style:normal;font-variant:normal;text-decoration:none;ver=
+tical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1=
+.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2=
+"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-c=
+olor:transparent;font-weight:400;font-style:normal;font-variant:normal;text=
+-decoration:none;vertical-align:baseline;white-space:pre-wrap">Unblock Data=
+base Project</span></font></p></li><ul style=3D"margin-top:0px;margin-botto=
+m:0px"><li dir=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,sa=
+ns-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font=
+-style:normal;font-variant:normal;text-decoration:none;vertical-align:basel=
+ine;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0p=
+t;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"=
+font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;=
+font-weight:400;font-style:normal;font-variant:normal;text-decoration:none;=
+vertical-align:baseline;white-space:pre-wrap">Team Knowledge Transfer</span=
+></font></p></li><li dir=3D"ltr" style=3D"list-style-type:circle;font-famil=
+y:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weigh=
+t:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-a=
+lign:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;mar=
+gin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span=
+ style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:tr=
+ansparent;font-weight:400;font-style:normal;font-variant:normal;text-decora=
+tion:none;vertical-align:baseline;white-space:pre-wrap">Team Ownership of B=
+ugs / PRs</span></font></p></li></ul></ul><li dir=3D"ltr" style=3D"list-sty=
+le-type:square;font-family:Arial,sans-serif;color:rgb(0,0,0);background-col=
+or:transparent;font-weight:400;font-style:normal;font-variant:normal;text-d=
+ecoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" styl=
+e=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentatio=
+n"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0=
+,0,0);background-color:transparent;font-weight:400;font-style:normal;font-v=
+ariant:normal;text-decoration:none;vertical-align:baseline;white-space:pre-=
+wrap">Remote Feature Flags</span></font></p></li><ul style=3D"margin-top:0p=
+x;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-style-type:disc;font-fam=
+ily:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-wei=
+ght:400;font-style:normal;font-variant:normal;text-decoration:none;vertical=
+-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;m=
+argin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><a =
+href=3D"https://github.com/thunderbird/thunderbird-android/pull/11223" styl=
+e=3D"text-decoration:none"><span style=3D"font-family:Arial,sans-serif;colo=
+r:rgb(17,85,204);background-color:transparent;font-weight:400;font-style:no=
+rmal;font-variant:normal;text-decoration:underline;vertical-align:baseline;=
+white-space:pre-wrap">RFC</span></a><span style=3D"font-family:Arial,sans-s=
+erif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-sty=
+le:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;=
+white-space:pre-wrap"> - common schema, setting up internal architecture vs=
+. phase 2, which will include the remote capabilities (security, privacy, C=
+opy for why we are using this for our users, etc.)</span></font></p></li><l=
+i dir=3D"ltr" style=3D"list-style-type:disc;font-family:Arial,sans-serif;co=
+lor:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:norm=
+al;font-variant:normal;text-decoration:none;vertical-align:baseline;white-s=
+pace:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bo=
+ttom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-family=
+:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight=
+:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-al=
+ign:baseline;white-space:pre-wrap">Out of scope - percentage rollout, exper=
+iments, could build this in later if we want.</span></font></p></li><li dir=
+=3D"ltr" style=3D"list-style-type:disc;font-family:Arial,sans-serif;color:r=
+gb(0,0,0);background-color:transparent;font-weight:400;font-style:normal;fo=
+nt-variant:normal;text-decoration:none;vertical-align:baseline;white-space:=
+pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:=
+0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-family:Aria=
+l,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;=
+font-style:normal;font-variant:normal;text-decoration:none;vertical-align:b=
+aseline;white-space:pre-wrap">&lt;3 Sprints</span></font></p></li></ul><li =
+dir=3D"ltr" style=3D"list-style-type:square;font-family:Arial,sans-serif;co=
+lor:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:norm=
+al;font-variant:normal;text-decoration:none;vertical-align:baseline;white-s=
+pace:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bo=
+ttom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-family=
+:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight=
+:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-al=
+ign:baseline;white-space:pre-wrap">Bolt</span></font></p></li><ul style=3D"=
+margin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-style-type:=
+disc;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transpa=
+rent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:=
+none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-=
+height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font s=
+ize=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);back=
+ground-color:transparent;font-weight:400;font-style:normal;font-variant:nor=
+mal;text-decoration:none;vertical-align:baseline;white-space:pre-wrap">Goal=
+ - have Bolt as a standalone library, managed w/o the app</span></font></p>=
+</li><li dir=3D"ltr" style=3D"list-style-type:disc;font-family:Arial,sans-s=
+erif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-sty=
+le:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;=
+white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;ma=
+rgin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font=
+-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font=
+-weight:400;font-style:normal;font-variant:normal;text-decoration:none;vert=
+ical-align:baseline;white-space:pre-wrap">Provide a view to show each desig=
+n piece (atom, molecule, components, etc.)</span></font></p></li><li dir=3D=
+"ltr" style=3D"list-style-type:disc;font-family:Arial,sans-serif;color:rgb(=
+0,0,0);background-color:transparent;font-weight:400;font-style:normal;font-=
+variant:normal;text-decoration:none;vertical-align:baseline;white-space:pre=
+"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt=
+" role=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,s=
+ans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;fon=
+t-style:normal;font-variant:normal;text-decoration:none;vertical-align:base=
+line;white-space:pre-wrap">Web Asm app=C2=A0 to render the design system</s=
+pan></font></p></li><li dir=3D"ltr" style=3D"list-style-type:disc;font-fami=
+ly:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weig=
+ht:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-=
+align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;ma=
+rgin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><spa=
+n style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:t=
+ransparent;font-weight:400;font-style:normal;font-variant:normal;text-decor=
+ation:none;vertical-align:baseline;white-space:pre-wrap">Currently the foun=
+dational layer defined for mobile (Fonts, colors, spacing, etc.).</span></f=
+ont></p></li></ul><li dir=3D"ltr" style=3D"list-style-type:square;font-fami=
+ly:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weig=
+ht:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-=
+align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;ma=
+rgin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><spa=
+n style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:t=
+ransparent;font-weight:400;font-style:normal;font-variant:normal;text-decor=
+ation:none;vertical-align:baseline;white-space:pre-wrap">Notifications Phas=
+e 1 (solving for major bugs)</span></font></p></li><ul style=3D"margin-top:=
+0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-style-type:disc;font-f=
+amily:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-w=
+eight:400;font-style:normal;font-variant:normal;text-decoration:none;vertic=
+al-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38=
+;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><=
+span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-colo=
+r:transparent;font-weight:400;font-style:normal;font-variant:normal;text-de=
+coration:none;vertical-align:baseline;white-space:pre-wrap">Exploring sync =
+redesign ideas. Will be presenting Settings Issues and proposals to design =
+team likely next week</span></font></p></li><li dir=3D"ltr" style=3D"list-s=
+tyle-type:disc;font-family:Arial,sans-serif;color:rgb(0,0,0);background-col=
+or:transparent;font-weight:400;font-style:normal;font-variant:normal;text-d=
+ecoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" styl=
+e=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentatio=
+n"><font size=3D"2"><a href=3D"https://docs.google.com/document/d/1kPy5I7-I=
+UZIvaOgStt_bnIuT7tgsk7jkMZX54OklT8Y/edit?tab=3Dt.0#heading=3Dh.lok9c7xadhew=
+" style=3D"text-decoration:none"><span style=3D"font-family:Arial,sans-seri=
+f;color:rgb(17,85,204);background-color:transparent;font-weight:400;font-st=
+yle:normal;font-variant:normal;text-decoration:underline;vertical-align:bas=
+eline;white-space:pre-wrap">Notification and Sync Improvements Technical Do=
+cumentation</span></a></font></p></li></ul><li dir=3D"ltr" style=3D"list-st=
+yle-type:square;font-family:Arial,sans-serif;color:rgb(0,0,0);background-co=
+lor:transparent;font-weight:400;font-style:normal;font-variant:normal;text-=
+decoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" sty=
+le=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentati=
+on"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(=
+0,0,0);background-color:transparent;font-weight:400;font-style:normal;font-=
+variant:normal;text-decoration:none;vertical-align:baseline;white-space:pre=
+-wrap">Other</span></font></p></li><ul style=3D"margin-top:0px;margin-botto=
+m:0px"><li dir=3D"ltr" style=3D"list-style-type:disc;font-family:Arial,sans=
+-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-s=
+tyle:normal;font-variant:normal;text-decoration:none;vertical-align:baselin=
+e;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;=
+margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"fo=
+nt-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;fo=
+nt-weight:400;font-style:normal;font-variant:normal;text-decoration:none;ve=
+rtical-align:baseline;white-space:pre-wrap">Fixed the top two Beta crashes<=
+/span></font></p></li><ul style=3D"margin-top:0px;margin-bottom:0px"><li di=
+r=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,sans-serif;colo=
+r:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:normal=
+;font-variant:normal;text-decoration:none;vertical-align:baseline;white-spa=
+ce:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bott=
+om:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-family:A=
+rial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:4=
+00;font-style:normal;font-variant:normal;text-decoration:none;vertical-alig=
+n:baseline;white-space:pre-wrap">Relative Date Format crash</span></font></=
+p></li><li dir=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,sa=
+ns-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font=
+-style:normal;font-variant:normal;text-decoration:none;vertical-align:basel=
+ine;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0p=
+t;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><a href=3D"http=
+s://play.google.com/console/u/0/developers/8696262544613553264/app/49723643=
+10826617121/vitals/crashes/ff040600f98987ee330d8bc335bcb535/details?days=3D=
+28&amp;versionCode=3D55&amp;isUserPerceived=3Dtrue" style=3D"text-decoratio=
+n:none"><span style=3D"font-family:Arial,sans-serif;color:rgb(17,85,204);ba=
+ckground-color:transparent;font-weight:400;font-style:normal;font-variant:n=
+ormal;text-decoration:underline;vertical-align:baseline;white-space:pre-wra=
+p">WebView on long messages crash</span></a></font></p></li></ul></ul></ul>=
+</ul></ul><h3 dir=3D"ltr" style=3D"line-height:1.38;margin-top:16pt;margin-=
+bottom:4pt"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;co=
+lor:rgb(67,67,67);background-color:transparent;font-weight:400;font-style:n=
+ormal;font-variant:normal;text-decoration:none;vertical-align:baseline;whit=
+e-space:pre-wrap">=F0=9F=AB=82 Community</span></font></h3><ul style=3D"mar=
+gin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-style-type:dis=
+c;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparen=
+t;font-weight:400;font-style:normal;font-variant:normal;text-decoration:non=
+e;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-hei=
+ght:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=
+=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);backgro=
+und-color:transparent;font-weight:400;font-style:normal;font-variant:normal=
+;text-decoration:none;vertical-align:baseline;white-space:pre-wrap">Finishi=
+ng up Q2 roadmap reviews and will send all changes to the council by the en=
+d of Friday</span></font></p></li><li dir=3D"ltr" style=3D"list-style-type:=
+disc;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transpa=
+rent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:=
+none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-=
+height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font s=
+ize=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);back=
+ground-color:transparent;font-weight:400;font-style:normal;font-variant:nor=
+mal;text-decoration:none;vertical-align:baseline;white-space:pre-wrap">Topi=
+cbox to discourse transition is progressing and we will be reaching out to =
+gather testers soon</span></font></p></li><li dir=3D"ltr" style=3D"list-sty=
+le-type:disc;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color=
+:transparent;font-weight:400;font-style:normal;font-variant:normal;text-dec=
+oration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=
+=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation=
+"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,=
+0,0);background-color:transparent;font-weight:400;font-style:normal;font-va=
+riant:normal;text-decoration:none;vertical-align:baseline;white-space:pre-w=
+rap">We are working with the Council to plan some communications around edu=
+cation, with the goal of driving more folks to run for election next spring=
+.</span></font></p></li><li dir=3D"ltr" style=3D"list-style-type:disc;font-=
+family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-=
+weight:400;font-style:normal;font-variant:normal;text-decoration:none;verti=
+cal-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.3=
+8;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2">=
+<span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-col=
+or:transparent;font-weight:400;font-style:normal;font-variant:normal;text-d=
+ecoration:none;vertical-align:baseline;white-space:pre-wrap">Contributor jo=
+urney work on DTN is progressing but needs more time.</span></font></p></li=
+></ul><h3 dir=3D"ltr" style=3D"line-height:1.38;margin-top:16pt;margin-bott=
+om:4pt"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:=
+rgb(67,67,67);background-color:transparent;font-weight:400;font-style:norma=
+l;font-variant:normal;text-decoration:none;vertical-align:baseline;white-sp=
+ace:pre-wrap">=F0=9F=9A=A2 Releases</span></font></h3><ul style=3D"margin-t=
+op:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-style-type:disc;fon=
+t-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;fon=
+t-weight:400;font-style:normal;font-variant:normal;text-decoration:none;ver=
+tical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1=
+.38;margin-top:12pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"=
+2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-=
+color:transparent;font-weight:400;font-style:normal;font-variant:normal;tex=
+t-decoration:none;vertical-align:baseline;white-space:pre-wrap">Desktop Rel=
+ease Upcoming Milestones</span></font></p></li><ul style=3D"margin-top:0px;=
+margin-bottom:0px"><li dir=3D"ltr" style=3D"list-style-type:circle;font-fam=
+ily:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-wei=
+ght:400;font-style:normal;font-variant:normal;text-decoration:none;vertical=
+-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;m=
+argin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><sp=
+an style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:=
+transparent;font-weight:400;font-style:normal;font-variant:normal;text-deco=
+ration:none;vertical-align:baseline;white-space:pre-wrap">July 8: </span><a=
+ href=3D"https://stage.thunderbird.net/en-US/thunderbird/153.0beta/releasen=
+otes/" style=3D"text-decoration:none"><span style=3D"font-family:Arial,sans=
+-serif;color:rgb(17,85,204);background-color:transparent;font-weight:400;fo=
+nt-style:normal;font-variant:normal;text-decoration:underline;vertical-alig=
+n:baseline;white-space:pre-wrap">153.0b7</span></a></font></p></li><li dir=
+=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,sans-serif;color=
+:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:normal;=
+font-variant:normal;text-decoration:none;vertical-align:baseline;white-spac=
+e:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-botto=
+m:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-family:Ar=
+ial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:40=
+0;font-style:normal;font-variant:normal;text-decoration:none;vertical-align=
+:baseline;white-space:pre-wrap">July 13: 153.0b8</span></font></p></li><li =
+dir=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,sans-serif;co=
+lor:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:norm=
+al;font-variant:normal;text-decoration:none;vertical-align:baseline;white-s=
+pace:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bo=
+ttom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-family=
+:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight=
+:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-al=
+ign:baseline;white-space:pre-wrap">July 15: 153.0b9</span></font></p></li><=
+li dir=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,sans-serif=
+;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:n=
+ormal;font-variant:normal;text-decoration:none;vertical-align:baseline;whit=
+e-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin=
+-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-fam=
+ily:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-wei=
+ght:400;font-style:normal;font-variant:normal;text-decoration:none;vertical=
+-align:baseline;white-space:pre-wrap">July 15: merge 153.0 beta-&gt;release=
+</span></font></p></li><li dir=3D"ltr" style=3D"list-style-type:circle;font=
+-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font=
+-weight:400;font-style:normal;font-variant:normal;text-decoration:none;vert=
+ical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.=
+38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"=
+><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-co=
+lor:transparent;font-weight:400;font-style:normal;font-variant:normal;text-=
+decoration:none;vertical-align:baseline;white-space:pre-wrap">July 20: merg=
+e 154.0a1 main-&gt;beta</span></font></p></li><li dir=3D"ltr" style=3D"list=
+-style-type:circle;font-family:Arial,sans-serif;color:rgb(0,0,0);background=
+-color:transparent;font-weight:400;font-style:normal;font-variant:normal;te=
+xt-decoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" =
+style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"present=
+ation"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:r=
+gb(0,0,0);background-color:transparent;font-weight:700;font-style:normal;fo=
+nt-variant:normal;text-decoration:none;vertical-align:baseline;white-space:=
+pre-wrap">Jul 21</span><span style=3D"font-family:Arial,sans-serif;color:rg=
+b(0,0,0);background-color:transparent;font-weight:400;font-style:normal;fon=
+t-variant:normal;text-decoration:none;vertical-align:baseline;white-space:p=
+re-wrap">: 153.0, </span><span style=3D"font-family:Arial,sans-serif;color:=
+rgb(0,0,0);background-color:transparent;font-weight:700;font-style:normal;f=
+ont-variant:normal;text-decoration:none;vertical-align:baseline;white-space=
+:pre-wrap">153.0esr</span><span style=3D"font-family:Arial,sans-serif;color=
+:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:normal;=
+font-variant:normal;text-decoration:none;vertical-align:baseline;white-spac=
+e:pre-wrap">, 140.13.0esr</span></font></p></li></ul><li dir=3D"ltr" style=
+=3D"list-style-type:disc;font-family:Arial,sans-serif;color:rgb(0,0,0);back=
+ground-color:transparent;font-weight:400;font-style:normal;font-variant:nor=
+mal;text-decoration:none;vertical-align:baseline;white-space:pre"><p dir=3D=
+"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"p=
+resentation"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;c=
+olor:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:nor=
+mal;font-variant:normal;text-decoration:none;vertical-align:baseline;white-=
+space:pre-wrap">Android Release Upcoming Milestones</span></font></p></li><=
+ul style=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list=
+-style-type:circle;font-family:Arial,sans-serif;color:rgb(0,0,0);background=
+-color:transparent;font-weight:400;font-style:normal;font-variant:normal;te=
+xt-decoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" =
+style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"present=
+ation"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:r=
+gb(0,0,0);background-color:transparent;font-weight:400;font-style:normal;fo=
+nt-variant:normal;text-decoration:none;vertical-align:baseline;white-space:=
+pre-wrap">July 6: </span><a href=3D"https://github.com/thunderbird/thunderb=
+ird-android/releases/tag/THUNDERBIRD_20_1" style=3D"text-decoration:none"><=
+span style=3D"font-family:Arial,sans-serif;color:rgb(17,85,204);background-=
+color:transparent;font-weight:400;font-style:normal;font-variant:normal;tex=
+t-decoration:underline;vertical-align:baseline;white-space:pre-wrap">20.1</=
+span></a></font></p></li></ul><li dir=3D"ltr" style=3D"list-style-type:disc=
+;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent=
+;font-weight:400;font-style:normal;font-variant:normal;text-decoration:none=
+;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-heig=
+ht:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=
+=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);backgro=
+und-color:transparent;font-weight:400;font-style:normal;font-variant:normal=
+;text-decoration:none;vertical-align:baseline;white-space:pre-wrap">iOS</sp=
+an></font></p></li><ul style=3D"margin-top:0px;margin-bottom:0px"><li dir=
+=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,sans-serif;color=
+:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:normal;=
+font-variant:normal;text-decoration:none;vertical-align:baseline;white-spac=
+e:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-botto=
+m:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-family:Ar=
+ial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:40=
+0;font-style:normal;font-variant:normal;text-decoration:none;vertical-align=
+:baseline;white-space:pre-wrap">Weekly alpha release every Friday on TestFl=
+ight</span></font></p></li></ul><li dir=3D"ltr" style=3D"list-style-type:di=
+sc;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transpare=
+nt;font-weight:400;font-style:normal;font-variant:normal;text-decoration:no=
+ne;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-he=
+ight:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font siz=
+e=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);backgr=
+ound-color:transparent;font-weight:400;font-style:normal;font-variant:norma=
+l;text-decoration:none;vertical-align:baseline;white-space:pre-wrap">Deskto=
+p ADI:</span></font></p></li><ul style=3D"margin-top:0px;margin-bottom:0px"=
+><li dir=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,sans-ser=
+if;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-style=
+:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;wh=
+ite-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;marg=
+in-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-f=
+amily:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-w=
+eight:400;font-style:normal;font-variant:normal;text-decoration:none;vertic=
+al-align:baseline;white-space:pre-wrap">63% on 140esr, 35% on Release, 2% o=
+n other (does not include 115)</span></font></p></li></ul><li dir=3D"ltr" s=
+tyle=3D"list-style-type:disc;font-family:Arial,sans-serif;color:rgb(0,0,0);=
+background-color:transparent;font-weight:400;font-style:normal;font-variant=
+:normal;text-decoration:none;vertical-align:baseline;white-space:pre"><p di=
+r=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=
+=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,sans-se=
+rif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-styl=
+e:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;w=
+hite-space:pre-wrap">Desktop </span><a href=3D"https://docs.google.com/spre=
+adsheets/d/e/2PACX-1vTtg0WzNuEoh5_VzIY7eux9K2CfVImViAdNihVrsYg1tt4ho4diQDtm=
+FkiC8DkWghqUDUbV5YMI2QAZ/pubhtml" style=3D"text-decoration:none"><span styl=
+e=3D"font-family:Arial,sans-serif;color:rgb(17,85,204);background-color:tra=
+nsparent;font-weight:400;font-style:normal;font-variant:normal;text-decorat=
+ion:underline;vertical-align:baseline;white-space:pre-wrap">Release Metrics=
+</span></a></font></p></li><li dir=3D"ltr" style=3D"list-style-type:disc;fo=
+nt-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;fo=
+nt-weight:400;font-style:normal;font-variant:normal;text-decoration:none;ve=
+rtical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:=
+1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"=
+2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-=
+color:transparent;font-weight:400;font-style:normal;font-variant:normal;tex=
+t-decoration:none;vertical-align:baseline;white-space:pre-wrap">Deliverable=
+s</span></font></p></li><ul style=3D"margin-top:0px;margin-bottom:0px"><li =
+dir=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,sans-serif;co=
+lor:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:norm=
+al;font-variant:normal;text-decoration:none;vertical-align:baseline;white-s=
+pace:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bo=
+ttom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-family=
+:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight=
+:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-al=
+ign:baseline;white-space:pre-wrap">Git migration:</span></font></p></li><ul=
+ style=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-s=
+tyle-type:square;font-family:Arial,sans-serif;color:rgb(0,0,0);background-c=
+olor:transparent;font-weight:400;font-style:normal;font-variant:normal;text=
+-decoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" st=
+yle=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentat=
+ion"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb=
+(0,0,0);background-color:transparent;font-weight:400;font-style:normal;font=
+-variant:normal;text-decoration:none;vertical-align:baseline;white-space:pr=
+e-wrap">Completed. Wrapping up loose ends (mach try, artifact builds, searc=
+hfox, lando-cli).</span></font></p></li></ul><li dir=3D"ltr" style=3D"list-=
+style-type:circle;font-family:Arial,sans-serif;color:rgb(0,0,0);background-=
+color:transparent;font-weight:400;font-style:normal;font-variant:normal;tex=
+t-decoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" s=
+tyle=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presenta=
+tion"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rg=
+b(0,0,0);background-color:transparent;font-weight:400;font-style:normal;fon=
+t-variant:normal;text-decoration:none;vertical-align:baseline;white-space:p=
+re-wrap">Linux Release channel by default:</span></font></p></li><ul style=
+=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-style-t=
+ype:square;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:t=
+ransparent;font-weight:400;font-style:normal;font-variant:normal;text-decor=
+ation:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D=
+"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><=
+font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0=
+);background-color:transparent;font-weight:400;font-style:normal;font-varia=
+nt:normal;text-decoration:none;vertical-align:baseline;white-space:pre-wrap=
+">Debs are available for all channels except ESR (uplifts incoming for ESR)=
+</span></font></p></li><li dir=3D"ltr" style=3D"list-style-type:square;font=
+-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font=
+-weight:400;font-style:normal;font-variant:normal;text-decoration:none;vert=
+ical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.=
+38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"=
+><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-co=
+lor:transparent;font-weight:400;font-style:normal;font-variant:normal;text-=
+decoration:none;vertical-align:baseline;white-space:pre-wrap">Snap default =
+will switch to Release channel at 153.0</span></font></p></li></ul><li dir=
+=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,sans-serif;color=
+:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:normal;=
+font-variant:normal;text-decoration:none;vertical-align:baseline;white-spac=
+e:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-botto=
+m:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-family:Ar=
+ial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:40=
+0;font-style:normal;font-variant:normal;text-decoration:none;vertical-align=
+:baseline;white-space:pre-wrap">153esr enablement</span></font></p></li><ul=
+ style=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-s=
+tyle-type:square;font-family:Arial,sans-serif;color:rgb(0,0,0);background-c=
+olor:transparent;font-weight:400;font-style:normal;font-variant:normal;text=
+-decoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" st=
+yle=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentat=
+ion"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb=
+(0,0,0);background-color:transparent;font-weight:400;font-style:normal;font=
+-variant:normal;text-decoration:none;vertical-align:baseline;white-space:pr=
+e-wrap">In progress</span></font></p></li></ul><li dir=3D"ltr" style=3D"lis=
+t-style-type:circle;font-family:Arial,sans-serif;color:rgb(0,0,0);backgroun=
+d-color:transparent;font-weight:400;font-style:normal;font-variant:normal;t=
+ext-decoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr"=
+ style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presen=
+tation"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:=
+rgb(0,0,0);background-color:transparent;font-weight:400;font-style:normal;f=
+ont-variant:normal;text-decoration:none;vertical-align:baseline;white-space=
+:pre-wrap">TB iOS beta/stable release automation</span></font></p></li><ul =
+style=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-st=
+yle-type:square;font-family:Arial,sans-serif;color:rgb(0,0,0);background-co=
+lor:transparent;font-weight:400;font-style:normal;font-variant:normal;text-=
+decoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" sty=
+le=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentati=
+on"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(=
+0,0,0);background-color:transparent;font-weight:400;font-style:normal;font-=
+variant:normal;text-decoration:none;vertical-align:baseline;white-space:pre=
+-wrap">In progress</span></font></p></li></ul><li dir=3D"ltr" style=3D"list=
+-style-type:circle;font-family:Arial,sans-serif;color:rgb(0,0,0);background=
+-color:transparent;font-weight:400;font-style:normal;font-variant:normal;te=
+xt-decoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" =
+style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"present=
+ation"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:r=
+gb(0,0,0);background-color:transparent;font-weight:400;font-style:normal;fo=
+nt-variant:normal;text-decoration:none;vertical-align:baseline;white-space:=
+pre-wrap">mozilla-taskgraph enablement (enables pinned versions of taskgrap=
+h reducing bustage)</span></font></p></li><ul style=3D"margin-top:0px;margi=
+n-bottom:0px"><li dir=3D"ltr" style=3D"list-style-type:square;font-family:A=
+rial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:4=
+00;font-style:normal;font-variant:normal;text-decoration:none;vertical-alig=
+n:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin=
+-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span st=
+yle=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:trans=
+parent;font-weight:400;font-style:normal;font-variant:normal;text-decoratio=
+n:none;vertical-align:baseline;white-space:pre-wrap">In progress</span></fo=
+nt></p></li></ul></ul><li dir=3D"ltr" style=3D"list-style-type:disc;font-fa=
+mily:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-we=
+ight:400;font-style:normal;font-variant:normal;text-decoration:none;vertica=
+l-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;=
+margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><s=
+pan style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color=
+:transparent;font-weight:400;font-style:normal;font-variant:normal;text-dec=
+oration:none;vertical-align:baseline;white-space:pre-wrap">QA</span></font>=
+</p></li><ul style=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr" sty=
+le=3D"list-style-type:circle;font-family:Arial,sans-serif;color:rgb(0,0,0);=
+background-color:transparent;font-weight:400;font-style:normal;font-variant=
+:normal;text-decoration:none;vertical-align:baseline;white-space:pre"><p di=
+r=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:12pt" role=
+=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,sans-se=
+rif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-styl=
+e:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;w=
+hite-space:pre-wrap">Tested all recent desktop and android releases, severa=
+l unconfirmed issues and need infos, appeals, Thundermail, 153 regressions.=
+</span></font></p></li></ul></ul><h3 dir=3D"ltr" style=3D"line-height:1.38;=
+margin-top:16pt;margin-bottom:4pt"><font size=3D"2"><span style=3D"font-fam=
+ily:Arial,sans-serif;color:rgb(67,67,67);background-color:transparent;font-=
+weight:400;font-style:normal;font-variant:normal;text-decoration:none;verti=
+cal-align:baseline;white-space:pre-wrap">=F0=9F=9B=9F Customer Support</spa=
+n></font></h3><font size=3D"2"><br></font><ul style=3D"margin-top:0px;margi=
+n-bottom:0px"><li dir=3D"ltr" style=3D"list-style-type:disc;font-family:Ari=
+al,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:700=
+;font-style:normal;font-variant:normal;text-decoration:none;vertical-align:=
+baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-t=
+op:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span styl=
+e=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transpa=
+rent;font-weight:700;font-style:normal;font-variant:normal;text-decoration:=
+none;vertical-align:baseline;white-space:pre-wrap">General</span></font></p=
+></li><ul style=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=
+=3D"list-style-type:circle;font-family:Arial,sans-serif;color:rgb(0,0,0);ba=
+ckground-color:transparent;font-weight:400;font-style:normal;font-variant:n=
+ormal;text-decoration:none;vertical-align:baseline;white-space:pre"><p dir=
+=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=
+=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,sans-se=
+rif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-styl=
+e:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;w=
+hite-space:pre-wrap">Reporting a bit delayed, will have these delivered by =
+end of week. Roland worked around the API madness, just need to finalize th=
+e reports and send them.</span></font></p></li><ul style=3D"margin-top:0px;=
+margin-bottom:0px"><li dir=3D"ltr" style=3D"list-style-type:square;font-fam=
+ily:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-wei=
+ght:400;font-style:normal;font-variant:normal;text-decoration:none;vertical=
+-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;m=
+argin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><sp=
+an style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:=
+transparent;font-weight:400;font-style:normal;font-variant:normal;text-deco=
+ration:none;vertical-align:baseline;white-space:pre-wrap">We=E2=80=99ll inc=
+lude a roundup from the July 1 Ideas sync in the June report</span></font><=
+/p></li><li dir=3D"ltr" style=3D"list-style-type:square;font-family:Arial,s=
+ans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:700;fon=
+t-style:normal;font-variant:normal;text-decoration:none;vertical-align:base=
+line;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0=
+pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D=
+"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent=
+;font-weight:700;font-style:normal;font-variant:normal;text-decoration:none=
+;vertical-align:baseline;white-space:pre-wrap">New</span><span style=3D"fon=
+t-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;fon=
+t-weight:400;font-style:normal;font-variant:normal;text-decoration:none;ver=
+tical-align:baseline;white-space:pre-wrap">: will include analysis of mobil=
+e repo to reviews and sumo: are we working on the right things?</span></fon=
+t></p></li></ul><li dir=3D"ltr" style=3D"list-style-type:circle;font-family=
+:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight=
+:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-al=
+ign:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;marg=
+in-top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span =
+style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:tra=
+nsparent;font-weight:400;font-style:normal;font-variant:normal;text-decorat=
+ion:none;vertical-align:baseline;white-space:pre-wrap">Getting closer to th=
+e offer stage for our next hire, exciting times!</span></font></p></li></ul=
+><li dir=3D"ltr" style=3D"list-style-type:disc;font-family:Arial,sans-serif=
+;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:n=
+ormal;font-variant:normal;text-decoration:none;vertical-align:baseline;whit=
+e-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin=
+-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-fam=
+ily:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-wei=
+ght:700;font-style:normal;font-variant:normal;text-decoration:none;vertical=
+-align:baseline;white-space:pre-wrap">Infra</span></font></p></li><ul style=
+=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list-style-t=
+ype:circle;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:t=
+ransparent;font-weight:400;font-style:normal;font-variant:normal;text-decor=
+ation:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D=
+"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><=
+font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0=
+);background-color:transparent;font-weight:400;font-style:normal;font-varia=
+nt:normal;text-decoration:none;vertical-align:baseline;white-space:pre-wrap=
+">Need to get the ticket spike monitor plugged into Pagerduty when Matthew =
+is back</span></font></p></li><li dir=3D"ltr" style=3D"list-style-type:circ=
+le;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transpare=
+nt;font-weight:400;font-style:normal;font-variant:normal;text-decoration:no=
+ne;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-he=
+ight:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation"><font siz=
+e=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);backgr=
+ound-color:transparent;font-weight:400;font-style:normal;font-variant:norma=
+l;text-decoration:none;vertical-align:baseline;white-space:pre-wrap">Need t=
+o get the Pagerduty support team rotation in place</span></font></p></li><l=
+i dir=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,sans-serif;=
+color:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:no=
+rmal;font-variant:normal;text-decoration:none;vertical-align:baseline;white=
+-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-=
+bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-fami=
+ly:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weig=
+ht:400;font-style:normal;font-variant:normal;text-decoration:none;vertical-=
+align:baseline;white-space:pre-wrap">Rolled out pilot of AutoQA for tickets=
+ in our QA tool </span><a href=3D"https://kaizo.com/" style=3D"text-decorat=
+ion:none"><span style=3D"font-family:Arial,sans-serif;color:rgb(17,85,204);=
+background-color:transparent;font-weight:400;font-style:normal;font-variant=
+:normal;text-decoration:underline;vertical-align:baseline;white-space:pre-w=
+rap">Kaizo</span></a></font></p></li></ul><li dir=3D"ltr" style=3D"list-sty=
+le-type:disc;font-family:Arial,sans-serif;color:rgb(0,0,0);background-color=
+:transparent;font-weight:400;font-style:normal;font-variant:normal;text-dec=
+oration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" style=
+=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentation=
+"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0,=
+0,0);background-color:transparent;font-weight:700;font-style:normal;font-va=
+riant:normal;text-decoration:none;vertical-align:baseline;white-space:pre-w=
+rap">Thundermail</span></font></p></li><ul style=3D"margin-top:0px;margin-b=
+ottom:0px"><li dir=3D"ltr" style=3D"list-style-type:circle;font-family:Aria=
+l,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;=
+font-style:normal;font-variant:normal;text-decoration:none;vertical-align:b=
+aseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-to=
+p:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=
+=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transpar=
+ent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:n=
+one;vertical-align:baseline;white-space:pre-wrap">Friday wellness days will=
+ have </span><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);b=
+ackground-color:transparent;font-weight:700;font-style:normal;font-variant:=
+normal;text-decoration:none;vertical-align:baseline;white-space:pre-wrap">o=
+ne</span><span style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);backg=
+round-color:transparent;font-weight:400;font-style:normal;font-variant:norm=
+al;text-decoration:none;vertical-align:baseline;white-space:pre-wrap"> supp=
+ort team member working, who will TOIL another day. Customers will be cover=
+ed, but we still need to be careful of invite numbers during this period, e=
+specially with Donor appeals in late July</span></font></p></li><li dir=3D"=
+ltr" style=3D"list-style-type:circle;font-family:Arial,sans-serif;color:rgb=
+(0,0,0);background-color:transparent;font-weight:400;font-style:normal;font=
+-variant:normal;text-decoration:none;vertical-align:baseline;white-space:pr=
+e"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0p=
+t" role=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,=
+sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;fo=
+nt-style:normal;font-variant:normal;text-decoration:none;vertical-align:bas=
+eline;white-space:pre-wrap">Figuring out the incident escalation process (h=
+ow do we ping PagerDuty) in case there=E2=80=99s a fire</span></font></p></=
+li><li dir=3D"ltr" style=3D"list-style-type:circle;font-family:Arial,sans-s=
+erif;color:rgb(0,0,0);background-color:transparent;font-weight:700;font-sty=
+le:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;=
+white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;ma=
+rgin-bottom:0pt" role=3D"presentation"><font size=3D"2"><a href=3D"https://=
+thunderbird.github.io/thunderbird-support-reports/lisa/daily/launch_overvie=
+w.html#waves" style=3D"text-decoration:none"><span style=3D"font-family:Ari=
+al,sans-serif;color:rgb(17,85,204);background-color:transparent;font-weight=
+:700;font-style:normal;font-variant:normal;text-decoration:underline;vertic=
+al-align:baseline;white-space:pre-wrap">Reports</span></a></font></p></li><=
+ul style=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr" style=3D"list=
+-style-type:square;font-family:Arial,sans-serif;color:rgb(0,0,0);background=
+-color:transparent;font-weight:700;font-style:normal;font-variant:normal;te=
+xt-decoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" =
+style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"present=
+ation"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:r=
+gb(0,0,0);background-color:transparent;font-weight:700;font-style:normal;fo=
+nt-variant:normal;text-decoration:none;vertical-align:baseline;white-space:=
+pre-wrap">Overall CSAT</span><span style=3D"font-family:Arial,sans-serif;co=
+lor:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:norm=
+al;font-variant:normal;text-decoration:none;vertical-align:baseline;white-s=
+pace:pre-wrap">: 93%</span></font></p></li><ul style=3D"margin-top:0px;marg=
+in-bottom:0px"><li dir=3D"ltr" style=3D"list-style-type:disc;font-family:Ar=
+ial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:70=
+0;font-style:normal;font-variant:normal;text-decoration:none;vertical-align=
+:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-=
+top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span sty=
+le=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transp=
+arent;font-weight:700;font-style:normal;font-variant:normal;text-decoration=
+:none;vertical-align:baseline;white-space:pre-wrap">The good</span><span st=
+yle=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:trans=
+parent;font-weight:400;font-style:normal;font-variant:normal;text-decoratio=
+n:none;vertical-align:baseline;white-space:pre-wrap">: fast, help replies a=
+cross onboarding, account access, aliases, and Appointment.=C2=A0</span></f=
+ont></p></li><li dir=3D"ltr" style=3D"list-style-type:disc;font-family:Aria=
+l,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:700;=
+font-style:normal;font-variant:normal;text-decoration:none;vertical-align:b=
+aseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-to=
+p:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=
+=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transpar=
+ent;font-weight:700;font-style:normal;font-variant:normal;text-decoration:n=
+one;vertical-align:baseline;white-space:pre-wrap">The bad</span><span style=
+=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transpar=
+ent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:n=
+one;vertical-align:baseline;white-space:pre-wrap">: Pricing tiers remain a =
+strong signal, DKIM issues are painful but flipped. We get good ratings on =
+pricing complaints, but the pricing complaint itself stands.</span></font><=
+/p></li></ul><li dir=3D"ltr" style=3D"list-style-type:square;font-family:Ar=
+ial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:70=
+0;font-style:normal;font-variant:normal;text-decoration:none;vertical-align=
+:baseline;white-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-=
+top:0pt;margin-bottom:0pt" role=3D"presentation"><font size=3D"2"><span sty=
+le=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:transp=
+arent;font-weight:700;font-style:normal;font-variant:normal;text-decoration=
+:none;vertical-align:baseline;white-space:pre-wrap">Contact rate</span><spa=
+n style=3D"font-family:Arial,sans-serif;color:rgb(0,0,0);background-color:t=
+ransparent;font-weight:400;font-style:normal;font-variant:normal;text-decor=
+ation:none;vertical-align:baseline;white-space:pre-wrap">: 1.4%, slowing do=
+wn at scale to .66%</span></font></p></li><li dir=3D"ltr" style=3D"list-sty=
+le-type:square;font-family:Arial,sans-serif;color:rgb(0,0,0);background-col=
+or:transparent;font-weight:700;font-style:normal;font-variant:normal;text-d=
+ecoration:none;vertical-align:baseline;white-space:pre"><p dir=3D"ltr" styl=
+e=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=3D"presentatio=
+n"><font size=3D"2"><span style=3D"font-family:Arial,sans-serif;color:rgb(0=
+,0,0);background-color:transparent;font-weight:700;font-style:normal;font-v=
+ariant:normal;text-decoration:none;vertical-align:baseline;white-space:pre-=
+wrap">Average Handle Time</span><span style=3D"font-family:Arial,sans-serif=
+;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:n=
+ormal;font-variant:normal;text-decoration:none;vertical-align:baseline;whit=
+e-space:pre-wrap">: 47.5 hours</span></font></p></li><li dir=3D"ltr" style=
+=3D"list-style-type:square;font-family:Arial,sans-serif;color:rgb(0,0,0);ba=
+ckground-color:transparent;font-weight:700;font-style:normal;font-variant:n=
+ormal;text-decoration:none;vertical-align:baseline;white-space:pre"><p dir=
+=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=
+=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,sans-se=
+rif;color:rgb(0,0,0);background-color:transparent;font-weight:700;font-styl=
+e:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;w=
+hite-space:pre-wrap">Reply times</span><span style=3D"font-family:Arial,san=
+s-serif;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-=
+style:normal;font-variant:normal;text-decoration:none;vertical-align:baseli=
+ne;white-space:pre-wrap">: 4.2 hrs</span></font></p></li><li dir=3D"ltr" st=
+yle=3D"list-style-type:square;font-family:Arial,sans-serif;color:rgb(0,0,0)=
+;background-color:transparent;font-weight:700;font-style:normal;font-varian=
+t:normal;text-decoration:none;vertical-align:baseline;white-space:pre"><p d=
+ir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" role=
+=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,sans-se=
+rif;color:rgb(0,0,0);background-color:transparent;font-weight:700;font-styl=
+e:normal;font-variant:normal;text-decoration:none;vertical-align:baseline;w=
+hite-space:pre-wrap">Github escalations</span><span style=3D"font-family:Ar=
+ial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-weight:40=
+0;font-style:normal;font-variant:normal;text-decoration:none;vertical-align=
+:baseline;white-space:pre-wrap">: 8%</span></font></p></li><li dir=3D"ltr" =
+style=3D"list-style-type:square;font-family:Arial,sans-serif;color:rgb(0,0,=
+0);background-color:transparent;font-weight:700;font-style:normal;font-vari=
+ant:normal;text-decoration:none;vertical-align:baseline;white-space:pre"><p=
+ dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margin-bottom:0pt" ro=
+le=3D"presentation"><font size=3D"2"><span style=3D"font-family:Arial,sans-=
+serif;color:rgb(0,0,0);background-color:transparent;font-weight:700;font-st=
+yle:normal;font-variant:normal;text-decoration:none;vertical-align:baseline=
+;white-space:pre-wrap">87 </span><span style=3D"font-family:Arial,sans-seri=
+f;color:rgb(0,0,0);background-color:transparent;font-weight:400;font-style:=
+normal;font-variant:normal;text-decoration:none;vertical-align:baseline;whi=
+te-space:pre-wrap">ideas, more in the monthly report</span></font></p></li>=
+<li dir=3D"ltr" style=3D"list-style-type:square;font-family:Arial,sans-seri=
+f;color:rgb(0,0,0);background-color:transparent;font-weight:700;font-style:=
+normal;font-variant:normal;text-decoration:none;vertical-align:baseline;whi=
+te-space:pre"><p dir=3D"ltr" style=3D"line-height:1.38;margin-top:0pt;margi=
+n-bottom:0pt" role=3D"presentation"><font size=3D"2"><span style=3D"font-fa=
+mily:Arial,sans-serif;color:rgb(0,0,0);background-color:transparent;font-we=
+ight:400;font-style:normal;font-variant:normal;text-decoration:none;vertica=
+l-align:baseline;white-space:pre-wrap">tl;dr: we=E2=80=99ve been increasing=
+ the number of invites as the launch is going well. </span></font></p></li>=
+</ul></ul></ul><div><br></div><div>Thank you,</div><div>Kelly</div></div><d=
+iv><span class=3D"gmail_signature_prefix">-- </span><br><div dir=3D"ltr" cl=
+ass=3D"gmail_signature" data-smartmail=3D"gmail_signature"><div dir=3D"ltr"=
+><font color=3D"#888888"><div style=3D"font-size:0.9rem"> <b>Kelly McSweene=
+y</b> <i>(she, her) [@kellymcs]</i><br>Sr TPM, Engineering<br>
+        <a href=3D"https://www.thunderbird.net" rel=3D"nofollow" target=3D"=
+_blank">Thunderbird</a>
+      </div></font></div></div></div></div>
+
+<p></p>
+
+-- <br />
+You received this message because you are subscribed to the Google Groups &=
+quot;MZLA Team (Staff Only)&quot; group.<br />
+To unsubscribe from this group and stop receiving emails from it, send an e=
+mail to <a href=3D"mailto:mzla-team+unsubscribe@thunderbird.net">mzla-team+=
+unsubscribe@thunderbird.net</a>.<br />
+To view this discussion visit <a href=3D"https://groups.google.com/a/thunde=
+rbird.net/d/msgid/mzla-team/CAGmtRCNkd4ROQwkS-GdR5-NR0ZwCjVWBf-7jtqeyhWh20B=
+nb7g%40mail.gmail.com?utm_medium=3Demail&utm_source=3Dfooter">https://group=
+s.google.com/a/thunderbird.net/d/msgid/mzla-team/CAGmtRCNkd4ROQwkS-GdR5-NR0=
+ZwCjVWBf-7jtqeyhWh20Bnb7g%40mail.gmail.com</a>.<br />
+
+--00000000000078b8e7065680da17--

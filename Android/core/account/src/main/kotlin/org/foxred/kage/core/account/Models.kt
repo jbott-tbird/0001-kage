@@ -93,6 +93,15 @@ data class Email(
     val attachments: List<EmailAttachment>,
     val read: Boolean = false,
     val flagged: Boolean = false,
+    val sender: List<EmailAddress> = emptyList(),
+    val replyTo: List<EmailAddress> = emptyList(),
+    val bcc: List<EmailAddress> = emptyList(),
+    val sentAt: Instant? = null,
+    val messageIds: List<String> = listOfNotNull(messageId),
+    val threadIds: List<String> = emptyList(),
+    val inReplyTo: List<String> = emptyList(),
+    val references: List<String> = emptyList(),
+    val blobId: String? = null,
 )
 
 data class OutgoingAttachment(val filename: String, val mediaType: String, val data: ByteArray)
@@ -112,6 +121,7 @@ data class OutgoingEmail(
 )
 
 enum class FailureKind {
+    CANCELLED,
     AUTHENTICATION,
     CONNECTION,
     PROTOCOL,
@@ -122,3 +132,26 @@ enum class FailureKind {
 
 class MailFailure(val kind: FailureKind, message: String, cause: Throwable? = null) :
     Exception(message, cause)
+
+/** Cursor binds a bounded UID window to a mailbox generation and an exact sync cutoff. */
+data class MessageCursor(
+    val mailbox: String,
+    val uidValidity: Long,
+    val beforeUid: Long,
+    val since: Instant,
+) {
+    init {
+        require(uidValidity > 0 && beforeUid > 0)
+    }
+}
+
+data class MessagePage(val messages: List<Email>, val next: MessageCursor?)
+
+data class MailboxStatus(
+    val uidValidity: Long,
+    val uidNext: Long,
+    val messageCount: Int,
+    val unreadCount: Int,
+)
+
+data class Namespace(val prefix: String, val delimiter: Char, val shared: Boolean = false)

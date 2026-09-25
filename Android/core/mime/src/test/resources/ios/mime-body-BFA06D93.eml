@@ -1,0 +1,1503 @@
+Return-path: <bounce-i2i2-2893365351330880011@mlsend.com>
+Original-recipient: rfc822;user@example.com
+Received: from p00-icloudmta-smtpin-us-east-1a-100-percent-26 by p59-mailgateway-smtp-5b8cf7fd7d-slqkq (mailgateway 2544B77)
+	with SMTP id 39cdacba-5dfa-426a-b594-104f5e295f84 
+	for <user@example.com>; Sat, 6 Dec 2025 01:00:37 GMT
+X-ICLOUD-MAIL-BWL: 1
+X-Apple-MoveToFolder: INBOX 
+X-Apple-Action: WL/INBOX
+X-Apple-UUID: 39cdacba-5dfa-426a-b594-104f5e295f84
+Received: from mail106.on.mlsend.com (mail106.on.mlsend.com [185.249.220.106])
+	by p00-icloudmta-smtpin-us-east-1a-100-percent-26 (Postfix) with ESMTPS id E66C7C0009D
+	for <user@example.com>; Sat,  6 Dec 2025 01:00:30 +0000 (UTC)
+X-ICL-Info: GAtbRVYDBVFFSlVFSgQEUFUKE0oWX1gHVQoPB0UBDldbS1JOVgIEUltIVkFYVVJfFxYTGRtVGwtHEFRaSggPUUZPU0RNAQVRRUFeR0gBByIYFRUSFlQYARoURhEcDUULDRoJGxdCRUwWFgtXClMLFhodAh8dUUUOEAAmGh0eVQ0YWQ4SFF8LDxQQCkZIBhgNG1cLGwtVWAZbGgkaWEBCEEgUBx4UAQZUWxYIWRVcRQcbHUgUF10WBhFEFR4AU1kOGgsVWRtfW1kYFRUSFlQYARoURhoRVAteER1fThtUAVpMGwUUSQBTABdBVBUbUwVbRklSFkEGAFY1FAoEHV5STBYWC0k=
+X-ICL-Score: 2.33303322422
+Authentication-Results: bimi.icloud.com; bimi=skipped reason="insufficient dmarc"
+X-ARC-Info: policy=fail; arc=none; r1=-20; r2=0
+Authentication-Results: arc.icloud.com; arc=none
+Authentication-Results: dmarc.icloud.com; dmarc=pass header.from=sixcolors.com
+X-DMARC-Policy: v=DMARC1; p=none;
+X-DMARC-Info: pass=pass; dmarc-policy=none; s=r0; d=r1; pdomain=sixcolors.com
+Authentication-Results: dkim-verifier.icloud.com; dkim=pass header.d=sixcolors.com header.i=@sixcolors.com header.b=DXlAz4Lc
+Authentication-Results: dkim-verifier.icloud.com; dkim=pass header.d=mlsend.com header.i=@mlsend.com header.b=K3Zuhowf
+Received-SPF: pass (spf.icloud.com: domain of bounce-i2i2-2893365351330880011@mlsend.com designates 185.249.220.106 as permitted sender) receiver=spf.icloud.com; client-ip=185.249.220.106; helo=mail106.on.mlsend.com; envelope-from=bounce-i2i2-2893365351330880011@mlsend.com
+Authentication-Results: spf.icloud.com; spf=pass (spf.icloud.com: domain of bounce-i2i2-2893365351330880011@mlsend.com designates 185.249.220.106 as permitted sender) smtp.mailfrom=bounce-i2i2-2893365351330880011@mlsend.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sixcolors.com; s=ml;
+	t=1764982828; bh=E238QfptvuG9rWRHrcAaZJkm2UU7c7Xt/IxsgIjTHto=;
+	h=Date:To:From:Subject;
+	b=DXlAz4LcgFCz5FXwVXswxlqreL+i290KchYMuQgrkHG9+zOKyR1FnQbPD3K0FqoHr
+	 XG1lfW4uYxuw2QlqfKv1dlW8+wTJKnuojAWfJrt8mG02ICWXCZBbxtpbQ9XkYW/cSD
+	 Kj8aclcrTjVGLTkJNPVxsbpOeULnYCNldA+Lfk+k=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mlsend.com; s=ml;
+	t=1764982828; bh=E238QfptvuG9rWRHrcAaZJkm2UU7c7Xt/IxsgIjTHto=;
+	h=Date:To:From:Reply-To:Subject:Message-ID:List-Unsubscribe:
+	 MIME-Version:Content-Type;
+	b=K3ZuhowfTNZeTUzy1ZWDZdch8th9clkA+XuzCAjWOUArzjjAMXIV7a7DChaAtv2CL
+	 emoao5SwEcb8U8pi4c99MPVbdo3lUR0H2whftbG4LUAltz9M+FJ5Kl2hAt4aTrDvmo
+	 yZGx8VQiuCDB49/8IH0sExGMOYxCqPTMZADQI8xE=
+Received: from (127.0.0.1)
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits)
+	 client-signature RSA-PSS (2048 bits))
+	(Client CN "on.mlsend.com", Issuer "on.mlsend.com" (verified OK))
+	by mail106.on.mlsend.com (Postfix) with ESMTPS id F2F42C00934
+	for <user@example.com>; Sat,  6 Dec 2025 01:00:27 +0000 (UTC)
+Received: from (127.0.0.1)
+	by mail106.on.mlsend.com (Postfix) with ESMTP id E6A48C008CA
+	for <user@example.com>; Sat,  6 Dec 2025 01:00:27 +0000 (UTC)
+Date: Sat, 6 Dec 2025 03:00:27 +0200
+To: user@example.com
+From: Six Colors <members@sixcolors.com>
+Reply-To: Six Colors <members@sixcolors.com>
+Subject: This Week in Apple: When the music stops
+Message-ID: <dd99cd789bcc10ebb82bcc39304a9664@mlsend.com>
+X-Mailer-SubscriberID: 2893365351330880011;i2i2;ba3a547f9d5bcc568e2640b0fc6b2212
+X-Mailru-Msgtype: ba3a547f9d5bcc568e2640b0fc6b2212
+Precedence: bulk
+Feedback-ID: l2i8u9d0i8:ba3a547f9d5bcc568e2640b0fc6b2212:977304813761047482:MailerLite
+List-Unsubscribe-Post: List-Unsubscribe=One-Click
+List-Unsubscribe: <mailto:unsubscribe-2893365351330880011-i2i2-ba3a547f9d5bcc568e2640b0fc6b2212@mlsend.com?body=unsubscribe>, <https://click.mlsend.com/link/c/YT0yODkzMzY1MzUxMzMwODgwMDExJmM9aTJpMiZlPTAmYj0xNTAxNDIyOTY0JmQ9aDZ0OGI0bA==.qV8NCQs5fKQFKSgwyc5If8TSQIXjTBXarfFMpmP7idQ>
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="b1_dd99cd789bcc10ebb82bcc39304a9664"
+X-MANTSH: 1TFkXGB0YEQpZRBdoXFIfBUloXhpmTREKWU0XZEVETxEKWUkXGnEaEBp3BhgfGHE
+ cHB8QGncGGBoGGhEKWV4XbGx5EQpDThdgHXJceGF/RFp8aHl+SW1jU29CB39ffmlGaEETflhkS
+ BEKWFwXGQQaBB8eBRsaGgQdGgQbExIEGxwQGx4aHxoRCl5ZF01LeX5nEQpNXBcbGxsRCkxaF2h
+ tTU1dEQpMRhdNTWsRCkNaFxsSHwQYHhMEGBgaBBsaHBEKQl4XGxEKQkYXZWxPG1hJenoaAUcRC
+ kJHF2xofR9/WmxJTmtrEQpCXBcbEQpeThcbEQpCSxdjf1tQeVBfHmBZbREKQkkXY39bUHlQXx5
+ gWW0RCkJFF2t5SVpvZkV8WmBFEQpCThdjf1tQeVBfHmBZbREKQkwXYVNTe2ZpHXMeT1IRCkJsF
+ 2F+RkNLUkdvbltlEQpCQBdhaGcZW0NtRwVIYREKQlgXZlhsHmFacERGZUwRCkJ4F21/XWEZXkF
+ AbnJjEQpNXhcbEQpaWBcfEQpwaBd6R05QBUV4WmhAExAZGhEKcGgXZFJZY3JnHmBDb30QHhwRC
+ nBoF2x8SHMSeRxgSE9tEB0aEQpwaBdua0IFYm1acFhsWBAeGxEKcGgXbmxtTVNveUV4cnwQGRo
+ RCnBoF2trTHJHckNQY0h9EBkaEQpwaBdheUIaQAVGf29aRxAeGhEKcGgXbR5eQxtacHpnchIQG
+ RoRCnB/F2VDeUN6ZhpmZEcdEBgeEQpwXxdjBRtFTHtkHx9FYhAcGBEKcH0XemhsQVBTW18YTnM
+ QGRoRCnB9F25oaUFie1BMaG97EBkaEQpwfRdgZR9hfQFfR3x6bRAZGhEKcH8XYEVlExleBRh6a
+ X4QGBgRCnBfF2tzYnNcYHhoHXl/EB4cEQpwfRdpTUxMGUtHe39oexAZGhEKcH0XZUYYWENLZk1
+ YE28QGRoRCnB9F2EBQUxvfVhnQVJ5EBkaEQpwfxdtGGtjX3tlUllDYxAZGhEKcF8XZWZffHB5c
+ wFFc0wQGRoRCnB9F29FTm5de0wdQ1pnEBkaEQpwfRdjWkdBHlIeQkIBbBAZGhEKcGwXbk9iBWt
+ uZGloWBsQGRoRCnBDF2tva2t6c2lPZRwBEB8bEQptfhcbEQpYTRdLEQ==
+X-Proofpoint-GUID: J7XvRKUnpVBSTcGIyEh-UuTClBk9TrNb
+X-Proofpoint-ORIG-GUID: J7XvRKUnpVBSTcGIyEh-UuTClBk9TrNb
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMjA2MDAwNSBTYWx0ZWRfXxLQZ+zfUiniE
+ G4RiZ+O95cHv7mDhkLCQhbgIvDZVJ1kZMu7CnH8YxTHrVi9SV4guRMmJSBZDPy6bOHZMmydk6d8
+ XF4nqe9mlq6ie3RHJVdNj1DZjdBtiNMCcdd95UHh146aH5gz9piF7L9psGvwUVeazdvGVNiTCk1
+ +Y1Gx4LxCwzrBGZNCw1Pjtrg1aC7irhqnQtPDXZQd7HA/GwsAJeDhX9zlXwYtoKtW+jU6mUhGUP
+ MMSJi2ebCHwFjVa8oG80lpg9keSfjLUP5FpD1pwkfk9t4FoJsb6VWmcus6wUcXCh/NPiMehHA=
+X-JNJ: AAAAAAAB+kaJEVZvOXdvS5/dbZ3ikYIZ5wqcDOqDbx3KJ645XawjAw6uKoMgPPrV79tLX+fsSZkbyViGr1Yd4IwY94CZOh3TL062CePwV+CECJOHATjcVg9dizYFsbPYO3Wi/PdUDBuYcYW7m4VH2JapY2jsVSmsuaIRym9Det3WF6TArzoh6ak+izbCB24C6ltUVVAl+c+hHWJZpKi+l7NcXy75K0xmJycaHIe4Ca8HwhQMz4Z3L+P4ef1Qn3L+8gv7uhktzcJ3m0lnlXlS4I7jWx7meWW4Alz7hc//0a/iXV6lBiy+9LQEk57m+KzSiCMzo+T26FyHH8tYejq/NqmPRfZUkRrHvXl8rzKgJnq96PLncCpRwzmIfoalW7Ow74iT1g1L4CvxihyzdX794mLzu0vI/ie0d07MkCWn94b872O8Kfa7RKZKzbdd5Bz2u1yrhjke45GvblayqMbVkgDbcvWB6I+iRFXIIg/FNKfhzjLE4E4r59nBK567i6ZCkXCUkNYIRD6fQ2AWoRDKoSkzKY7Ohk3S9JzePAVgI+zoXS1pnOuLvQTnsCSOyleeN6Ii9aF+xWhU3iFJa25Y+UUGh31lAifjdjPIVsb/gt+Q2w8RXc1MYy0XIIGrQk/hrojiOhSjPFPPyFWPr44DaHtxApPoGZPdwjjX8VkJ9Ncj61Df2KzzDAoNwPWVB2RTmdvOFlh+V4a2aFbrk6u+WzCx/s+77ZzEfrM1k7ecNG8Tia2K6PB1V9dyoa+bq8pJQy+t6ttw2BP4Y1zaxD01ymWveJlzUGBVDPC633SIAx8SJ6I5QO0hLz+AUy8r8R+K2JzPfHdj5OQ6gfXDGQ9Xma9fik7r64l0TbGJlDAA1dK4ywEVdTF5mYlQMJzosfCmbFuoBjHJSFQs0t2fpKnrNWa0LHUCoGcBFegHsOxGMxRzdgXFWBRTke99wweq
+
+
+--b1_dd99cd789bcc10ebb82bcc39304a9664
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+Hello,
+
+You have received a newsletter from Six Colors.
+
+However, your email software can't display HTML emails. You can view the =
+newsletter by clicking here:
+
+https://click.mlsend.com/link/c/YT0yODkzMzY1MzUxMzMwODgwMDExJmM9aTJpMiZlP=
+TAmYj0xNTAxNDIyOTYyJmQ9dzBtOXg1dg=3D=3D.TYyhohMRvrQoIR07SKNROdSMPvPqKKdne=
+qLFzs2fOGQ
+
+
+
+You're receiving this newsletter because you have shown interest in Six C=
+olors.
+Not interested anymore? Click here to unsubscribe:
+https://click.mlsend.com/link/c/YT0yODkzMzY1MzUxMzMwODgwMDExJmM9aTJpMiZlP=
+TAmYj0xNTAxNDIyOTY1JmQ9YjN1MXUzcQ=3D=3D.6DPe48dWcxU5Gg39_HJFevargHKR46Jgz=
+HifyA0lCb4
+
+
+--b1_dd99cd789bcc10ebb82bcc39304a9664
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html lang=3D"en">
+ =20
+  <head>
+    <!--[if gte mso 9]>
+      <xml>
+        <o:OfficeDocumentsettings>
+          <o:AllowPNG/>
+          <o:PixelsPerInch>96</o:PixelsPerInch>
+        </o:OfficeDocumentsettings>
+      </xml>
+    <![endif]-->
+    <meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dutf=
+-8">
+    <meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scal=
+e=3D1.0">
+    <meta http-equiv=3D"X-UA-Compatible" content=3D"IE=3Dedge">
+    <meta name=3D"format-detection" content=3D"address=3Dno">
+    <meta name=3D"format-detection" content=3D"telephone=3Dno">
+    <meta name=3D"format-detection" content=3D"email=3Dno">
+    <meta name=3D"x-apple-disable-message-reformatting">    <!--[if !mso]=
+>
+      <!-->
+      <style type=3D"text/css">
+        @import url("https://assets.mlcdn.com/fonts.css?version=3D1764840=
+");
+      </style>
+    <!--<![endif]-->
+    <!--[if mso]>
+      <style type=3D"text/css">
+        .content-MS .content img { width: 560px; }
+      </style>
+    <![endif]-->
+    <!--[if (mso)|(mso 16)]>
+      <style type=3D"text/css">
+        .mlContentButton a { text-decoration: none; }
+      </style>
+    <![endif]-->
+    <!--[if !mso]>
+      <!-- -->
+    <!--<![endif]-->
+    <!--[if (lt mso 16)]>
+      <style type=3D"text/css" if=3D"variable.bodyBackgroundImage.value">
+        .mlBodyBackgroundImage { background-image: none; }
+      </style>
+    <![endif]-->
+    <style type=3D"text/css">
+      .ReadMsgBody { width: 100%; }
+      .ExternalClass{ width: 100%; }
+      .ExternalClass * { line-height: 100%; }
+      .ExternalClass, .ExternalClass p, .ExternalClass td, .ExternalClass=
+ div, .ExternalClass span, .ExternalClass font { line-height:100%; }
+      body { margin: 0; padding: 0; }
+      body, table, td, p, a, li { -webkit-text-size-adjust: 100%; -ms-tex=
+t-size-adjust: 100%; }
+      table td { border-collapse: collapse; }
+      table { border-spacing: 0; border-collapse: collapse; }
+      p, a, li, td, blockquote { mso-line-height-rule: exactly; }
+      p, a, li, td, body, table, blockquote { -ms-text-size-adjust: 100%;=
+ -webkit-text-size-adjust: 100%; }
+      img, a img { border: 0; outline: none; text-decoration: none; }
+      img { -ms-interpolation-mode: bicubic; }
+      * img[tabindex=3D"0"] + div { display: none !important; }
+      a[href^=3Dtel],a[href^=3Dsms],a[href^=3Dmailto], a[href^=3Ddate] { =
+color: inherit; cursor: pointer; text-decoration: none; }
+      a[x-apple-data-detectors]{ color: inherit!important; text-decoratio=
+n: none!important; font-size: inherit!important; font-family: inherit!imp=
+ortant; font-weight: inherit!important; line-height: inherit!important; }
+      #MessageViewBody a { color: inherit; text-decoration: none; font-si=
+ze: inherit; font-family: inherit; font-weight: inherit; line-height: inh=
+erit; }
+      #MessageViewBody { width: 100% !important; }
+      #MessageWebViewDiv { width: 100% !important; }
+      @-moz-document url-prefix() {
+      .bodyText p a, .bodyTitle p a {
+      word-break: break-word;
+      }
+      }
+      @media screen {
+      body {
+      font-family: 'Poppins', sans-serif;
+      }
+      * {
+      direction: ltr;
+      }
+      }
+      @media only screen and (min-width:768px){
+      .mlEmailContainer{
+      width: 640px!important;
+      }
+      }
+      @media only screen and (max-width: 640px) {
+      .mlTemplateContainer {
+      padding: 10px 10px 0 10px;
+      }
+      } @media only screen and (max-width: 640px) {
+      .mlTemplateContainer{
+      padding: 10px 10px 0 10px;
+      }
+      } @media only screen and (max-width: 640px) {
+      .mlContentCenter{
+      min-width: 10%!important;
+      margin: 0!important;
+      float: none!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .mlContentTable{
+      width: 100%!important;
+      min-width: 10%!important;
+      margin: 0!important;
+      float: none!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .mlContentBlock{
+      display: block !important;
+      width: 100%!important;
+      min-width: 10%!important;
+      margin: 0!important;
+      float: none!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .mlContentOuter{
+      padding-bottom: 0px!important;
+      padding-left: 15px!important;
+      padding-right: 15px!important;
+      padding-top: 0px!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .mlContentOuterSmall{
+      padding-bottom: 0px!important;
+      padding-left: 10px!important;
+      padding-right: 10px!important;
+      padding-top: 0px!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .mlMenuOuter{
+      padding-bottom: 0px!important;
+      padding-left: 5px!important;
+      padding-right: 5px!important;
+      padding-top: 0px!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .mlContentOuterFullBig{
+      padding: 30px!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .mlContentImage img {
+      height: auto!important;
+      width: 100%!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .mlContentImage160 img {
+      height: auto!important;
+      max-width: 160px;
+      width: 100%!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .mlContentImage260 img {
+      height: auto!important;
+      max-width: 260px;
+      width: 100%!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .mlContentImage{
+      height: 100%!important;
+      width: auto!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .mlProductImage{
+      height: auto!important;
+      width: 100%!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .mlContentButton a{
+      display: block!important;
+      width: auto!important;
+      }
+      }
+      @media only screen and (max-width: 640px) {
+      .mobileHide{
+      display: none!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .mobileShow{
+      display: block!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .alignCenter{
+      height: auto!important;
+      text-align: center!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .alignCenter img{
+      display: inline !important;
+      text-align: center!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .marginBottom{
+      margin-bottom: 15px!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .marginTop {
+      margin-top: 10px !important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .mlContentHeight{
+      height: auto!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .mlDisplayInline {
+      display: inline-block!important;
+      float: none!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .mlNoFloat{
+      float: none!important;
+      margin-left: auto!important;
+      margin-right: auto!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .mlContentSurvey{
+      float: none!important;
+      margin-bottom: 10px!important;
+      width:100%!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .mlContentSurvey td a{
+      width: auto!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .multiple-choice-item-table{
+      width: 100% !important;
+      margin-bottom: 20px !important;
+      min-width: 10% !important;
+      float: none !important;
+      }
+      } @media only screen and (max-width: 640px) {
+      body{
+      margin: 0px!important;
+      padding: 0px!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      body, table, td, p, a, li, blockquote{
+      -webkit-text-size-adjust: none!important;
+      }
+      }
+      @media only screen and (max-width: 480px){
+      .social-LinksTable{
+      width: 100%!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .social-LinksTable td:first-child{
+      padding-left: 0px!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .social-LinksTable td:last-child{
+      padding-right: 0px!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .social-LinksTable td{
+      padding: 0 10px!important;
+      }
+      } @media only screen and (max-width: 640px) {
+      .social-LinksTable td img{
+      height: auto!important;
+      max-width: 48px;
+      width: 100%!important;
+      }
+      }
+      /* Carousel style */
+      @media screen and (-webkit-min-device-pixel-ratio: 0) {
+      .webkit {
+      display: block !important;
+      }
+      }  @media screen and (-webkit-min-device-pixel-ratio: 0) {
+      .non-webkit {
+      display: none !important;
+      }
+      }  @media screen and (-webkit-min-device-pixel-ratio: 0) {
+      /* TARGET OUTLOOK.COM */
+      [class=3D"x_non-webkit"] {
+      display: block !important;
+      }
+      }  @media screen and (-webkit-min-device-pixel-ratio: 0) {
+      [class=3D"x_webkit"] {
+      display: none !important;
+      }
+      }
+    </style>
+    <!--[if mso]>
+      <style type=3D"text/css">
+        .bodyText { font-family: Arial, Helvetica, sans-serif!important ;=
+ }
+        .bodyText * { font-family: Arial, Helvetica, sans-serif!important=
+; }
+        .bodyText a { font-family: Arial, Helvetica, sans-serif!important=
+; }
+        .bodyText a span { font-family: Arial, Helvetica, sans-serif!impo=
+rtant; }
+        .bodyText span { font-family: Arial, Helvetica, sans-serif!import=
+ant; }
+        .bodyText p { font-family: Arial, Helvetica, sans-serif!important=
+; }
+        .bodyText ul li { font-family: Arial, Helvetica, sans-serif!impor=
+tant; }
+        .bodyTitle { font-family: Arial, Helvetica, sans-serif!important =
+; }
+        .bodyTitle * { font-family: Arial, Helvetica, sans-serif!importan=
+t; }
+        .bodyTitle a { font-family: Arial, Helvetica, sans-serif!importan=
+t; }
+        .bodyTitle a span { font-family: Arial, Helvetica, sans-serif!imp=
+ortant; }
+        .bodyTitle span { font-family: Arial, Helvetica, sans-serif!impor=
+tant; }
+        .bodyTitle p { font-family: Arial, Helvetica, sans-serif!importan=
+t; }
+        .bodyFont { font-family: Arial, Helvetica, sans-serif!important ;=
+ }
+        .bodyFont * { font-family: Arial, Helvetica, sans-serif!important=
+; }
+        .bodyFont a { font-family: Arial, Helvetica, sans-serif!important=
+; }
+        .bodyFont a span { font-family: Arial, Helvetica, sans-serif!impo=
+rtant; }
+        .bodyFont span { font-family: Arial, Helvetica, sans-serif!import=
+ant; }
+        .bodyFont p { font-family: Arial, Helvetica, sans-serif!important=
+; }
+        .mlContentButton { font-family: Arial, Helvetica, sans-serif!impo=
+rtant; }
+      </style>
+    <![endif]-->
+    <style type=3D"text/css">
+      @media only screen and (max-width: 640px){
+      #logoBlock-4 {
+      max-width: 560px!important;
+      width: 100%!important;
+      }
+      }
+    </style>
+    <style type=3D"text/css">
+      @media only screen and (max-width: 640px){
+      #content-9 .content img {
+      height: auto !important;
+      min-width: 1px!important;
+      width: 100% !important;
+      }
+      #content-9 .excerpts img {
+      height: auto !important;
+      max-width: 560px!important;
+      width: 100% !important;
+      padding-left: 0px!important;
+      right: 0px!important;
+      }
+      #content-9 .excerpts td {
+      padding-left: 0px!important;
+      padding-right: 0px!important;
+      padding-bottom: 20px!important;
+      }
+      #content-9 .featured-image img {
+      height: auto !important;
+      min-width: 1px!important;
+      width: 100% !important;
+      }
+      }
+    </style>
+    <style type=3D"text/css">
+      .date-9 a {
+      color: #6f6f6f;
+      text-decoration: none;
+      }
+    </style>
+    <style type=3D"text/css">
+      @media only screen and (max-width: 640px) {
+      .mlBorderBottom {
+      border-bottom: 1px solid #ededf3;
+      padding-bottom: 15px!important;
+      }
+      }
+    </style>
+    <style type=3D"text/css">
+      @media only screen and (max-width: 640px){
+      #content-11 .content img {
+      height: auto !important;
+      min-width: 1px!important;
+      width: 100% !important;
+      }
+      #content-11 .excerpts img {
+      height: auto !important;
+      max-width: 560px!important;
+      width: 100% !important;
+      padding-left: 0px!important;
+      right: 0px!important;
+      }
+      #content-11 .excerpts td {
+      padding-left: 0px!important;
+      padding-right: 0px!important;
+      padding-bottom: 20px!important;
+      }
+      #content-11 .featured-image img {
+      height: auto !important;
+      min-width: 1px!important;
+      width: 100% !important;
+      }
+      }
+    </style>
+    <style type=3D"text/css">
+      .date-11 a {
+      color: #6f6f6f;
+      text-decoration: none;
+      }
+    </style>
+    <style type=3D"text/css">
+      @media only screen and (max-width: 640px) {
+      .mlBorderBottom {
+      border-bottom: 1px solid #ededf3;
+      padding-bottom: 15px!important;
+      }
+      }
+    </style>
+    <style type=3D"text/css">
+      @media only screen and (max-width: 640px){
+      #content-13 .content img {
+      height: auto !important;
+      min-width: 1px!important;
+      width: 100% !important;
+      }
+      #content-13 .excerpts img {
+      height: auto !important;
+      max-width: 560px!important;
+      width: 100% !important;
+      padding-left: 0px!important;
+      right: 0px!important;
+      }
+      #content-13 .excerpts td {
+      padding-left: 0px!important;
+      padding-right: 0px!important;
+      padding-bottom: 20px!important;
+      }
+      #content-13 .featured-image img {
+      height: auto !important;
+      min-width: 1px!important;
+      width: 100% !important;
+      }
+      }
+    </style>
+    <style type=3D"text/css">
+      .date-13 a {
+      color: #6f6f6f;
+      text-decoration: none;
+      }
+    </style>
+    <style type=3D"text/css">
+      @media only screen and (max-width: 640px) {
+      .mlBorderBottom {
+      border-bottom: 1px solid #ededf3;
+      padding-bottom: 15px!important;
+      }
+      }
+    </style>
+    <style type=3D"text/css">
+      @media only screen and (max-width: 640px){
+      #logoBlock-17 {
+      max-width: 127.49003984063745px!important;
+      width: 100%!important;
+      height: auto!important;
+      }
+      }
+    </style>
+    <title>This Week in Apple: When the music stops</title>
+    <meta name=3D"robots" content=3D"noindex, nofollow">
+  </head>
+ =20
+  <body class=3D"mlBodyBackground" style=3D"padding: 0; margin: 0; -webki=
+t-font-smoothing:antialiased; background-color:#f6f8f9; -webkit-text-size=
+-adjust:none;">
+    <!-- Make your email an accessible article. -->
+    <div role=3D"article" aria-roledescription=3D"email" aria-label=3D"Th=
+is+Week+in+Apple%3A+When+the+music+stops">
+      <!--[if !mso]>
+        <!-- -->
+        <table width=3D"100%" border=3D"0" cellspacing=3D"0" cellpadding=3D=
+"0" bgcolor=3D"#f6f8f9" class=3D"mainTable mlBodyBackground" dir=3D"ltr" =
+background=3D"">
+          <tr>
+            <td class=3D"mlTemplateContainer" align=3D"center">
+            <!--<![endif]-->
+            <!--[if mso 16]>
+              <table width=3D"100%" border=3D"0" cellspacing=3D"0" cellpa=
+dding=3D"0" align=3D"center">
+                <tr>
+                  <td bgcolor=3D"#f6f8f9" align=3D"center">
+                  <!--<![endif]-->
+                  <!-- Content starts here -->
+                  <!-- BORDER RADIUS FOR CARDS LAYOUT -->
+                  <!-- BORDER RADIUS FOR DEFAULT LAYOUT -->
+                  <table cellpadding=3D"0" cellspacing=3D"0" border=3D"0"=
+ align=3D"center" width=3D"640" style=3D"width: 640px; min-width: 640px;"=
+ class=3D"mlContentTable">
+                    <tr>
+                      <td align=3D"center">
+                        <table cellpadding=3D"0" cellspacing=3D"0" border=
+=3D"0" align=3D"center" width=3D"640" style=3D"width: 640px; min-width: 6=
+40px;" class=3D"mlContentTable">
+                          <tr>
+                            <td colspan=3D"2" height=3D"20"></td>
+                          </tr>
+                          <tr>
+                            <td style=3D"font-family: 'Poppins', sans-ser=
+if; font-size:0px;color:#f6f8f9;line-height:0px;max-height:0px;max-width:=
+0px;opacity:0;overflow:hidden;mso-hide:all;">
+                              <div style=3D"display:none;font-size:0px;co=
+lor:#f6f8f9;line-height:0px;max-height:0px;max-width:0px;opacity:0;overfl=
+ow:hidden;mso-hide:all;"></div>
+                            </td>
+                            <td align=3D"right" style=3D"font-family: 'Po=
+ppins', sans-serif; color: #111111; font-size: 12px; line-height: 18px;">
+                              <a style=3D"color: #111111;" href=3D"https:=
+//click.mlsend.com/link/c/YT0yODkzMzY1MzUxMzMwODgwMDExJmM9aTJpMiZlPTAmYj0=
+xNTAxNDIyODQ0JmQ9aTB4NXU1cw=3D=3D.uTuvsDKJGTK-J9RDmpdiATMqCFXqBYm13MYUEuO=
+MP-k" data-link-id=3D"1501422844" target=3D"_blank">View in browser</a>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan=3D"2" height=3D"20"></td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <table align=3D"center" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" class=3D"mlContentTable" width=3D"640">
+                    <tr>
+                      <td>
+                        <!--  -->
+                        <table align=3D"center" border=3D"0" bgcolor=3D"#=
+ffffff" class=3D"mlContentTable mlContentTableDefault" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"640">
+                          <tr>
+                            <td class=3D"mlContentTableCardTd">
+                              <table align=3D"center" bgcolor=3D"#ffffff"=
+ border=3D"0" cellpadding=3D"0" cellspacing=3D"0" class=3D"mlContentTable=
+ ml-default" style=3D"width: 640px; min-width: 640px;" width=3D"640">
+                                <tr>
+                                  <td>
+                                    <table role=3D"presentation" cellpadd=
+ing=3D"0" cellspacing=3D"0" border=3D"0" align=3D"center" width=3D"640" s=
+tyle=3D"width: 640px; min-width: 640px;" class=3D"mlContentTable">
+                                      <tr>
+                                        <td align=3D"center" style=3D"pad=
+ding: 0px 40px;" class=3D"mlContentOuter">
+                                          <table role=3D"presentation" ce=
+llpadding=3D"0" cellspacing=3D"0" border=3D"0" align=3D"center" width=3D"=
+100%">
+                                            <tr>
+                                              <td align=3D"center">
+                                                <img src=3D"https://bucke=
+t.mlcdn.com/a/2977/2977435/images/aae3f902d678364df5336b176899f36eefc7f12=
+d.jpeg/99403bcfe780af22cb3847cf5fff80abda911c6e.jpeg" id=3D"logoBlock-4" =
+border=3D"0" alt=3D"Six Colors" width=3D"560" style=3D"display: block;">
+                                              </td>
+                                            </tr>
+                                          </table>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                        <!--  -->
+                        <!--  -->
+                        <table align=3D"center" border=3D"0" bgcolor=3D"#=
+ffffff" class=3D"mlContentTable mlContentTableDefault" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"640">
+                          <tr>
+                            <td class=3D"mlContentTableCardTd">
+                              <table align=3D"center" bgcolor=3D"#ffffff"=
+ border=3D"0" cellpadding=3D"0" cellspacing=3D"0" class=3D"mlContentTable=
+ ml-default" style=3D"width: 640px; min-width: 640px;" width=3D"640">
+                                <tr>
+                                  <td>
+                                    <table role=3D"presentation" cellpadd=
+ing=3D"0" cellspacing=3D"0" border=3D"0" align=3D"center" width=3D"640" s=
+tyle=3D"width: 640px; min-width: 640px;" class=3D"mlContentTable">
+                                      <tr>
+                                        <td height=3D"20" class=3D"spacin=
+gHeight-20" style=3D"line-height: 20px; min-height: 20px;"></td>
+                                      </tr>
+                                    </table>
+                                    <table role=3D"presentation" width=3D=
+"640" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" align=3D"center" c=
+lass=3D"mlContentTable" style=3D"width: 640px; min-width: 640px;">
+                                      <tr>
+                                        <td align=3D"center" class=3D"mlC=
+ontentOuter rss-items-container-6">
+                                          <table role=3D"presentation" ce=
+llpadding=3D"0" cellspacing=3D"0" border=3D"0" align=3D"center" width=3D"=
+560" style=3D"width: 560px; min-width: 560px;" class=3D"mlContentTable">
+                                            <tr>
+                                              <td align=3D"center">
+                                                <!--[if !mso]>
+                                                  <!-- -->
+                                                  <table role=3D"presenta=
+tion" width=3D"560" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" alig=
+n=3D"center" class=3D"mlContentBlock" style=3D"width: 560px; min-width: 5=
+60px;">
+                                                  <!--<![endif]-->
+                                                  <!--[if mso]>
+                                                    <table role=3D"presen=
+tation" width=3D"560" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" al=
+ign=3D"center" style=3D"width: 560px; min-width: 560px;">
+                                                    <![endif]-->
+                                                    <tr>
+                                                      <td align=3D"center=
+" class=3D"">
+                                                        <table role=3D"pr=
+esentation" cellpadding=3D"0" cellspacing=3D"0" border=3D"0" align=3D"cen=
+ter" width=3D"100%">
+                                                          <tr>
+                                                            <td align=3D"=
+left" style=3D"font-family: 'Open Sans', Arial, Helvetica, sans-serif; co=
+lor: #28a745; text-transform: none; font-style: normal; text-decoration: =
+none;  font-size: 17px; font-weight: 700; line-height: 150%;" class=3D"bo=
+dyTitle">
+                                                              <a href=3D"=
+https://click.mlsend.com/link/c/YT0yODkzMzY1MzUxMzMwODgwMDExJmM9aTJpMiZlP=
+TAmYj0xNTAxNDIyODQ1JmQ9bDltMnY2ZA=3D=3D.JKBLcdCBpeVOaK2rQ_tkZF3ilhyiq_Kmr=
+LjzUZxGVtI" data-link-id=3D"1501422845" style=3D"color: #28a745; text-tra=
+nsform: none; font-style: normal; text-decoration: none;  mso-line-height=
+-rule: exactly; text-decoration: none;" target=3D"">Six Colors newsletter=
+ for December 5, 2025</a>
+                                                            </td>
+                                                          </tr>
+                                                          <tr>
+                                                            <td height=3D=
+"10" style=3D"line-height: 10px;"></td>
+                                                          </tr>
+                                                          <tr>
+                                                            <td align=3D"=
+left" style=3D"font-family: 'Open Sans', Arial, Helvetica, sans-serif; co=
+lor: #000000; font-size: 15px;" class=3D"bodyText content-MS content" id=3D=
+"content-9">
+                                                              <div class=3D=
+"content">
+                                                                <p style=3D=
+"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; color: #=
+000000; line-height: 150%;">What&#039;s inside:</p>
+                                                                <ul style=
+=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px;">
+                                                                  <li sty=
+le=3D"margin-top: 0px; margin-bottom: 5px; margin: 0px 0px 5px 0px; line-=
+height: 150%; color: #000000;">This Week in Apple: When the music stops</=
+li>
+                                                                  <li sty=
+le=3D"margin-top: 0px; margin-bottom: 5px; margin: 0px 0px 5px 0px; line-=
+height: 150%; color: #000000;">Podcasts from us</li>
+                                                                </ul>
+                                                              </div>
+                                                            </td>
+                                                          </tr>
+                                                        </table>
+                                                      </td>
+                                                    </tr>
+                                                    </table>
+                                                    <table role=3D"presen=
+tation" cellpadding=3D"0" cellspacing=3D"0" border=3D"0" align=3D"center"=
+ width=3D"100%">
+                                                      <tr>
+                                                        <td align=3D"cent=
+er">
+                                                          <table role=3D"=
+presentation" cellpadding=3D"0" border=3D"0" align=3D"center" width=3D"10=
+0%">
+                                                            <tr>
+                                                              <td height=3D=
+"40" class=3D"spacingHeight-30"></td>
+                                                            </tr>
+                                                          </table>
+                                                        </td>
+                                                      </tr>
+                                                    </table>
+                                                    <!--[if !mso]>
+                                                      <!-- -->
+                                                      <table role=3D"pres=
+entation" width=3D"560" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" =
+align=3D"center" class=3D"mlContentBlock" style=3D"width: 560px; min-widt=
+h: 560px;">
+                                                      <!--<![endif]-->
+                                                      <!--[if mso]>
+                                                        <table role=3D"pr=
+esentation" width=3D"560" border=3D"0" cellpadding=3D"0" cellspacing=3D"0=
+" align=3D"center" style=3D"width: 560px; min-width: 560px;">
+                                                        <![endif]-->
+                                                        <tr>
+                                                          <td align=3D"ce=
+nter" class=3D"">
+                                                            <table role=3D=
+"presentation" cellpadding=3D"0" cellspacing=3D"0" border=3D"0" align=3D"=
+center" width=3D"100%">
+                                                              <tr>
+                                                                <td align=
+=3D"left" style=3D"font-family: 'Open Sans', Arial, Helvetica, sans-serif=
+; color: #28a745; text-transform: none; font-style: normal; text-decorati=
+on: none;  font-size: 17px; font-weight: 700; line-height: 150%;" class=3D=
+"bodyTitle">
+                                                                  <a href=
+=3D"https://click.mlsend.com/link/c/YT0yODkzMzY1MzUxMzMwODgwMDExJmM9aTJpM=
+iZlPTAmYj0xNTAxNDIyODQ2JmQ9aTlkOWw5bw=3D=3D.sNG40WKsGdn50M8VmOBJmOkpdYFGa=
+O60MC3Dzkxfrzw" data-link-id=3D"1501422846" style=3D"color: #28a745; text=
+-transform: none; font-style: normal; text-decoration: none;  mso-line-he=
+ight-rule: exactly; text-decoration: none;" target=3D"">This Week In Appl=
+e</a>
+                                                                </td>
+                                                              </tr>
+                                                              <tr>
+                                                                <td heigh=
+t=3D"10" style=3D"line-height: 10px;"></td>
+                                                              </tr>
+                                                              <tr>
+                                                                <td align=
+=3D"left" style=3D"font-family: 'Open Sans', Arial, Helvetica, sans-serif=
+; color: #000000; font-size: 15px;" class=3D"bodyText content-MS content"=
+ id=3D"content-11">
+                                                                  <div cl=
+ass=3D"content">
+                                                                    <img =
+src=3D"https://mt.sixcolors.com/images/moltz.jpg" alt=3D"This Week In App=
+le" style=3D"width: 560px; height: auto; margin-bottom: 10px; float: none=
+;" width=3D"560">
+                                                                    <h2 s=
+tyle=3D"color: #28a745; text-transform: none; font-style: normal; text-de=
+coration: none; font-size: 18px; line-height: 150%; margin-bottom: 10px; =
+margin-top: 0px;">When the music stops</h2>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;"><strong> by John Moltz</strong></p>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">It=E2=80=99s the =E2=80=9COops, All App=
+le Executives!=E2=80=9D edition of This Week in Apple.</p>
+                                                                    <h2 s=
+tyle=3D"color: #28a745; text-transform: none; font-style: normal; text-de=
+coration: none; font-size: 18px; line-height: 150%; margin-bottom: 10px; =
+margin-top: 0px;">We no longer have to rage against the Dye-ing of the li=
+ght</h2>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">Breaking the week=E2=80=99s big news on=
+ Mastodon, <a href=3D"https://click.mlsend.com/link/c/YT0yODkzMzY1MzUxMzM=
+wODgwMDExJmM9aTJpMiZlPTAmYj0xNTAxNDIyODQ3JmQ9bjVqNngwZw=3D=3D.PjtMOmqhiEN=
+gFmp9mjEnG8rVsFxkv6KAIYfQvLevHp8" data-link-id=3D"1501422847" target=3D"_=
+blank" style=3D"word-break: break-word; font-family: 'Open Sans', Arial, =
+Helvetica, sans-serif; color: #09c269; text-decoration: underline;"><em>B=
+loomberg</em>=E2=80=99s Mark Gurman said</a>:</p>
+                                                                    <bloc=
+kquote>
+                                                                      <p =
+style=3D"margin-top: 0px; margin-bottom: 0px; margin: 0px 0px 0px 0px; co=
+lor: #000000; line-height: 150%;">Apple=E2=80=99s top design executive Al=
+an Dye is leaving the iPhone maker to become the Chief Design Officer at =
+Meta in a blockbuster coup for the social networking giant and big loss f=
+or Apple.</p>
+                                                                    </blo=
+ckquote>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">Did=E2=80=A6 Alan Dye ghost write that?=
+ I=E2=80=99m not sure if Gurman polled the Apple community about this but=
+, despite this supposed =E2=80=9Cbig loss=E2=80=9D, people seem just shor=
+t of giddy about it.</p>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;"><a href=3D"https://click.mlsend.com/lin=
+k/c/YT0yODkzMzY1MzUxMzMwODgwMDExJmM9aTJpMiZlPTAmYj0xNTAxNDIyODQ4JmQ9dzJnM=
+2s2cQ=3D=3D.U7IEgiF4hwzXwJS5hIUAr-NRuX4lo-fiNfFIjQnjhM0" data-link-id=3D"=
+1501422848" target=3D"_blank" style=3D"word-break: break-word; font-famil=
+y: 'Open Sans', Arial, Helvetica, sans-serif; color: #09c269; text-decora=
+tion: underline;">Louie Mantia:</a></p>
+                                                                    <bloc=
+kquote>
+                                                                      <p =
+style=3D"margin-top: 0px; margin-bottom: 0px; margin: 0px 0px 0px 0px; co=
+lor: #000000; line-height: 150%;">Alan Dye may have left for a more lucra=
+tive offer from Meta, but this is absolutely a good thing for Apple=E2=80=
+=A6</p>
+                                                                    </blo=
+ckquote>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;"><a href=3D"https://click.mlsend.com/lin=
+k/c/YT0yODkzMzY1MzUxMzMwODgwMDExJmM9aTJpMiZlPTAmYj0xNTAxNDIyODQ5JmQ9cTBlN=
+XI2cw=3D=3D.WGXPkJgf8jcynHzl10MCYuQdLbRPmoINeWILeFD4Ldc" data-link-id=3D"=
+1501422849" target=3D"_blank" style=3D"word-break: break-word; font-famil=
+y: 'Open Sans', Arial, Helvetica, sans-serif; color: #09c269; text-decora=
+tion: underline;">Chan Karunamuni:</a></p>
+                                                                    <bloc=
+kquote>
+                                                                      <p =
+style=3D"margin-top: 0px; margin-bottom: 0px; margin: 0px 0px 0px 0px; co=
+lor: #000000; line-height: 150%;">=E2=80=A6I could not be more excited fo=
+r this new era.</p>
+                                                                    </blo=
+ckquote>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;"><a href=3D"https://click.mlsend.com/lin=
+k/c/YT0yODkzMzY1MzUxMzMwODgwMDExJmM9aTJpMiZlPTAmYj0xNTAxNDIyODUwJmQ9ejB3M=
+Gc5Zg=3D=3D.NieV0h54CWB3gvQN19Z_ipsXZJUm9rcmIpnnp8npXp8" data-link-id=3D"=
+1501422850" target=3D"_blank" style=3D"word-break: break-word; font-famil=
+y: 'Open Sans', Arial, Helvetica, sans-serif; color: #09c269; text-decora=
+tion: underline;">Nick Heer:</a></p>
+                                                                    <bloc=
+kquote>
+                                                                      <p =
+style=3D"margin-top: 0px; margin-bottom: 0px; margin: 0px 0px 0px 0px; co=
+lor: #000000; line-height: 150%;">Dye personally launches an overhaul of =
+Apple=E2=80=99s entire visual interface language, then leaves. Is that a =
+good sign for its reception, either internally or externally?</p>
+                                                                    </blo=
+ckquote>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;"><a href=3D"https://click.mlsend.com/lin=
+k/c/YT0yODkzMzY1MzUxMzMwODgwMDExJmM9aTJpMiZlPTAmYj0xNTAxNDIyODUxJmQ9aDl2O=
+HE1aQ=3D=3D.aSWVrd4crVmK-9a_ZS_BbC_9a9lCek2wHtZc7ZlVoFY" data-link-id=3D"=
+1501422851" target=3D"_blank" style=3D"word-break: break-word; font-famil=
+y: 'Open Sans', Arial, Helvetica, sans-serif; color: #09c269; text-decora=
+tion: underline;">John Gruber:</a></p>
+                                                                    <bloc=
+kquote>
+                                                                      <p =
+style=3D"margin-top: 0px; margin-bottom: 0px; margin: 0px 0px 0px 0px; co=
+lor: #000000; line-height: 150%;">=E2=80=A6I think this is the best perso=
+nnel news at Apple in decades</p>
+                                                                    </blo=
+ckquote>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;"><a href=3D"https://click.mlsend.com/lin=
+k/c/YT0yODkzMzY1MzUxMzMwODgwMDExJmM9aTJpMiZlPTAmYj0xNTAxNDIyODUzJmQ9ejBnO=
+Hg1YQ=3D=3D.Uu0P7W00lgNuz00R11I02ZkCQBBr60wUynTQV-duP3Y" data-link-id=3D"=
+1501422853" target=3D"_blank" style=3D"word-break: break-word; font-famil=
+y: 'Open Sans', Arial, Helvetica, sans-serif; color: #09c269; text-decora=
+tion: underline;">Jason Snell:</a></p>
+                                                                    <bloc=
+kquote>
+                                                                      <p =
+style=3D"margin-top: 0px; margin-bottom: 0px; margin: 0px 0px 0px 0px; co=
+lor: #000000; line-height: 150%;">=E2=80=A6I think Alan Dye=E2=80=99s dep=
+arture is a major coup for Apple.</p>
+                                                                    </blo=
+ckquote>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">Me:</p>
+                                                                    <bloc=
+kquote>
+                                                                      <p =
+style=3D"margin-top: 0px; margin-bottom: 0px; margin: 0px 0px 0px 0px; co=
+lor: #000000; line-height: 150%;">Do not let the door hit you=E2=80=A6 [l=
+ong pause]=E2=80=A6 a-where the Good Lord split you. [flourish]</p>
+                                                                    </blo=
+ckquote>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">I didn=E2=80=99t actually write that an=
+ywhere, I just said it in my head.</p>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">I did do the flourish, though, because =
+I=E2=80=99m fancy like that.</p>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">While some may speculate whether or Dye=
+=E2=80=99s departure was due to him taking heat for Liquid Glass or those=
+ horrible, horrible icons (simply the worst), it=E2=80=99s more likely an=
+y heat he=E2=80=99s been feeling is just from the friction generated by a=
+ll the money Meta is surely throwing at him.</p>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">Can you guess what he=E2=80=99s going t=
+o be working on? Can you? Its starts with an =E2=80=9CA=E2=80=9D.</p>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">No? Second letter =E2=80=9CI=E2=80=9D?<=
+/p>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">Which also happens to be the last lette=
+r?</p>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">Still no?</p>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">Seriously, how are you not getting this=
+?</p>
+                                                                    <h2 s=
+tyle=3D"color: #28a745; text-transform: none; font-style: normal; text-de=
+coration: none; font-size: 18px; line-height: 150%; margin-bottom: 10px; =
+margin-top: 0px;">Culture clubbing</h2>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">Speaking of Meta, while Dye is on his w=
+ay there, Meta=E2=80=99s former chief legal officer, Jennifer Newstead, w=
+ill be <a href=3D"https://click.mlsend.com/link/c/YT0yODkzMzY1MzUxMzMwODg=
+wMDExJmM9aTJpMiZlPTAmYj0xNTAxNDIyODU1JmQ9eTNmN2oycQ=3D=3D.D8IvSmFVkacUmqq=
+6DPx_B2TTwbvOaFGeTnOtpszqyDk" data-link-id=3D"1501422855" target=3D"_blan=
+k" style=3D"word-break: break-word; font-family: 'Open Sans', Arial, Helv=
+etica, sans-serif; color: #09c269; text-decoration: underline;">headed to=
+ Apple</a>. That=E2=80=99s fun!</p>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">Let=E2=80=99s find out some more about =
+Newstead from <a href=3D"https://click.mlsend.com/link/c/YT0yODkzMzY1MzUx=
+MzMwODgwMDExJmM9aTJpMiZlPTAmYj0xNTAxNDIyODU2JmQ9YjlyM2Y0cA=3D=3D.WEuxfiU0=
+b5joxdlMCJas0mL5V9O1j27j12QaI1tGLho" data-link-id=3D"1501422856" target=3D=
+"_blank" style=3D"word-break: break-word; font-family: 'Open Sans', Arial=
+, Helvetica, sans-serif; color: #09c269; text-decoration: underline;">her=
+ Wikipedia entry</a>.</p>
+                                                                    <bloc=
+kquote>
+                                                                      <p =
+style=3D"margin-top: 0px; margin-bottom: 0px; margin: 0px 0px 0px 0px; co=
+lor: #000000; line-height: 150%;">She is credited with helping to draft t=
+he Patriot Act.</p>
+                                                                    </blo=
+ckquote>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">Eeeeeeeeyayyyyyyyy?</p>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">Hang on, just going to go delete my iCl=
+oud account.</p>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">Newstead also served as legal counsel t=
+o the State Department during the first Trump administration, if you were=
+ worried Tim Cook wasn=E2=80=99t doing enough to suck up.</p>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">You should really not worry about that =
+ever.</p>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">Apple=E2=80=99s current general counsel=
+, Kate Adams, will be leaving the company, as will vice president of envi=
+ronment, policy, and social initiatives Lisa Jackson. Jackson=E2=80=99s t=
+eams will report to Apple COO Sabih Kahn.</p>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">That=E2=80=99s not a sign of their dimi=
+nished importance at Apple. <em>You=E2=80=99re</em> a sign of their dimin=
+ished importance at Apple, <em>Carl</em>.</p>
+                                                                    <h2 s=
+tyle=3D"color: #28a745; text-transform: none; font-style: normal; text-de=
+coration: none; font-size: 18px; line-height: 150%; margin-bottom: 10px; =
+margin-top: 0px;">A world of =E2=80=9CNo=E2=80=9D</h2>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">While all this is in motion, one former=
+ Apple exec is trying to jam his foot in the door no matter how hard it=E2=
+=80=99s being slammed on it.</p>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;"><a href=3D"https://click.mlsend.com/lin=
+k/c/YT0yODkzMzY1MzUxMzMwODgwMDExJmM9aTJpMiZlPTAmYj0xNTAxNDIyODU5JmQ9dDJ4M=
+3Yydw=3D=3D.awa5KFd7XFjim24KiUufJfM1G78Hr3pbRViq5i1C-4c" data-link-id=3D"=
+1501422859" target=3D"_blank" style=3D"word-break: break-word; font-famil=
+y: 'Open Sans', Arial, Helvetica, sans-serif; color: #09c269; text-decora=
+tion: underline;">=E2=80=9CTony Fadell, iPod co-creator, might want to be=
+ Apple=E2=80=99s next CEO: report=E2=80=9D</a></p>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">John Ternus seems the likely replacemen=
+t for Cook, but <em>The Information</em> says the annual meeting of the R=
+abble Rousers has occurred and:</p>
+                                                                    <bloc=
+kquote>
+                                                                      <p =
+style=3D"margin-top: 0px; margin-bottom: 0px; margin: 0px 0px 0px 0px; co=
+lor: #000000; line-height: 150%;">Some former Apple executives hope a dar=
+k-horse candidate emerges.</p>
+                                                                    </blo=
+ckquote>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">=E2=80=9CWe=E2=80=99ll call one of them=
+ =E2=80=98Tony F=E2=80=99. =E2=80=A6 No, that=E2=80=99s too obvious. Let=E2=
+=80=99s say =E2=80=98T. Fadell=E2=80=99.=E2=80=9D</p>
+                                                                    <bloc=
+kquote>
+                                                                      <p =
+style=3D"margin-top: 0px; margin-bottom: 0px; margin: 0px 0px 0px 0px; co=
+lor: #000000; line-height: 150%;">For example, Tony Fadell, a former Appl=
+e hardware executive who coinvented the iPod, has told associates recentl=
+y that he would be open to replacing Cook as CEO, according to people who=
+ have heard his remarks.</p>
+                                                                    </blo=
+ckquote>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">=E2=80=9CDAAAAAMN, I sure wanna be Appl=
+e CEO!=E2=80=9D he was heard to remark.</p>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">And I would like to be the god emperor =
+of time and space, Tony. Doesn=E2=80=99t mean it=E2=80=99s gonna happen.<=
+/p>
+                                                                    <bloc=
+kquote>
+                                                                      <p =
+style=3D"margin-top: 0px; margin-bottom: 0px; margin: 0px 0px 0px 0px; co=
+lor: #000000; line-height: 150%;">=E2=80=A6some people close to Apple don=
+=E2=80=99t believe Ternus is ready to take on such a high-profile role=E2=
+=80=A6</p>
+                                                                    </blo=
+ckquote>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">Maybe he is, maybe he isn=E2=80=99t, bu=
+t is Fadell? <em>The Information</em> might want to read <a href=3D"https=
+://click.mlsend.com/link/c/YT0yODkzMzY1MzUxMzMwODgwMDExJmM9aTJpMiZlPTAmYj=
+0xNTAxNDIyODYxJmQ9Zjh4NXk3aw=3D=3D.KaGIklQurNZn8b4W7E7cMLHXIPX7oHZuscGoZG=
+EtIg8" data-link-id=3D"1501422861" target=3D"_blank" style=3D"word-break:=
+ break-word; font-family: 'Open Sans', Arial, Helvetica, sans-serif; colo=
+r: #09c269; text-decoration: underline;">some history on him</a>. I under=
+stand it=E2=80=99s difficult because it=E2=80=99s behind a paywall at, uh=
+, <em>The Information</em>.</p>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">According to <em>The Information</em>=E2=
+=80=99s 2016 piece on the ongoing struggles at Nest, Fadell told co-found=
+er Matt Rogers that if he went on his scheduled honeymoon, he wouldn=E2=80=
+=99t have a job when he returned. Rogers went anyway and Fadell =E2=80=9C=
+did not follow up on his threat=E2=80=9D.</p>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">Hashtag leadership.</p>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">Further, after acquiring Dropcam, Fadel=
+l practiced some more of his loose familiarity with the finer parts of =E2=
+=80=9CHow to Win Friends and Influence People=E2=80=9D.</p>
+                                                                    <bloc=
+kquote>
+                                                                      <p =
+style=3D"margin-top: 0px; margin-bottom: 0px; margin: 0px 0px 0px 0px; co=
+lor: #000000; line-height: 150%;">More than half of the 100 Dropcam emplo=
+yees hired by Nest have now left. In an interview with The Information, M=
+r. Fadell blamed the Dropcam team for the problems with the acquisition. =
+=E2=80=9CA lot of the employees were not as good as we hoped,=E2=80=9D he=
+ said.</p>
+                                                                    </blo=
+ckquote>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">The buck stops with those lousy people =
+we acquired, many of whom dress poorly and none of whom make nearly as mu=
+ch as I do.</p>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px; co=
+lor: #000000; line-height: 150%;">It=E2=80=99s a mystery why Nest was hav=
+ing trouble.</p>
+                                                                    <p st=
+yle=3D"margin-top: 0px; margin-bottom: 0px; margin: 0px 0px 0px 0px; colo=
+r: #000000; line-height: 150%;">Fortunately, <em>former</em> Apple execut=
+ives don=E2=80=99t get to decide who will be the next CEO. In fact, being=
+ <em>former</em> Apple executives might be, in some instances, a good rea=
+son to not take their advice under any circumstances at all.</p>
+                                                                  </div>
+                                                                </td>
+                                                              </tr>
+                                                            </table>
+                                                          </td>
+                                                        </tr>
+                                                        </table>
+                                                        <table role=3D"pr=
+esentation" cellpadding=3D"0" cellspacing=3D"0" border=3D"0" align=3D"cen=
+ter" width=3D"100%">
+                                                          <tr>
+                                                            <td align=3D"=
+center">
+                                                              <table role=
+=3D"presentation" cellpadding=3D"0" border=3D"0" align=3D"center" width=3D=
+"100%">
+                                                                <tr>
+                                                                  <td hei=
+ght=3D"40" class=3D"spacingHeight-30"></td>
+                                                                </tr>
+                                                              </table>
+                                                            </td>
+                                                          </tr>
+                                                        </table>
+                                                        <!--[if !mso]>
+                                                          <!-- -->
+                                                          <table role=3D"=
+presentation" width=3D"560" border=3D"0" cellpadding=3D"0" cellspacing=3D=
+"0" align=3D"center" class=3D"mlContentBlock" style=3D"width: 560px; min-=
+width: 560px;">
+                                                          <!--<![endif]--=
+>
+                                                          <!--[if mso]>
+                                                            <table role=3D=
+"presentation" width=3D"560" border=3D"0" cellpadding=3D"0" cellspacing=3D=
+"0" align=3D"center" style=3D"width: 560px; min-width: 560px;">
+                                                            <![endif]-->
+                                                            <tr>
+                                                              <td align=3D=
+"center" class=3D"">
+                                                                <table ro=
+le=3D"presentation" cellpadding=3D"0" cellspacing=3D"0" border=3D"0" alig=
+n=3D"center" width=3D"100%">
+                                                                  <tr>
+                                                                    <td a=
+lign=3D"left" style=3D"font-family: 'Open Sans', Arial, Helvetica, sans-s=
+erif; color: #28a745; text-transform: none; font-style: normal; text-deco=
+ration: none;  font-size: 17px; font-weight: 700; line-height: 150%;" cla=
+ss=3D"bodyTitle">
+                                                                      <a =
+href=3D"https://click.mlsend.com/link/c/YT0yODkzMzY1MzUxMzMwODgwMDExJmM9a=
+TJpMiZlPTAmYj0xNTAxNDIyODYzJmQ9dTdiMmYwYg=3D=3D.-iDcrxcouQCBh66YYb1kf_FXh=
+JRKEnsCYFyX-CMPBwg" data-link-id=3D"1501422863" style=3D"color: #28a745; =
+text-transform: none; font-style: normal; text-decoration: none;  mso-lin=
+e-height-rule: exactly; text-decoration: none;" target=3D"">Podcasts!</a>
+                                                                    </td>
+                                                                  </tr>
+                                                                  <tr>
+                                                                    <td h=
+eight=3D"10" style=3D"line-height: 10px;"></td>
+                                                                  </tr>
+                                                                  <tr>
+                                                                    <td a=
+lign=3D"left" style=3D"font-family: 'Open Sans', Arial, Helvetica, sans-s=
+erif; color: #000000; font-size: 15px;" class=3D"bodyText content-MS cont=
+ent" id=3D"content-13">
+                                                                      <di=
+v class=3D"content">
+                                                                        <=
+p style=3D"margin-top: 0px; margin-bottom: 10px; margin: 0px 0px 10px 0px=
+; color: #000000; line-height: 150%;">The latest Six Colors members-only =
+podcast is live:</p>
+                                                                        <=
+p style=3D"margin-top: 0px; margin-bottom: 0px; margin: 0px 0px 0px 0px; =
+color: #000000; line-height: 150%;"><strong><a href=3D"https://click.mlse=
+nd.com/link/c/YT0yODkzMzY1MzUxMzMwODgwMDExJmM9aTJpMiZlPTAmYj0xNTAxNDIyODY=
+1JmQ9aTN1OGw4cg=3D=3D.U80o3LvRIPYW2GWu1k8WCer8US7a9ALQAxZN8NwW4sk" data-l=
+ink-id=3D"1501422865" target=3D"_blank" style=3D"word-break: break-word; =
+font-family: 'Open Sans', Arial, Helvetica, sans-serif; color: #09c269; t=
+ext-decoration: underline;">Big changes in Apple leadership</a></strong><=
+br><em>December is the Friday afternoon of the year.</em></p>
+                                                                      </d=
+iv>
+                                                                    </td>
+                                                                  </tr>
+                                                                </table>
+                                                              </td>
+                                                            </tr>
+                                                            </table>
+                                              </td>
+                                            </tr>
+                                            </table>
+                                        </td>
+                                      </tr>
+                                      </table>
+                                      <table role=3D"presentation" cellpa=
+dding=3D"0" cellspacing=3D"0" border=3D"0" align=3D"center" width=3D"640"=
+ style=3D"width: 640px; min-width: 640px;" class=3D"mlContentTable">
+                                        <tr>
+                                          <td height=3D"20" class=3D"spac=
+ingHeight-20" style=3D"line-height: 20px; min-height: 20px;"></td>
+                                        </tr>
+                                      </table>
+                                  </td>
+                                </tr>
+                                </table>
+                            </td>
+                          </tr>
+                          </table>
+                          <!--  -->
+                          <!--  -->
+                          <table align=3D"center" border=3D"0" bgcolor=3D=
+"#ffffff" class=3D"mlContentTable mlContentTableDefault" cellpadding=3D"0=
+" cellspacing=3D"0" width=3D"640">
+                            <tr>
+                              <td class=3D"mlContentTableCardTd">
+                                <table align=3D"center" bgcolor=3D"#fffff=
+f" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" class=3D"mlContentTab=
+le ml-default" style=3D"width: 640px; min-width: 640px;" width=3D"640">
+                                  <tr>
+                                    <td>
+                                      <table role=3D"presentation" cellpa=
+dding=3D"0" cellspacing=3D"0" border=3D"0" align=3D"center" width=3D"640"=
+ style=3D"width: 640px; min-width: 640px;" class=3D"mlContentTable">
+                                        <tr>
+                                          <td height=3D"20" class=3D"spac=
+ingHeight-20" style=3D"line-height: 20px; min-height: 20px;"></td>
+                                        </tr>
+                                      </table>
+                                      <table role=3D"presentation" cellpa=
+dding=3D"0" cellspacing=3D"0" border=3D"0" align=3D"center" width=3D"640"=
+ style=3D"width: 640px; min-width: 640px;" class=3D"mlContentTable">
+                                        <tr>
+                                          <td align=3D"center" class=3D""=
+>
+                                            <table role=3D"presentation" =
+cellpadding=3D"0" cellspacing=3D"0" border=3D"0" align=3D"center" width=3D=
+"100%" style=3D"border-top: 1px solid #ededf3; border-collapse: initial;"=
+ class=3D"">
+                                              <tr>
+                                                <td height=3D"20" class=3D=
+"spacingHeight-20" style=3D"line-height: 20px; min-height: 20px;"></td>
+                                              </tr>
+                                            </table>
+                                          </td>
+                                        </tr>
+                                      </table>
+                                    </td>
+                                  </tr>
+                                </table>
+                              </td>
+                            </tr>
+                          </table>
+                          <!--  -->
+                          <table align=3D"center" border=3D"0" bgcolor=3D=
+"#ffffff" class=3D"mlContentTable mlContentTableFooterDefault" cellpaddin=
+g=3D"0" cellspacing=3D"0" width=3D"640">
+                            <tr>
+                              <td class=3D"mlContentTableFooterCardTd">
+                                <table align=3D"center" bgcolor=3D"#fffff=
+f" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" class=3D"mlContentTab=
+le ml-default" style=3D"width: 640px; min-width: 640px;" width=3D"640">
+                                  <tr>
+                                    <td>
+                                      <table role=3D"presentation" cellpa=
+dding=3D"0" cellspacing=3D"0" border=3D"0" align=3D"center" width=3D"640"=
+ style=3D"width: 640px; min-width: 640px;" class=3D"mlContentTable">
+                                        <tr>
+                                          <td align=3D"center" style=3D"p=
+adding: 0px 40px;" class=3D"mlContentOuter">
+                                            <table role=3D"presentation" =
+cellpadding=3D"0" cellspacing=3D"0" border=3D"0" align=3D"left" class=3D"=
+mlNoFloat marginBottom">
+                                              <tr>
+                                                <td align=3D"center" vali=
+gn=3D"middle" height=3D"25" class=3D"mlContentHeight">
+                                                  <a href=3D"https://clic=
+k.mlsend.com/link/c/YT0yODkzMzY1MzUxMzMwODgwMDExJmM9aTJpMiZlPTAmYj0xNTAxN=
+DIyODY2JmQ9eDB0N244Zg=3D=3D.Ytn70w6KC7UWSvaxGEOgnSinpgjnwk1fiJhsK4aQzcc" =
+data-link-id=3D"1501422866" target=3D"_self"><img src=3D"https://bucket.m=
+lcdn.com/a/2977/2977435/images/6cc5fa6be34ab6cde0b2a5cc1103d7545c5614c2.p=
+ng" id=3D"logoBlock-17" height=3D"25" border=3D"0" alt=3D"Six Colors" sty=
+le=3D"display: block;"></a>
+                                                </td>
+                                              </tr>
+                                            </table>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td height=3D"20" class=3D"spac=
+ingHeight-20"></td>
+                                        </tr>
+                                        <tr>
+                                          <td align=3D"center" style=3D"p=
+adding: 0px 40px;" class=3D"mlContentOuter">
+                                            <table role=3D"presentation" =
+cellpadding=3D"0" cellspacing=3D"0" border=3D"0" align=3D"center" width=3D=
+"100%">
+                                              <tr>
+                                                <td align=3D"center">
+                                                  <table role=3D"presenta=
+tion" cellpadding=3D"0" cellspacing=3D"0" border=3D"0" align=3D"left" wid=
+th=3D"267" style=3D"width: 267px; min-width: 267px;" class=3D"mlContentTa=
+ble marginBottom">
+                                                    <tr>
+                                                      <td align=3D"left" =
+class=3D"bodyTitle" style=3D"font-family: Helvetica, sans-serif; font-siz=
+e: 13px; font-weight: 400; line-height: 100%; color: #111111;">The Incomp=
+arable, Inc.</td>
+                                                    </tr>
+                                                    <tr>
+                                                      <td height=3D"10" c=
+lass=3D"spacingHeight-10"></td>
+                                                    </tr>
+                                                    <tr>
+                                                      <td align=3D"left" =
+class=3D"bodyTitle" id=3D"footerText-17" style=3D"font-family: Helvetica,=
+ sans-serif; font-size: 12px; line-height: 100%; color: #111111;">
+                                                        <p style=3D"margi=
+n-top: 0px; margin-bottom: 10px;">P.O. Box 2044</p>
+                                                        <p style=3D"margi=
+n-top: 0px; margin-bottom: 0px;">Mill Valley&nbsp;CA 94942<br></p>
+                                                      </td>
+                                                    </tr>
+                                                  </table>
+                                                  <table role=3D"presenta=
+tion" cellpadding=3D"0" cellspacing=3D"0" border=3D"0" align=3D"right" wi=
+dth=3D"267" style=3D"width: 267px; min-width: 267px;" class=3D"mlContentT=
+able">
+                                                    <tr>
+                                                      <td align=3D"right"=
+ class=3D"bodyTitle" id=3D"footerUnsubscribeText-17" style=3D"font-family=
+: Helvetica, sans-serif; font-size: 12px; line-height: 150%; color: #1111=
+11;">
+                                                        <p style=3D"margi=
+n-top: 0px; margin-bottom: 0px;">You received this email because you are =
+a paying&nbsp;Six Colors member. Thank you!</p>
+                                                      </td>
+                                                    </tr>
+                                                    <tr>
+                                                      <td height=3D"10"><=
+/td>
+                                                    </tr>
+                                                    <tr>
+                                                      <td align=3D"right"=
+ class=3D"bodyTitle" style=3D"font-family: Helvetica, sans-serif; font-si=
+ze: 12px; line-height: 150%; color: #111111;">
+                                                        <a href=3D"https:=
+//click.mlsend.com/link/c/YT0yODkzMzY1MzUxMzMwODgwMDExJmM9aTJpMiZlPTAmYj0=
+xNTAxNDIyOTYzJmQ9aDV0Nmc4cw=3D=3D.oyM4ZSiO-3lTyaEqrxHOpXchzBvt34cNCEVtIJB=
+hz1Q" style=3D"color: #111111; text-decoration: underline;">
+<span style=3D"color: #111111;">Stop getting this newsletter.</span>
+</a>
+                                                      </td>
+                                                    </tr>
+                                                  </table>
+                                                </td>
+                                              </tr>
+                                            </table>
+                                          </td>
+                                        </tr>
+                                      </table>
+                                      <table role=3D"presentation" cellpa=
+dding=3D"0" cellspacing=3D"0" border=3D"0" align=3D"center" width=3D"640"=
+ style=3D"width: 640px; min-width: 640px;" class=3D"mlContentTable">
+                                        <tr>
+                                          <td height=3D"20" class=3D"spac=
+ingHeight-20" style=3D"line-height: 20px; min-height: 20px;"></td>
+                                        </tr>
+                                      </table>
+                                    </td>
+                                  </tr>
+                                </table>
+                              </td>
+                            </tr>
+                          </table>
+                      </td>
+                    </tr>
+                    </table>
+                    <table cellpadding=3D"0" cellspacing=3D"0" border=3D"=
+0" align=3D"center" width=3D"640" style=3D"width: 640px; min-width: 640px=
+;" class=3D"mlContentTable">
+                      <tr>
+                        <td height=3D"40" class=3D"spacingHeight-20"></td=
+>
+                      </tr>
+                     =20
+                     =20
+                    </table>
+                    <!-- Content ends here -->
+                    <!--[if mso 16]>
+                  </td>
+                </tr>
+                </table>
+              <!--<![endif]-->
+              <!--[if !mso]>
+                <!-- -->
+            </td>
+          </tr>
+          </table>
+        <!--<![endif]-->
+    </div>
+  </body>
+
+</html>
+
+
+
+--b1_dd99cd789bcc10ebb82bcc39304a9664--
+
+

@@ -1,0 +1,161 @@
+Received: from 10.223.248.109
+ by atlas103.aol.mail.ne1.yahoo.com pod-id NONE with HTTPS; Fri, 23 Jan 2026 13:08:21 +0000
+Return-Path: <bounce-HP2v60000019beaf85197a016fc434b5c3ae8011@comms.aol.net>
+X-Originating-Ip: [159.127.162.109]
+Received-SPF: fail (domain of comms.aol.net does not designate 159.127.162.109 as permitted sender)
+Authentication-Results: mta.yahoo.com;
+ dkim=pass header.i=@comms.aol.net header.s=ep1 arc_overridden_status=NOT_OVERRIDDEN;
+ spf=fail smtp.mailfrom=comms.aol.net arc_overridden_status=NOT_OVERRIDDEN;
+ dmarc=pass(p=REJECT) header.from=comms.aol.net arc_overridden_status=NOT_OVERRIDDEN;
+X-Apparently-To: user@example.com; Fri, 23 Jan 2026 13:08:21 +0000
+X-YMailISG: s4GqqTgWLDvSReax9q9JHfBrfrNiDSGVuw4518uDpHCjUnN_
+ ZWCikJ7GcZDsUDM_xd10C_gQOj3Cz8sLXTBjdLnIs8vsXhhxKAKAc.JUWqjD
+ qyqDSKnQntcntZ8eU556CzacNaLjFjfy7QAXF_9NRWRx7nBVfPVpHMMyXiqK
+ oP93EP2PlvZ3rtQhgvh8NhXuuygwE7IEcwqT15FldLdmBQ80eo_2F_UT8eJ9
+ ULJ7IsopoOvInRFWlo20JdcnnSiAoYOxAyw0DKMqkWdwOcTNXVKfMxH6EIDe
+ Nh0zs3RFU30RmEOtPbLuiP5kGn4Pzx8q4Xue8Kf62CIKzDkrH47vcidoKaf.
+ Qyi59SKUyigV9w0eO8qKVMS4NNFqYNWny9rJj1VT1RIVpJOz8Y2dS5zMQ6OB
+ r82shX75B4_IaYlg0c7SaauiRfpC_IugLhnxh54DCQdIC_trNvguMUeO9DBq
+ 18nr3dyWW6IFxwdI9KFuAHnfhikbVcpMc2C79CPbZZyFlawVhUKEP.kqca6C
+ j4g.v0x6Cft2VSjPI4fqxm69o1JUAXZ3vxHPtnDoaqSvOfLR1bcIVxMenN.M
+ b3lvX_tpbrcgb.VhlfrM.h4Ogg00EnTjanLUqCnDNo.VTyRfviZlZ3zQbDIJ
+ UNNPto_BDeVd62sDfwMI344Yg1fUdJfsgwityaIxQ_7SHfTHiUGajktOTNcd
+ q2mEI4aEK_S9N64jsP.zwF7BNAhyNvXbBxDz7490OwLSaNa.XO4LPpgDy4wc
+ WNFr4X7HzrWAZNpKoXSroT7inP6VXluJyCJnENIZiyjNOMzaLvSeoUMgd7j6
+ z7fjwKTYSOZCyjG24UXQe1XP778ULHwhhB9.UQOc6GYez.kHrO3vxukB41LB
+ Y8SjBgDUOTbbSC_06k314YKCDe1TfZgh7tSQtSQMXf2j3mtKYWhpT_QXmvJw
+ Iau9Sqkprfu58XNGzL8VN7vkNO8Ep_XtsDO4TV6cZalQXGaHECYh3UwOZ.rw
+ jIblSqA5NTgwfwsjU8pL_jRJie52MDMKiDbwdIa2C7Nl4zxfS.YtOtETva.1
+ 6corcpQmthOkdHLbMShvFY.1CM8ItHxisyd9f9JYwIE4m3U.DfcNbUjZRaav
+ 2XHDnDny4HH6gO4v.4QZTx5Gva8SQ_D9Q4BuAcyAqJhTwtoT6e8yObwAufQh
+ vvfyOwktzI5ypd0LTrP3KWltRq82WItaSbkeUdv0.aHc9GfiKjwJtenOpmfo
+ AxyY24dJJhKcD0qN4y6hzWoLGlR3zLGubyw-
+Received: from 159.127.162.109 (EHLO mta109aa.pmx1.epsl1.com)
+ by 10.223.248.109 with SMTPs
+ (version=TLS1_2 cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256);
+ Fri, 23 Jan 2026 13:08:21 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=comms.aol.net;
+    s=ep1; t=1769173701;
+    bh=THVuSqnj7z7zr6PsIk3ZarfQREjI3c/JJLWBgNfL+rw=;
+    h=List-Unsubscribe:List-Unsubscribe-Post:MIME-Version:Subject:From:
+     To:Date:Content-Type;
+    b=OBYz39dXQCifC0qqdNolZusQHwNk5ItiwFvTtLbXYmGvFQ7tnnLwkfGKW0P3BVJ5S
+     W/AwKtioKCKMpEws2OA1ZDyXImlQ9mI3/qA7eoNxyHeFreAdoLhWvCE0kT6/+u1umb
+     0NK7/Wjkg0Yurg+DzCvmJiCtk64iRNmmrjml6VOM=
+Received: from [10.233.84.240] ([10.233.84.240:54872])
+    by pc1udsmtn2n14 (envelope-from <bounce-HP2v60000019beaf85197a016fc434b5c3ae8011@comms.aol.net>)
+    (ecelerity 3.6.9.48312 r(Core:3.6.9.0)) with ECSTREAM
+    id 80/D7-41976-5C273796; Fri, 23 Jan 2026 13:08:21 +0000
+List-Unsubscribe: <mailto:bounce-HP2v60000019beaf85197a016fc434b5c3ae8011@comms.aol.net?subject=list-unsubscribe>,<https://email.aol.net/U2/v60000019beaf85197a016fc434b5c3ae8/654b770fc6f04e64000001c1c0b84425>
+List-Unsubscribe-Post: List-Unsubscribe=One-Click
+Message-ID: <HP2v60000019beaf85197a016fc434b5c3ae8011@comms.aol.net>
+MIME-Version: 1.0
+Feedback-ID: 654b770f-c6f0-4e64-a8d0-72e65bb5e80e:a3a78beb-ed1e-4d40-8d59-80898de8e54c:email:epslh1
+X-NSS: 654b770f-c6f0-4e64-a8d0-72e65bb5e80e
+Reply-To: "reply@comms.aol.net"
+ <reply-HP2v60000019beaf85197a016fc434b5c3ae8011@comms.aol.net>
+Subject: You've updated your AOL account information
+From: AOL Support  <AOLSupport@comms.aol.net>
+To: user@example.com
+Date: Fri, 23 Jan 2026 13:08:21 +0000
+Content-Type: multipart/alternative;
+ boundary="-=Part.d96da9.c8ced2f941b41333.19beaf8523d.267666a9a62272b=-"
+Content-Length: 4698
+
+---=Part.d96da9.c8ced2f941b41333.19beaf8523d.267666a9a62272b=-
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html; charset=UTF-8
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1=2E0 Transitional//EN" "http://ww=
+w=2Ew3=2Eorg/TR/xhtml1/DTD/xhtml1-transitional=2Edtd">
+<html xmlns=3D"http://www=2Ew3=2Eorg/1999/xhtml">
+<head>
+<title></title>
+<style type=3D"text/css">
+  @font-face {
+        font-family:'Basis Grotesque for AOL';
+        src:url('https://s=2Eaolcdn=2Ecom/membership/omp-static/fonts/basi=
+s/BasisGrotesqueforAOL=2Ewoff2')
+        format('woff2');
+        font-weight:400 !important
+      }
+</style>
+</head>
+<body>
+<table width=3D"100%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0">
+<tr>
+<td align=3D"center" valign=3D"top" bgcolor=3D"#f2f2f2" style=3D"padding-b=
+ottom: 20px;padding-top: 20px;"><img src=3D"https://s=2Eyimg=2Ecom/cv/apiv2=
+/AOLimages/aol_logo_black_1224_118x48=2Epng" width=3D"75" alt=3D"AOL"></td>
+</tr>
+<tr>
+<td align=3D"center" valign=3D"top"><br />
+<table width=3D"515" border=3D"0" cellpadding=3D"0" cellspacing=3D"0">
+<tr>
+<td align=3D"left" valign=3D"top" style=3D"padding-left:20px; padding-righ=
+t:20px; font-family:'Basis Grotesque for AOL', _OpenSans, OpenSans, 'Helvet=
+ica Neue', Helvetica, Arial, Sans-Serif; font-size:21px; line-height:35px; =
+color:#424242;"><p><strong>Dear user,</strong><br />
+<br />
+Our records indicate that your AOL account was recently updated and will n=
+ow reflect the new information you provided=2E It is important to keep your=
+ account information current in the event you need to retrieve your forgott=
+en password or for interactions with our Customer Support Team=2E<br />
+<br />
+If you did not request this change or would like to view your changes, ple=
+ase sign in to <a href=3D"https://email=2Eaol=2Enet/T/v60000019beaf85197a01=
+6fc434b5c3ae8/654b770fc6f04e640000021ef3a0bcc2/654b770f-c6f0-4e64-a8d0-72e6=
+5bb5e80e?__dU__=3Dv0G4RBKTXg2GurxKhpMnTBNKaP0r8AhGa-&__F__=3Dv0fUYvjHMDjRPM=
+Sh3tviDHXIoXcPxvDgUUCCPvXMWoX_2P4HY9fb6we_V6rSJ6-Q6Cnup64iWV8bUrrZ6A8sOcsnR=
+b0ZDxarO6KM8qSuJf4zoOw2jPy9Ao9gBsYerqXRFctm_hFw6nJavfp07yZU5SSRqQsz5aNPr7FQ=
+GK1UO87aHKHNOJc5Tey0V0yQf7GwFpGaAkhQZMGLsexVoP2n7282W9urXPubpPmG6QZtx_9-Bm0=
+BPHome7eofI_PzmzEpXDKKaAlauKlbRJ-qEuZWHm0WnQHl0YpjL" style=3D"color:#00abee=
+; text-decoration:none;" target=3D"_blank" REPLACED_target=3D"_blank"><stro=
+ng>myaccount=2Eaol=2Ecom</strong></a>=2E<br />
+<br />
+Thank you for being an AOL member=2E<br />
+<br />
+Sincerely,<br />
+AOL Member Services</td>
+</tr>
+<tr>
+<td align=3D"left" valign=3D"top" style=3D"padding-left:20px; padding-righ=
+t:20px; font-family:'Basis Grotesque for AOL', _OpenSans, OpenSans, 'Helvet=
+ica Neue', Helvetica, Arial, Sans-Serif; font-size:18px; line-height:28px; =
+color:#424242;"><br />
+<br />
+<br />
+This email has been sent from an unmonitored email address=2E Please do no=
+t reply to this message=2E<br />
+<br />
+<a href=3D"https://email=2Eaol=2Enet/T/v60000019beaf85197a016fc434b5c3ae8/=
+654b770fc6f04e640000021ef3a0bcc3/654b770f-c6f0-4e64-a8d0-72e65bb5e80e?__dU_=
+_=3Dv0G4RBKTXg2GurxKhpMnTBNKaP0r8AhGa-&__F__=3Dv0fUYvjHMDjRPMSh3tviDHXIoXcP=
+xvDgUUCCPvXMWoX_0r7FigEMozyQko9JR7C9_BNr107Le4ydfdKjiW1SPDeL42n0wlbmnDuQtkQ=
+wmtMxe6hC2q9v7f5nBErLTvNlxvBS5o8DWw7zWc5iilbXmxSCrv-pnYNLCqC5Gyu8D8tlr_VE1A=
+aQzuyGOkpd8B1YIFj7drBut5GMaWk_bdZMloV8tbO0p0IuS3w6xfs_8Kh6XvJzDqjCDx6yObr3x=
+c7dUQVH6Io0XoMus8whCpPOrU82ITaMQGCIwNI9opGW05Cr-ZE2TdPsoOh9OSBcK-BXx1VcztNz=
+Ar9kQfc_53mYXeRw=3D=3D" target=3D"_blank" REPLACED_target=3D"_blank" style=
+=3D"color:#00abee; text-decoration:none;">Privacy Policy</a>&nbsp;|&nbsp;<a=
+  href=3D"https://email=2Eaol=2Enet/T/v60000019beaf85197a016fc434b5c3ae8/65=
+4b770fc6f04e640000021ef3a0bcc4/654b770f-c6f0-4e64-a8d0-72e65bb5e80e?__dU__=
+=3Dv0G4RBKTXg2GurxKhpMnTBNKaP0r8AhGa-&__F__=3Dv0fUYvjHMDjRPMSh3tviDHXIoXcPx=
+vDgUUCCPvXMWoX_37fm0Dw6IHLKrR08I2EYVxT-CsCWABfwT3Zhb3CYcwLsPBSuVOk5GaAjwcQa=
+d7buVpzsLuXV8nVBDJ2hp9RuzXQ_bPYRkOk7OjEr0oSfrPmKDmM-DZKRkJjcLas69-o4dznmjEY=
+qEUri4FLktZZhOj3F_V3n8IUl2so0FQsTAGNmc-X07lq7nq3oESzGGYuj8-hUcUAylJSPexDqXU=
+GouijsMtNzoUtuMiNnYgvr36yqioogashW0MUq2PxcPtC6xvkf1_tw_hfk7mJ0wvtc7A" targe=
+t=3D"_blank" REPLACED_target=3D"_blank" style=3D"color:#00abee; text-decora=
+tion:none;">Customer Support</a><br />
+&copy;2026 AOL Media LLC=2E All rights reserved=2E<br>
+11955 Democracy Drive, 14th Floor, Reston, VA 20190, USA</td>
+</tr>
+</table></td>
+</tr>
+</table>
+
+<img src=3D'https://email=2Eaol=2Enet/O/v60000019beaf85197a016fc434b5c3ae8=
+/654b770fc6f04e6400004c5a42963aa1' style=3D"display:none; max-height: 0px; =
+font-size: 0px; overflow: hidden; mso-hide: all"/></body>
+</html>
+---=Part.d96da9.c8ced2f941b41333.19beaf8523d.267666a9a62272b=---
+

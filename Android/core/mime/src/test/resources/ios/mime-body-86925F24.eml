@@ -1,0 +1,329 @@
+Delivered-To: fixture-author@example.test
+Received: by 2002:a05:6214:bd1:b0:8b4:eb00:b62f with SMTP id ff17csp564274qvb;
+        Sat, 18 Jul 2026 11:17:46 -0700 (PDT)
+X-Forwarded-Encrypted: i=4; AHgh+RrHYV4zwAFsWI6Ada+KwkecQ+C1LSuAGu4C94Ebm+WCZLg256T9JeFk01vDlSgzbhUttddXeP2Q7A==@thunderbird.net
+X-Received: by 2002:a05:6214:2269:b0:8f1:8937:5dc7 with SMTP id 6a1803df08f44-907784ddf91mr94688446d6.56.1784398666214;
+        Sat, 18 Jul 2026 11:17:46 -0700 (PDT)
+ARC-Seal: i=3; a=rsa-sha256; t=1784398666; cv=pass;
+        d=google.com; s=arc-20260327;
+        b=F/3Vta5mx+LsIel4iBaTXLt2YL7Bo1t58j4bFrGTVCrHBPtwaON8nHeAEvuO8t0ait
+         N4viL7E0TRAHqL5rUKIumGK2R5k2s7S+RaRdb1Bp/irhx2jg8CC+31ZhL/dGrIL+xSDm
+         g5s9KLBhjABsIhf3/DSl68z2quDwxhHPEY3omH6LEYczCBSs+Pm19ZWHhg19iMIDV/38
+         UwMYWazEEefJdm4+p0YF6IhrwyrmwOxH9NEL77fCvdrtqaBjGXzdA7ZLPICFIzjlb33n
+         qkc/ovBhDO1zDgwkDObjn8xHyRHv34UeAhQEx3I6BKv58QrAohLnHRHfqDT2hhvsleQU
+         yCbg==
+ARC-Message-Signature: i=3; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=topicbox-delivery-id:list-unsubscribe:from
+         :content-transfer-encoding:reply-to:precedence:list-subscribe
+         :list-software:list-post:list-id:list-help:archived-at
+         :topicbox-message-uuid:topicbox-policy-reasoning:mime-version
+         :feedback-id:references:in-reply-to:message-id:subject:to:date
+         :dkim-signature;
+        bh=4cdpVbnHoEWfP8cqA6hIBJz3T5Mkpmiykl3En8k++qw=;
+        fh=0w5IDn1NjJO0JuGGAmFia+Y4ZvZyBZGOHQtDaFvme6U=;
+        b=pqZNm+vKxJ5V1bWmsIqDnsrQky9YT1MKSsqueHu1NSzHz1hULe3oxy+daYoijwnlya
+         v/9vBXYOeDde4xS+tXXHkIzfqQzj6Kho8HalYh5639o3GNCRaSJx+duzT3P1rEoCxKL/
+         +th57sbptXtBWLn0K+U21iiS2rqXrBiHSDU2++CegDj+ho59z1mwkX4uJrJjyVjkqNXd
+         Ri7rpcX30QNMOkWtBjYYEvvPBrRbaGnCPGAGY/N7+BiXxpA0+kVQg9Q3bM3vGtz5/35M
+         kbGmaFPwVyndebJQAGfs5Sj/CpTIF6CrpfgI2VvO2vAeTc5bIXgCz/FmKtAaqUCIHLad
+         qa1A==;
+        dara=google.com
+ARC-Authentication-Results: i=3; mx.google.com;
+       dkim=pass header.i=@discuss.thunderbird.net header.s=dkim-1 header.b=BnDSFUr4;
+       arc=pass (i=2 spf=pass spfdomain=legowerewolf.net dkim=pass dkdomain=legowerewolf.net dmarc=pass fromdomain=legowerewolf.net);
+       spf=pass (google.com: domain of bounce.mme64be55229db792a667a64d2.r2a69c34e-0b26-11f0-aa19-d9888eef7525@thunderbird.bounce.topicbox.com designates 103.168.172.225 as permitted sender) smtp.mailfrom=bounce.mMe64be55229db792a667a64d2.r2a69c34e-0b26-11f0-aa19-d9888eef7525@thunderbird.bounce.topicbox.com;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=thunderbird.net
+Return-Path: <bounce.mMe64be55229db792a667a64d2.r2a69c34e-0b26-11f0-aa19-d9888eef7525@thunderbird.bounce.topicbox.com>
+Received: from txout-a2-smtp.messagingengine.com (txout-a2-smtp.messagingengine.com. [103.168.172.225])
+        by mx.google.com with ESMTPS id 6a1803df08f44-90778804f26si60953216d6.652.2026.07.18.11.17.46
+        for <fixture-author@example.test>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 18 Jul 2026 11:17:46 -0700 (PDT)
+Received-SPF: pass (google.com: domain of bounce.mme64be55229db792a667a64d2.r2a69c34e-0b26-11f0-aa19-d9888eef7525@thunderbird.bounce.topicbox.com designates 103.168.172.225 as permitted sender) client-ip=103.168.172.225;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@discuss.thunderbird.net header.s=dkim-1 header.b=BnDSFUr4;
+       arc=pass (i=2 spf=pass spfdomain=legowerewolf.net dkim=pass dkdomain=legowerewolf.net dmarc=pass fromdomain=legowerewolf.net);
+       spf=pass (google.com: domain of bounce.mme64be55229db792a667a64d2.r2a69c34e-0b26-11f0-aa19-d9888eef7525@thunderbird.bounce.topicbox.com designates 103.168.172.225 as permitted sender) smtp.mailfrom=bounce.mMe64be55229db792a667a64d2.r2a69c34e-0b26-11f0-aa19-d9888eef7525@thunderbird.bounce.topicbox.com;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=thunderbird.net
+Received: from relay.topicbox.com (phl-topicbox-01.internal [10.202.2.219])
+	by mailtxout.phl.internal (Postfix) with ESMTP id DC0361C014E
+	for <fixture-author@example.test>; Sat, 18 Jul 2026 14:17:45 -0400 (EDT)
+Received: from localhost.localdomain (phl-topicbox-01.internal [10.202.2.219])
+	by relay.topicbox.com (Postfix) with ESMTP id DB240360CB6F
+	for <fixture-author@example.test>; Sat, 18 Jul 2026 14:17:45 -0400 (EDT)
+ARC-Authentication-Results: i=2; topicbox.com; arc=pass; dkim=pass (2048-bit rsa key
+ sha256) header.d=legowerewolf.net header.i=@legowerewolf.net
+ header.b=e+L75RkJ header.a=rsa-sha256 header.s=protonmail x-bits=2048;
+ dmarc=pass policy.published-domain-policy=reject
+ policy.applied-disposition=none policy.evaluated-disposition=none
+ (p=reject,d=none,d.eval=none) policy.policy-from=p
+ header.from=legowerewolf.net; spf=pass smtp.mailfrom=duncan@legowerewolf.net
+ smtp.helo=mail-10626.protonmail.ch; x-internal-arc=fail
+ (as.1.topicbox.com=pass, ams.1.topicbox.com=fail (message has been altered))
+ (Message modified while forwarding at Topicbox)
+ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=
+	topicbox.com; h=date:to:subject:message-id:in-reply-to
+	:references:mime-version:content-type:list-help:list-id
+	:list-post:list-subscribe:reply-to:content-transfer-encoding
+	:from:list-unsubscribe; s=sysmsg-1; t=1784398665; bh=4cdpVbnHoEW
+	fP8cqA6hIBJz3T5Mkpmiykl3En8k++qw=; b=rDnabycrfe1Aay8C+ktI7j8UrCE
+	r5XyiIVC7aUzDubLiOjCCuaphVeGV0xOz22Mmqp6ucvGFoXp4QKNWuH5Aot8IH+k
+	2x3maaM76v6rHuToVA4qxIKNWZdxbtL9CmmeejPEuNi7jIIbENrFg5+JmYUXhn1z
+	7e6Qmi9CWzV2sTWk=
+ARC-Seal: i=2; a=rsa-sha256; cv=pass; d=topicbox.com; s=sysmsg-1; t=
+	1784398665; b=Qf67kzdMYqFGbWtZxe7DyNBbRhQDFPocCo/+fjYeAM9Yb6/xVt
+	RaCFeN8KZLiLAfkadfzwdIeEAKnBf8ibYxqBRmnLLQC551Ac2+lx8N6mZIcf8m6w
+	xixipWaXMUtazlMn0MHMqzhERCRT8pPQPsxtIPkgM+djc4C2bLfk4qV5E=
+Authentication-Results: topicbox.com; arc=pass; dkim=pass (2048-bit rsa key
+ sha256) header.d=legowerewolf.net header.i=@legowerewolf.net
+ header.b=e+L75RkJ header.a=rsa-sha256 header.s=protonmail x-bits=2048;
+ dmarc=pass policy.published-domain-policy=reject
+ policy.applied-disposition=none policy.evaluated-disposition=none
+ (p=reject,d=none,d.eval=none) policy.policy-from=p
+ header.from=legowerewolf.net; spf=pass smtp.mailfrom=duncan@legowerewolf.net
+ smtp.helo=mail-10626.protonmail.ch; x-internal-arc=fail
+ (as.1.topicbox.com=pass, ams.1.topicbox.com=fail (message has been altered))
+ (Message modified while forwarding at Topicbox)
+X-Received-Authentication-Results: authmilter.topicbox.com; arc=none (no
+ signatures found); bimi=none (No BIMI records found); dkim=pass (2048-bit rsa
+ key sha256) header.d=legowerewolf.net header.i=@legowerewolf.net
+ header.b=e+L75RkJ header.a=rsa-sha256 header.s=protonmail x-bits=2048;
+ dmarc=pass policy.published-domain-policy=reject
+ policy.applied-disposition=none policy.evaluated-disposition=none
+ (p=reject,d=none,d.eval=none) policy.policy-from=p
+ header.from=legowerewolf.net; iprev=pass smtp.remote-ip=79.135.106.26
+ (mail-10626.protonmail.ch); spf=pass smtp.mailfrom=duncan@legowerewolf.net
+ smtp.helo=mail-10626.protonmail.ch; x-aligned-from=pass (Address match);
+ x-me-sender=none; x-ptr=pass smtp.helo=mail-10626.protonmail.ch
+ policy.ptr=mail-10626.protonmail.ch; x-return-mx=pass
+ header.domain=legowerewolf.net policy.is_org=yes (MX Records found:
+ mailsec.protonmail.ch,mail.protonmail.ch); x-return-mx=pass
+ smtp.domain=legowerewolf.net policy.is_org=yes (MX Records found:
+ mail.protonmail.ch,mailsec.protonmail.ch); x-tls=pass smtp.version=TLSv1.3
+ smtp.cipher=TLS_AES_256_GCM_SHA384 smtp.bits=256/256; x-vs=clean score=0
+ state=0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; d=discuss.thunderbird.net;
+	 h=date:to:subject:message-id:in-reply-to:references
+	:mime-version:content-type:list-help:list-id:list-post
+	:list-subscribe:reply-to:content-transfer-encoding:from
+	:list-unsubscribe; s=dkim-1; t=1784398665; x=1784485065; bh=4cdp
+	VbnHoEWfP8cqA6hIBJz3T5Mkpmiykl3En8k++qw=; b=BnDSFUr46DbkrFKYvH01
+	QsYFzKxr2Gk9q6NLvP0lAGyec2aEEXyX/CePSjPpOUwrVDGeis2lOS5tJ0abm5aJ
+	XxRrlPdVFLP290YxFqCsnbtu/T6JTS9HjZ1GnBwQl8XozH/VAgDdrGHv57+awtPv
+	BprRX+hFOcjN+Q/sEy7PQdY=
+Received: from authmilter.topicbox.com (unknown [172.17.0.1])
+	by mx.topicbox.com (Postfix) with ESMTP id EC5B44D8A4CE
+	for <planning@discuss.thunderbird.net>; Fri, 17 Jul 2026 15:10:39 -0400 (EDT)
+Received: from mx.topicbox.com (172.17.0.1 [172.17.0.1])
+    by authmilter.topicbox.com (Authentication Milter) with ESMTP
+    id 5CB24985B05;
+    Fri, 17 Jul 2026 15:10:39 -0400
+ARC-Seal: i=1; a=rsa-sha256; cv=none; d=topicbox.com; s=arcseal; t=
+    1784315439; b=ul6vGHbXpJMFwoSnb53V3yVo9Lfy2GhykaU/+f4s9OjqVGS8Mq
+    +dwTgTplMIgrNwhzqoOe8JdF1vtIGzv/JjoUvtlvwaaPHOyHtGQ7n+jego8I48kx
+    UccVO7aYxQmFqCYHWlhful+GtgqoLr3XJICXDd+zpx+5X38G843a5K7k0FFhBJ/P
+    tozouej0SSZXGCs6bc0nrAMN0ijVzEIHVqWfa8ZE1DOG+SxTubuj4el3edn5TjHm
+    Hona8DQL6IGabTDTXLnUEvtQK4EfmlDsW1z/j2bKMEjZTAlT+ylCQ6FrUJSCaAZz
+    3ij+YghhCIVOa1aD1N40KU4eZXIGjKZfCQxg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=
+    topicbox.com; h=date:to:from:subject:message-id:in-reply-to
+    :references:mime-version:content-type; s=arcseal; t=1784315439;
+    bh=udWXxfHKfW199vv/fvySkK1I0WK4t1JYaZ2r+ZlIHno=; b=TxhnvjVhou4N
+    oYUzJbPkj1XC6xPxxZKavs/SyP8wsTQ0uItsWVtEvgylRl4adso2n08GZudZ2zmU
+    ipa+jhS65F9nIjLOMScfXcs0fKZs9faOqFU+sOjSoW3tWjM+ok5qbko/9rKQFBIt
+    gX/j36Slz3uZej78WNR6zsmXrEJq1RUqXa73YFFNDarxvbuQcA7vpF21x7VZt7Cl
+    vvPAdB5VOvr05LWLmAdF7Xk2zao+V+6k760A06vibiCifGYI2xy4YEgIeAs2y0GC
+    ebSpI+M9/jaqh4/XYHACSHxiJFUPQKbkBUqx0tzxyDFOZrFXe5nP8qkSATQo6UJs
+    92N3Zzn5Mw==
+ARC-Authentication-Results: i=1; authmilter.topicbox.com;
+    arc=none (no signatures found);
+    bimi=none (No BIMI records found);
+    dkim=pass (2048-bit rsa key sha256) header.d=legowerewolf.net
+    header.i=@legowerewolf.net header.b=e+L75RkJ header.a=rsa-sha256
+    header.s=protonmail x-bits=2048;
+    dmarc=pass policy.published-domain-policy=reject
+    policy.applied-disposition=none policy.evaluated-disposition=none
+    (p=reject,d=none,d.eval=none) policy.policy-from=p
+    header.from=legowerewolf.net;
+    iprev=pass smtp.remote-ip=79.135.106.26 (mail-10626.protonmail.ch);
+    spf=pass smtp.mailfrom=duncan@legowerewolf.net
+    smtp.helo=mail-10626.protonmail.ch;
+    x-aligned-from=pass (Address match);
+    x-me-sender=none;
+    x-ptr=pass smtp.helo=mail-10626.protonmail.ch
+    policy.ptr=mail-10626.protonmail.ch;
+    x-return-mx=pass header.domain=legowerewolf.net policy.is_org=yes
+    (MX Records found: mailsec.protonmail.ch,mail.protonmail.ch);
+    x-return-mx=pass smtp.domain=legowerewolf.net policy.is_org=yes
+    (MX Records found: mail.protonmail.ch,mailsec.protonmail.ch);
+    x-tls=pass smtp.version=TLSv1.3 smtp.cipher=TLS_AES_256_GCM_SHA384
+    smtp.bits=256/256;
+    x-vs=clean score=0 state=0
+X-ME-VSCause: gggruggvucftvghtrhhoucdtuddrgeefiedrtddugdefvdelhecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpggftfghnshhusghstghrihgsvgdp
+    uffrtefokffrpgfnqfghnecuuegrihhlohhuthemuceftddtnecunecujfgurhepfffvhf
+    fukfgjfhggtgesrgdtreertddtjeenucfhrhhomhepffhunhgtrghnucfiihgsshhonhcu
+    oeguuhhntggrnheslhgvghhofigvrhgvfiholhhfrdhnvghtqeenucggtffrrghtthgvrh
+    hnpedtjedufedtgeetveejtdevtdehteduvdduffdvtdfhgeduhfekvddugffhieehueen
+    ucffohhmrghinhepphgrrhhulhgrrdgrphhppdhtohhpihgtsghogidrtghomhenucfkph
+    epjeelrddufeehrddutdeirddvieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgr
+    mhepihhnvghtpeejledrudefhedruddtiedrvdeipdhhvghlohepmhgrihhlqddutdeivd
+    eirdhprhhothhonhhmrghilhdrtghhpdhmrghilhhfrhhomhepoeguuhhntggrnheslhgv
+    ghhofigvrhgvfiholhhfrdhnvghtqedpnhgspghrtghpthhtohepuddprhgtphhtthhope
+    eophhlrghnnhhinhhgseguihhstghushhsrdhthhhunhguvghrsghirhgurdhnvghtqe
+X-ME-VSScore: 0
+X-ME-VSCategory: clean
+Received-SPF: pass
+    (legowerewolf.net: Sender is authorized to use 'duncan@legowerewolf.net' in 'mfrom' identity (mechanism 'include:_spf.protonmail.ch' matched))
+    receiver=authmilter.topicbox.com;
+    identity=mailfrom;
+    envelope-from="duncan@legowerewolf.net";
+    helo=mail-10626.protonmail.ch;
+    client-ip=79.135.106.26
+Received: from mail-10626.protonmail.ch (mail-10626.protonmail.ch [79.135.106.26])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx.topicbox.com (Postfix) with ESMTPS
+	for <planning@discuss.thunderbird.net>; Fri, 17 Jul 2026 15:10:38 -0400 (EDT)
+Date: Fri, 17 Jul 2026 19:10:34 +0000
+To: planning@discuss.thunderbird.net
+Subject: Re: [tb-planning] Update on OpenPGP Unobtrusive Signatures (UO)
+Message-ID: <680ff276-a959-46b9-bb05-2a46d13d4133@legowerewolf.net>
+In-Reply-To: <3b862d9c-9170-a399-2e84-24e3660c8bb0@beonex.com>
+References: <f5a615d5-e3dd-4061-b3f4-fa1719cd9c98@thunderbird.net> <3b862d9c-9170-a399-2e84-24e3660c8bb0@beonex.com>
+Feedback-ID: 82081621:user:proton
+X-Pm-Message-ID: 3bfc06a9fe676418f807d7f476d757a7b2121721
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="b1=_0feKbefr0DwvaiuoSAVV78tVmBEuUE0mHtBcf1t8"
+Topicbox-Policy-Reasoning: moderate: sender is a member; group holds all
+ messages
+Topicbox-Message-UUID: 33c4bd30-8213-11f1-838c-318d101b0b71
+Archived-At: =?UTF-8?B?PGh0dHBzOi8vdGh1bmRlcmJpcmQudG9waWNib3guY29tL2dy?=
+ =?UTF-8?B?b3Vwcy9wbGFubmluZy9UN2YyMDMzNjJjMDFhYmZmMi1NZTY0YmU1NTIyOWRi?=
+ =?UTF-8?B?NzkyYTY2N2E2NGQyPg==?=
+List-Help: <https://thunderbird.topicbox.com/groups/planning>
+List-Id: "Thunderbird Planning" <planning.discuss.thunderbird.net>
+List-Post: <mailto:planning@discuss.thunderbird.net>
+List-Software: Topicbox v0
+List-Subscribe: <https://thunderbird.topicbox.com/groups/planning>
+Precedence: list
+Reply-To: "Thunderbird Planning" <planning@discuss.thunderbird.net>
+Content-Transfer-Encoding: 7bit
+From: "Duncan Gibson via Thunderbird Planning"
+ <planning@discuss.thunderbird.net>
+List-Unsubscribe: <https://thunderbird.topicbox.com/groups/planning>,
+ <mailto:planning+unsubscribe@discuss.thunderbird.net?subject=x-tx-unsubscribe:2:thunderbird:fb30d204-8f3f-11eb-aa0e-32e0282d11b0:2a69c34e-0b26-11f0-aa19-d9888eef7525:Me64be55229db792a667a64d2:1:_f_NlNgJc2Yk3VMwlnPNqBRAFpoNWBtqg4RAiT-2EWw>
+Topicbox-Delivery-ID:
+ 2:thunderbird:fb30d204-8f3f-11eb-aa0e-32e0282d11b0:2a69c34e-0b26-11f0-aa19-d9888eef7525:Me64be55229db792a667a64d2:1:QrlqKKf9aWvr1zTmNpV2ycDi2fu7r_Pn018hY80PyDM
+
+
+--b1=_0feKbefr0DwvaiuoSAVV78tVmBEuUE0mHtBcf1t8
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+
+V2hhdCdzIHRoZSBwbGFuIGZvciBzdXBwb3J0aW5nIHBlb3BsZSB3aG8gZG9uJ3QgdXNlIFRodW5k
+ZXJiaXJkIGV2ZXJ5d2hlcmU/CgpGb3IgZXhhbXBsZTogSSBjYW4ndCBzZW5kIG1haWwgb24gbXkg
+UHJvdG9uTWFpbCBhY2NvdW50IGZyb20gbW9iaWxlIHdpdGhvdXQgKGEpIHVzaW5nIHRoZSBQcm90
+b25NYWlsIGFwcCBvciAoYikgZG9pbmcgc29tZSByZWFsbHkgaGFja3ksIGZsYWt5LCBkZXBlbmRz
+LW9uLW15LVBDIG5ldHdvcmtpbmcgc2hlbmFuaWdhbnMgdG8gY29ubmVjdCBUaHVuZGVyYmlyZCBB
+bmRyb2lkIHRvIHRoZSBQcm90b25NYWlsIEJyaWRnZS4gR3Vlc3Mgd2hpY2ggb25lIEkgZG8/CgpP
+biA3LzE3LzIwMjYgMzowMiBQTSwgQmVuIEJ1Y2tzY2ggd3JvdGU6Cgo+IE1hZ251cyBNZWxpbjoK
+Pgo+PiBNeSBwb3NpdGlvbiBvbiBzaWduZWQtb25seSBlbWFpbHMgaXMgdGhhdCBpdCdzIG5vdCBy
+ZWFsbHkgdXNlZnVsLiBZZXMgaXQgY2FuIGhhdmUgdXNlZnVsbmVzcyBpbiB1dHRlcmx5IHNwZWNp
+YWwgY2FzZXMgYnV0IHRoZSBwb3RlbnRpYWwgdHJvdWJsZSBhcm91bmQgaXQgZG9lcyBub3Qgd2Vp
+Z2ggdXAgZm9yIGl0LiBJTU8sIHNpZ25pbmcgaXMgcmVhbGx5IGEgdGVjaG5pY2FsIGFydGlmYWN0
+IHRoYXQgaXMgaW1wb3J0YW50IHdoZW4gd2UgdGFsayBhYm91dCBzZWN1cmUgY29tbXVuaWNhdGlv
+biAtIHdoaWNoIGlzIGVuY3J5cHRlZCtzaWduZWQsIGJ1dCBub3QgaW5kZXBlbmRlbnRseS4KPgo+
+IEFzIEkndmUgbWVudGlvbmVkIGluIG15IG90aGVyIGVtYWlsLCB0aGF0ICJ1dHRlcmx5IHNwZWNp
+YWwgY2FzZXMiIGlzIHF1aXRlIGZhciBmcm9tIHJlYWxpdHkuIE1vc3Qgb2YgdGhlIGJpZyBidXNp
+bmVzc2VzIGFuZCBnb3Zlcm5tZW50IHdhbnQgc2lnbmF0dXJlIGZpcnN0LCBhbmQgZW5jcnlwdGlv
+biBpbiBzcGVjaWFsIGNhc2VzLgo+Cj4+IElmIHVzZXJzIHdvdWxkIGFsd2F5cywgYW5kIGNvbnNp
+c3RlbnRseSwgYWx3YXlzIGluY2x1ZGUgdGhlaXIgc2lnbmF0dXJlLCB0aGVuIG1pc3Npbmcgc2ln
+bmF0dXJlIGlzIGEgcmVkIGZsYWcuIC4uLiBQZW9wbGUgZG8gbm90IGhhdmUgdGhlaXIgc3lzdGVt
+cyBzZXQgdXAgZm9yIHRoYXQgaW4gZ2VuZXJhbC4KPgo+IFRoYXQncyBleGFjdGx5IHdoYXQgd2Un
+cmUgdHJ5aW5nIHRvIGFjY29tcGxpc2ggaGVyZSwgZm9yIFRodW5kZXJiaXJkIHVzZXJzOiBUaGF0
+IGFsbCB0aGVpciBvdXRnb25nIG1haWxzIGFyZSBzaWduZWQgYnkgZGVmYXVsdCwgYW5kIHRoZSBu
+b24tc2lnbmVkIG1haWxzIGFyZSB0aGUgb3V0bGllciByZWQgZmxhZy4KPgo+IEJlbgo+Cj4gU2Vu
+dCBieSDCqSBbUGFydWxhXShodHRwczovL3BhcnVsYS5hcHApCj4KPiAtLQo+IEJlb25leCBHbWJI
+Cj4gVGF1bnVzc3RlaW4gYmVpIFdpZXNiYWRlbiwgR2VybWFueQo+IENFTyAvIEdlc2Now6RmdHNm
+w7xocmVyOiBCZW4gQnVja3NjaAo+IEhhbmRlbHNyZWdpc3RlcjogQW10c2dlcmljaHQgV2llc2Jh
+ZGVuLCBIUkIgMzAwNjUKPgo+IFtUaHVuZGVyYmlyZF0oaHR0cHM6Ly90aHVuZGVyYmlyZC50b3Bp
+Y2JveC5jb20vbGF0ZXN0KSAvIFRodW5kZXJiaXJkIFBsYW5uaW5nIC8gc2VlIFtkaXNjdXNzaW9u
+c10oaHR0cHM6Ly90aHVuZGVyYmlyZC50b3BpY2JveC5jb20vZ3JvdXBzL3BsYW5uaW5nKSArIFtw
+YXJ0aWNpcGFudHNdKGh0dHBzOi8vdGh1bmRlcmJpcmQudG9waWNib3guY29tL2dyb3Vwcy9wbGFu
+bmluZy9tZW1iZXJzKSArIFtkZWxpdmVyeSBvcHRpb25zXShodHRwczovL3RodW5kZXJiaXJkLnRv
+cGljYm94LmNvbS9ncm91cHMvcGxhbm5pbmcvc3Vic2NyaXB0aW9uKSBbUGVybWFsaW5rXShodHRw
+czovL3RodW5kZXJiaXJkLnRvcGljYm94LmNvbS9ncm91cHMvcGxhbm5pbmcvVDdmMjAzMzYyYzAx
+YWJmZjItTWMwOGUwZWIyMzJhOTJhODE3YzkxNTIyYykKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tClRodW5kZXJiaXJkOiBUaHVuZGVyYmlyZCBQbGFubmluZwpQZXJt
+YWxpbms6IGh0dHBzOi8vdGh1bmRlcmJpcmQudG9waWNib3guY29tL2dyb3Vwcy9wbGFubmluZy9U
+N2YyMDMzNjJjMDFhYmZmMi1NZTY0YmU1NTIyOWRiNzkyYTY2N2E2NGQyCkRlbGl2ZXJ5IG9wdGlv
+bnM6IGh0dHBzOi8vdGh1bmRlcmJpcmQudG9waWNib3guY29tL2dyb3Vwcy9wbGFubmluZy9zdWJz
+Y3JpcHRpb24K
+
+--b1=_0feKbefr0DwvaiuoSAVV78tVmBEuUE0mHtBcf1t8
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: base64
+
+PCFET0NUWVBFIGh0bWw+CjxodG1sPjxodG1sPjxodG1sPjxoZWFkPjxtZXRhIGNvbnRlbnQ9InRl
+eHQvaHRtbDsgY2hhcnNldD1VVEYtOCIgaHR0cC1lcXVpdj0iQ29udGVudC1UeXBlIiAvPjwvaGVh
+ZD48Ym9keT48cD5XaGF0JiMzOTtzIHRoZSBwbGFuIGZvciBzdXBwb3J0aW5nIHBlb3BsZSB3aG8g
+ZG9uJiMzOTt0IHVzZSBUaHVuZGVyYmlyZA0KICAgICAgZXZlcnl3aGVyZT8mbmJzcDs8cD5Gb3Ig
+ZXhhbXBsZTogSSBjYW4mIzM5O3Qgc2VuZCBtYWlsIG9uIG15IFByb3Rvbk1haWwgYWNjb3VudCBm
+cm9tDQogICAgICBtb2JpbGUgd2l0aG91dCAoYSkgdXNpbmcgdGhlIFByb3Rvbk1haWwgYXBwIG9y
+IChiKSBkb2luZyBzb21lDQogICAgICByZWFsbHkgaGFja3ksIGZsYWt5LCBkZXBlbmRzLW9uLW15
+LVBDIG5ldHdvcmtpbmcgc2hlbmFuaWdhbnMgdG8NCiAgICAgIGNvbm5lY3QgVGh1bmRlcmJpcmQg
+QW5kcm9pZCB0byB0aGUgUHJvdG9uTWFpbCBCcmlkZ2UuIEd1ZXNzIHdoaWNoDQogICAgICBvbmUg
+SSBkbz88ZGl2IGNsYXNzPSJtb3otY2l0ZS1wcmVmaXgiPk9uIDcvMTcvMjAyNiAzOjAyIFBNLCBC
+ZW4gQnVja3NjaA0KICAgICAgd3JvdGU6PGJyIC8+PC9kaXY+PGJsb2NrcXVvdGUgY2l0ZT0ibWlk
+OjNiODYyZDljLTkxNzAtYTM5OS0yZTg0LTI0ZTM2NjBjOGJiMEBiZW9uZXguY29tIiB0eXBlPSJj
+aXRlIj48bWV0YSBjb250ZW50PSJ0ZXh0L2h0bWw7IGNoYXJzZXQ9VVRGLTgiIGh0dHAtZXF1aXY9
+ImNvbnRlbnQtdHlwZSIgLz48cD5NYWdudXMgTWVsaW46PGJsb2NrcXVvdGU+PHA+TXkgcG9zaXRp
+b24gb24gc2lnbmVkLW9ubHkgZW1haWxzIGlzIHRoYXQgaXQmIzM5O3Mgbm90IHJlYWxseQ0KICAg
+ICAgICAgIHVzZWZ1bC4gWWVzIGl0IGNhbiBoYXZlIHVzZWZ1bG5lc3MgaW4gdXR0ZXJseSBzcGVj
+aWFsIGNhc2VzDQogICAgICAgICAgYnV0IHRoZSBwb3RlbnRpYWwgdHJvdWJsZSBhcm91bmQgaXQg
+ZG9lcyBub3Qgd2VpZ2ggdXAgZm9yIGl0Lg0KICAgICAgICAgIElNTywgc2lnbmluZyBpcyByZWFs
+bHkgYSB0ZWNobmljYWwgYXJ0aWZhY3QgdGhhdCBpcyBpbXBvcnRhbnQNCiAgICAgICAgICB3aGVu
+IHdlIHRhbGsgYWJvdXQgc2VjdXJlIGNvbW11bmljYXRpb24gLSB3aGljaCBpcw0KICAgICAgICAg
+IGVuY3J5cHRlZCtzaWduZWQsIGJ1dCBub3QgaW5kZXBlbmRlbnRseS48L2Jsb2NrcXVvdGU+PHA+
+PGJyIC8+DQogICAgICAgIEFzIEkmIzM5O3ZlIG1lbnRpb25lZCBpbiBteSBvdGhlciBlbWFpbCwg
+dGhhdCAmcXVvdDt1dHRlcmx5IHNwZWNpYWwNCiAgICAgICAgY2FzZXMmcXVvdDsgaXMgcXVpdGUg
+ZmFyIGZyb20gcmVhbGl0eS4gTW9zdCBvZiB0aGUgYmlnIGJ1c2luZXNzZXMgYW5kDQogICAgICAg
+IGdvdmVybm1lbnQgd2FudCBzaWduYXR1cmUgPHN0cm9uZz5maXJzdDwvc3Ryb25nPiwgYW5kDQog
+ICAgICAgIGVuY3J5cHRpb24gaW4gc3BlY2lhbCBjYXNlcy48YnIgLz48YmxvY2txdW90ZT48cD5J
+ZiB1c2VycyB3b3VsZCBhbHdheXMsIGFuZCBjb25zaXN0ZW50bHksIGFsd2F5cyBpbmNsdWRlIHRo
+ZWlyDQogICAgICAgICAgc2lnbmF0dXJlLCB0aGVuIG1pc3Npbmcgc2lnbmF0dXJlIGlzIGEgcmVk
+IGZsYWcuIC4uLiBQZW9wbGUgZG8NCiAgICAgICAgICBub3QgaGF2ZSB0aGVpciBzeXN0ZW1zIHNl
+dCB1cCBmb3IgdGhhdCBpbiBnZW5lcmFsLjwvYmxvY2txdW90ZT48cD48YnIgLz4NCiAgICAgICAg
+VGhhdCYjMzk7cyBleGFjdGx5IHdoYXQgd2UmIzM5O3JlIHRyeWluZyB0byBhY2NvbXBsaXNoIGhl
+cmUsIGZvcg0KICAgICAgICBUaHVuZGVyYmlyZCB1c2VyczogVGhhdCBhbGwgdGhlaXIgb3V0Z29u
+ZyBtYWlscyBhcmUgc2lnbmVkIGJ5DQogICAgICAgIGRlZmF1bHQsIGFuZCB0aGUgbm9uLXNpZ25l
+ZCBtYWlscyBhcmUgdGhlIG91dGxpZXIgcmVkIGZsYWcuPHA+QmVuPGZvb3RlciBjbGFzcz0ic2ln
+bmF0dXJlIiBzdHlsZT0iIj5TZW50IGJ5ICZjb3B5OyA8YSBocmVmPSJodHRwczovL3BhcnVsYS5h
+cHAiIG1vei1kby1ub3Qtc2VuZD0idHJ1ZSIgc291cmNlPSJjb252ZXJ0LWh0bWwiIHN0eWxlPSJ0
+ZXh0LWRlY29yYXRpb24tbGluZTogbm9uZTsgdGV4dC1kZWNvcmF0aW9uLXRoaWNrbmVzczogaW5p
+dGlhbDsgdGV4dC1kZWNvcmF0aW9uLXN0eWxlOiBpbml0aWFsOyB0ZXh0LWRlY29yYXRpb24tY29s
+b3I6IGluaXRpYWw7IiB0YXJnZXQ9Il9ibGFuayIgdGl0bGU9InBhcnVsYS5hcHANCg0KaHR0cHM6
+Ly9wYXJ1bGEuYXBwIj48c3Ryb25nPjxlbT5QYXJ1bGE8L2VtPjwvc3Ryb25nPjwvYT48L2Zvb3Rl
+cj4NCiAgICAgIDxmb290ZXIgY2xhc3M9InNpZ25hdHVyZSI+PHA+LS0gPGJyIC8+DQogICAgICAg
+ICAgQmVvbmV4IEdtYkg8YnIgLz4NCiAgICAgICAgICBUYXVudXNzdGVpbiBiZWkgV2llc2JhZGVu
+LCBHZXJtYW55PGJyIC8+DQogICAgICAgICAgQ0VPIC8gR2VzY2gmYXVtbDtmdHNmJnV1bWw7aHJl
+cjogQmVuIEJ1Y2tzY2g8YnIgLz4NCiAgICAgICAgICBIYW5kZWxzcmVnaXN0ZXI6IEFtdHNnZXJp
+Y2h0IFdpZXNiYWRlbiwgSFJCIDMwMDY1PC9mb290ZXI+PC9ibG9ja3F1b3RlPjxkaXYgaWQ9InRv
+cGljYm94LWZvb3RlciIgc3R5bGU9Im1hcmdpbjoxMHB4IDAgMDtib3JkZXItdG9wOjFweCBzb2xp
+ZCAjZGRkO2JvcmRlci1jb2xvcjpyZ2JhKDAsMCwwLC4xNSk7cGFkZGluZzo3cHggMDsiPgoKPHN0
+cm9uZz48YSBocmVmPSJodHRwczovL3RodW5kZXJiaXJkLnRvcGljYm94LmNvbS9sYXRlc3QiIHN0
+eWxlPSJjb2xvcjppbmhlcml0O3RleHQtZGVjb3JhdGlvbjpub25lIj5UaHVuZGVyYmlyZDwvYT48
+L3N0cm9uZz4KICAvIFRodW5kZXJiaXJkIFBsYW5uaW5nIC8gc2VlCjxhIGhyZWY9Imh0dHBzOi8v
+dGh1bmRlcmJpcmQudG9waWNib3guY29tL2dyb3Vwcy9wbGFubmluZyI+ZGlzY3Vzc2lvbnM8L2E+
+CiAgKwo8YSBocmVmPSJodHRwczovL3RodW5kZXJiaXJkLnRvcGljYm94LmNvbS9ncm91cHMvcGxh
+bm5pbmcvbWVtYmVycyI+cGFydGljaXBhbnRzPC9hPgogICsKPGEgaHJlZj0iaHR0cHM6Ly90aHVu
+ZGVyYmlyZC50b3BpY2JveC5jb20vZ3JvdXBzL3BsYW5uaW5nL3N1YnNjcmlwdGlvbiI+ZGVsaXZl
+cnkmbmJzcDtvcHRpb25zPC9hPgo8YSBocmVmPSJodHRwczovL3RodW5kZXJiaXJkLnRvcGljYm94
+LmNvbS9ncm91cHMvcGxhbm5pbmcvVDdmMjAzMzYyYzAxYWJmZjItTWU2NGJlNTUyMjlkYjc5MmE2
+NjdhNjRkMiIgc3R5bGU9ImZsb2F0OnJpZ2h0Ij5QZXJtYWxpbms8L2E+CjwvZGl2Pgo8L2JvZHk+
+PC9odG1sPjwvaHRtbD48L2h0bWw+
+
+--b1=_0feKbefr0DwvaiuoSAVV78tVmBEuUE0mHtBcf1t8--

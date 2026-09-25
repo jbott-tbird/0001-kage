@@ -1,0 +1,984 @@
+Return-path: <bounces+11002027-272c-example=mac.com@mailer.t.shopifyemail.com>
+Original-recipient: rfc822;example@mac.com
+Received: from p00-icloudmta-smtpin-us-west-1a-100-percent-10 by p59-mailgateway-smtp-7cbbd94d74-hw48n (mailgateway 2628B80)
+	with SMTP id 5b6e05a5-9d9b-4c84-80d6-fcf5a6fae876 
+	for <example@mac.com>; Mon, 20 Jul 2026 12:29:06 GMT
+X-Apple-MoveToFolder: INBOX 
+X-Apple-Action: MOVE_TO_FOLDER/INBOX
+X-Apple-UUID: 5b6e05a5-9d9b-4c84-80d6-fcf5a6fae876
+Received: from o19.mailer.shopify.com (o19.mailer.shopify.com [149.72.250.101])
+	by p00-icloudmta-smtpin-us-west-1a-100-percent-10 (Postfix) with ESMTPS id A74A51800107
+	for <example@mac.com>; Mon, 20 Jul 2026 12:29:01 +0000 (UTC)
+X-ICL-RepId: 019f7f80-4832-7445-8d5e-e23adcc49337
+X-ICL-Info: GAtbRVYDBVFFSlVFSgQEUVUKE0oWX1gHVQoPB0UBAltbTlRZSgUGTERJV1cdVAsAGgwIFB1DHVNESVZFSAIBT0dOVBRVRFkGEREDFgtcUxtIFAcUVlNZDzUUBx4UVURMAVcVHxdAXwQMHAsWEVwYARoURhEcDUJMBhEJBxFWTwcYGA8bVlNZD1ULBUoMX1IGHRwHBBRVTyIYGAVZG19bQh0cChhFXwdbWxQHHhRVREwGEQkHEVZPTBYWC1cIRERfGkhfWRVRXw4QC0gEEF9GCxMASBQXXRYGEUQSWQtYWRIcHx8SFVFfDlsaCRpYXV8GSEUjRkgCBlJFTUtGQHMFJDNNVE5BdARWMz8lWk50DyE3PF5POENeDQUQAA5WU1kPSw==
+X-ICL-Score: 2.33303322423
+Authentication-Results: bimi.icloud.com; bimi=none
+X-ARC-Info: policy=fail; arc=none; r1=-20; r2=0
+Authentication-Results: arc.icloud.com; arc=none
+Authentication-Results: dmarc.icloud.com; dmarc=pass header.from=t.shopifyemail.com
+X-DMARC-Policy: v=DMARC1; p=reject; pct=100; fo=1; rua=mailto:dmarc-aggregate@shopify.com;ruf=mailto:dmarc-reports@shopify.com
+X-DMARC-Info: pass=pass; dmarc-policy=reject; s=r1; d=r1; pdomain=shopifyemail.com
+Authentication-Results: dkim-verifier.icloud.com; dkim=pass header.d=t.shopifyemail.com header.i=@t.shopifyemail.com header.b=d3NqWXds
+Received-SPF: pass (spf.icloud.com: domain of bounces+11002027-272c-example=mac.com@mailer.t.shopifyemail.com designates 149.72.250.101 as permitted sender) receiver=spf.icloud.com; client-ip=149.72.250.101; helo=o19.mailer.shopify.com; envelope-from=bounces+11002027-272c-example=mac.com@mailer.t.shopifyemail.com
+Authentication-Results: spf.icloud.com; spf=pass (spf.icloud.com: domain of bounces+11002027-272c-example=mac.com@mailer.t.shopifyemail.com designates 149.72.250.101 as permitted sender) smtp.mailfrom=bounces+11002027-272c-example=mac.com@mailer.t.shopifyemail.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=t.shopifyemail.com;
+	h=content-type:date:from:mime-version:subject:reply-to:to:cc:
+	content-type:date:from:subject:to;
+	s=s1; t=1784550539;
+	bh=MqUypoHsu/K2chHP7GZo95ShvAA3JzAzSifyLJZwMgc=;
+	b=d3NqWXdsQYK+rbM/oS2qXqKeZVqa+hRQ8C4apiDCM9MF8h20llFx4GCs8YpozB23uNHE
+	FebUtttvovRjVDZW3fuKZqndgia7kPBK+/BDQZ4/P+q2JloMHqlgAvb+OsgLGB/9VSChUu
+	rGlxbw2HhPEoGOBVJ359UZFJC6Aa00b3oW909US9SKXxoy7Rd/ytSpjLgsfu0Ft/bXpGjn
+	l+0Kpr0gd2ZFnPqq5c4v6fRJGSTduncqOs3R7pWZIhqcqqVhTRVL2NwdZpkHmDP3xRF6vX
+	yiytfgFRoqYOisBJc4+CGHQWMNtA3PcnA6//owyPXDJvyo4IlPS7UHPKYb2Hno/Q==
+Received: by recvd-8585b85bc9-mm2pd with SMTP id recvd-8585b85bc9-mm2pd-1-6A5E148B-1C
+	2026-07-20 12:28:59.289610441 +0000 UTC m=+914744.329618183
+Received: from MTEwMDIwMjc (unknown)
+	by geopod-ismtpd-99 (SG) with HTTP
+	id m2c6YIwFTdCet_RL7SeBmQ
+	Mon, 20 Jul 2026 12:28:59.194 +0000 (UTC)
+Content-Type: multipart/alternative; boundary=ba1ba444f1c0039b543dbfe22f901964851653e192f90972b7250e4dac1b
+Date: Mon, 20 Jul 2026 12:28:59 +0000 (UTC)
+From: Crailtap <store+2080114@t.shopifyemail.com>
+Mime-Version: 1.0
+Message-ID: <E1020004-18C3FF4299D24FFC-6D9CBE88@shopify.com>
+Subject: A shipment from order #100918 has been delivered
+Reply-To: Crailtap <thegoat@crailtap.com>
+Feedback-Id: s_2080114:shopify
+X-Shop-App: 
+ =?us-ascii?Q?S1BkRklpUFl5MnlHMVJ5bm9lcHVPQWJWd1JwVC9SNEttb1lmeWs2QUdiMnpsbE?=
+ =?us-ascii?Q?ZRNG1yOE1jbjZLTmF6SHgrVlpzSFJ0cTAyZHdQO?=
+ =?us-ascii?Q?ENuMWtOY3NHMGlzVmQrbTB6bXY0RGIrdi9pMG0w?=
+ =?us-ascii?Q?ODlBV0huTkxXdjVoNS8zMDNUOW00Yk5EMmVKeUd?=
+ =?us-ascii?Q?SS0VQTm1lNXVvVXlvRmFiTG9tMkF2eXl0R3paYm?=
+ =?us-ascii?Q?1iQUxTaWhmTW9yOER0SHlHODdDNWtad0dMY25nV?=
+ =?us-ascii?Q?G5sUUNTb0p3cC9mY25xMEl1L1RySHo3V2NYcm1k?=
+ =?us-ascii?Q?KzFHbUZMTlhFQ2VSWnZIWUFrdkFkcVgrUTVkdGV?=
+ =?us-ascii?Q?lUy9IRUovbXRnR1pxTE9zeFAvdW5IWWlYNUE9PS?=
+ =?us-ascii?Q?0tRlFTd3BXYkdWYmdwNit2MWMza1FrUT09--9b3?=
+ =?us-ascii?Q?c9b06aebbc8e87a65f680fcecc49761d5ad86?=
+X-SG-EID: 
+ =?us-ascii?Q?u001=2ErdMGyCsEgukbpAMS7Bh6X4HJrrlyYo0LmjgGos3xNDNP8wk4TNl=2F1Zvg2?=
+ =?us-ascii?Q?gw5JG8A5b4ZNAhpF+pR73hwLXYzJ1cF4pmtkToK?=
+ =?us-ascii?Q?sG=2FJiWkuRa6ijZq=2FqmwiGU9S9CtjlfGW5O+rV3W?=
+ =?us-ascii?Q?R6va7Uyl5sl=2F4OXTMUAy12q0yq8sdx8gMLD2qfV?=
+ =?us-ascii?Q?R+INtkYZQTaXck1t0bIkpFmMaeDXm3iDP0NdeBX?=
+ =?us-ascii?Q?SGh2a8i019T65qXA5aPP0Lxp7b=2F3c3hwpl2FQa2?= =?us-ascii?Q?LkZd?=
+X-SG-ID: 
+ =?us-ascii?Q?u001=2ESdBcvi+Evd=2FbQef8eZF3BpTL9BgbK5wfSJMJGMsmprDITwp3LLcgXu9gv?=
+ =?us-ascii?Q?F1Oq5oTf1VY9MM=2F=2FZCviT=2FP37sq39cAIJtJ+MFf?=
+ =?us-ascii?Q?m0CyQ3KwqpODXjLzwwOg8OUKMbSKd39pOACwkWK?=
+ =?us-ascii?Q?xafx1VsPziFG6KHs5uWkNe5p0MO2=2F+XxFP6ZR6S?=
+ =?us-ascii?Q?gDvapaMVJULYB7EmPEeli2EQkb3QzlTsUo7gNCw?=
+ =?us-ascii?Q?dcW7JPV4G809kr0NHLizIckH0WZu+LTerUGWhDJ?=
+ =?us-ascii?Q?3WfYc7B33JIh+lDTIOPJ6rLBozfd2AowkVDM4Jz?=
+ =?us-ascii?Q?nl334e6pbiFMEmszMt8oXhGxyCbBuJqW4dn0Q=2FJ?=
+ =?us-ascii?Q?Pks2knClrklAyNmRFXWhvb7uwcRDvP4inLuh=2Fm3?=
+ =?us-ascii?Q?UOAxGT4muEy6425diyf68GUyxLfjRtfiE7zl=2FLJ?=
+ =?us-ascii?Q?rfIFLA9OmPda1GCnyG2CdcD6SMILBg9AjRrmGuL?=
+ =?us-ascii?Q?Vb1kBUIHnlEa9EsLch4QW7Yj8ZUdaV8RMasZeEa?=
+ =?us-ascii?Q?7cCoo=2FSwtCVFTn58UpizMywZTli5OjxB0M9IDBn?=
+ =?us-ascii?Q?4M=2FT4ijKmwLOUDOxygT0NwCGcSBaH1jj3Vbsw9i?=
+ =?us-ascii?Q?tDlhzwLI88LRPf2asSLUUPmrjFPoxvZkE7MPYp1?=
+ =?us-ascii?Q?itVqkfyJnvJIcxQKMEoU3=2F8gUqTuK0tESF1dzNj?=
+ =?us-ascii?Q?m6MnZ=2FncBi1y4K+s8wjfMEkjE4YhvOQl4J6ME+Z?=
+ =?us-ascii?Q?LSSKB+XxLwrGaL2lCA1jZt=2FI4qRAQzDcq2Lhi3y?=
+ =?us-ascii?Q?Gd04nGDjO5sZDS2Dm1h62qpbveAQ6U9lIS6pmAn?=
+ =?us-ascii?Q?tVb+bFzbWRcihqXBLD9wp8h7wdXDjIxgKLKd18a?=
+ =?us-ascii?Q?d9QkyYkUvD5arTvmxYLKufs=2FqE6m6rWjridDwMd?=
+ =?us-ascii?Q?RJymLIHHibSxjq9tW9dTgl1JiHkiA75eDjey2=2Fs?=
+ =?us-ascii?Q?bFMkBLgvMFlkeIcpXrY5i7MyU6jLsJirSyLec72?=
+ =?us-ascii?Q?mImgIGH2LVFIGqEL6jq1jgn04410OsL3pUClliK?=
+ =?us-ascii?Q?wFBRBRKEvHA+U+nr8vKy5lVfnPF2qR4NqHL3Rq8?=
+ =?us-ascii?Q?2t1s9scJxDQQs+S8UYxCzuP5wWaw44YnGSYyd6W?=
+ =?us-ascii?Q?3yupyZJzvE7aKXCDYbsosgOViTSTVWwxd8jUWbM?=
+ =?us-ascii?Q?WupDOcxr1lBo=2FL7E3p85BXOz2CqlH9JYxo7Get=2F?=
+ =?us-ascii?Q?ydxPhtymo=2FOm1nUrV1lSahTfSXhnIqHRbl0IFXP?=
+ =?us-ascii?Q?0u6ZH9AC6LTtfaHxkrR75MnuT2+WfaQNpJmjdeZ?=
+ =?us-ascii?Q?DIFtPvMYitKVACPudQpvzcKwfo8Q2LnePbsh6Ob?=
+ =?us-ascii?Q?Q8Rxabpo7qfVZNZ0lcKybMwEH=2FhVq1pf8Y8EJcR?=
+ =?us-ascii?Q?airwGFmqTvY+dtUKf0tmSyedik3pJrQecOHg9fS?=
+ =?us-ascii?Q?lCE03=2FL5y06c+hhEOnY+zm4TFCNj8mFLRQq4L4e?=
+ =?us-ascii?Q?9+tnHrLXpn5cS5P=2FLy=2FBTU4+3+V43e3vmtBA1pj?=
+ =?us-ascii?Q?vxTx8Zt1jgScT9i3or7tlEpSG8qmM=2FoVNLQxRqq?=
+ =?us-ascii?Q?pwAnmhLtT0f6lpuJHVWrn2ir8Czrs=3D?=
+To: example@mac.com
+X-Entity-ID: u001.a5OpWDrkAAdMS6OvSfUxGQ==
+X-MANTSH: 1TFkXGxobEQpZRBdjGQUYWxhyUH4YZREKWU0XZEVETxEKWUkXGnEaEBp3BhIbcRk
+ bEB53BhgaBhoRClleF2xseREKQ04XSF1he2NJb0xjTlxkZn58Zh18blkeeVJGTX4bYhpDeVMRC
+ lhcFxkEGgQfEgUbGhoEHRsEGxwaBBMbEBseGh8aEQpeWRdCQR1BWhEKTVwXGB8cEQpMWhd4bRp
+ daxEKRVkXaGtrEQpMXxd6BQUFBQUFBQUFHREKTU4XaWsRCkxGF2NNaxEKQ1oXGx4TBB0YBBgfG
+ gQbGhsRCkJeFxsRCkJcFxsRCkJLF2leYnlCAVJTRE0ZEQpCSRd6SU8SYlplTm5PQhEKQkUXY01
+ cf3h5Ex9QaxMRCkJOF3pJTxJiWmVObk9CEQpCTBdjXV96E29ERmtuYREKQmwXZm1bHFxuR35mR
+ 3oRCkJAF2NkaHtGTxtNUE9BEQpCWBduZ2FmeFsebFwbSxEKQngXZVAFH1lfbGhgWWQRClpYFxs
+ eEQpwZxduHWl7aXlQTHMZEhAaEQpwaBduRHgZR0dhRRhMTBAHHhkRCnBoF2ZgTXpIQmFNZ3scE
+ BoRCnBoF3oBRRMSbAVPZnx9EAcZHREKcGgXbGx9HWFPRFxOax0QGhEKcGgXaHx6Sxt/RWJQfkk
+ QBx4bEQpwaBdpSFAYc0V8Y0NbexAHGRIRCnBoF2B9TWV5WhkZEnpYEAceGREKcGgXb2dPX1lHY
+ RlofEwQGhEKcH8XbAUBel5kQmQdTEQQGhEKcF8XYk0Tc3tAbBhrYFkQGhEKcH0XYHtNTWZzaFx
+ pYlwQGhEKcH8XYnl/H0cTHh5reFMQGhEKcH0XYUtbbBxCYF9oSV8QGhEKcH8XbVJff0V/BVhsS
+ 1oQBx8ZEQpwXxdgfEBeemNCWml6EhAHHxsRCnB9F2RcWm1MWXNSaEEYEBoRCnBfF25FZ0BDWEx
+ fXWBTEAceGxEKcH0Xa1hCYRkdGmh4TXkQBx4ZEQpwXxdlc3xBRlNtZEJDaxAaEQpwfRdgX3off
+ 2Z+QVBBGRAaEQpwfRdlH1BPZE9pSAVFHxAaEQpwfRdgHGZ8aR9LRwFJQRAaEQpwfRdlUGNuQXp
+ oZk9YYxAaEQpwfRd6eW0ceE1tWnIaXhAaEQpwfRdhUhxLY0tjUHNcfhAaEQpwfRdkEmATUkNbc
+ 2cccBAaEQpwfRdhXxNAHltnf15lfRAHHhkRCnBsF3ofBRxgQHIFRUtEEBoRCm1+FxoRClhNF0s R
+X-Authority-Info: v=2.4 cv=O6Q0fR9W c=1 sm=1 tr=0 ts=6a5e148e b=1
+ cx=c_apl:c_pps a=nnX4LWWwYPtH6EEROayDJA==:117 a=nnX4LWWwYPtH6EEROayDJA==:17
+ a=hm7/1u90vLMVjCfsgk7TIyjbs10=:19 a=jaG6a-ywOGCrBXo9:21 a=RAioF0-LDSMA:10
+ a=LoKmEmyLDP4A:10 a=iLxcjXlPkw4A:10 a=TwyNCnMxAAAA:8 a=1x6M4AJSAAAA:8
+ a=6qLccdtz4rjqOrKBWbsA:9 a=wPNLvfGTeEIA:10 a=uZ30BzuaAAAA:8
+ a=gG6yJ6_XhhNUYevRQ2EA:9 a=Vj4v7aIgIkpgYp5u:21 a=_W_S_7VecoQA:10
+ a=lqcHg5cX4UMA:10 a=o9UsN7Vznp0-xf5GBk_v:22 a=5yU3S35YU4bGjq-dph-N:22
+ a=Bho9c0fBagfJEIQBS7DQ:22 cc=ntf
+X-Proofpoint-GUID: bwKQIcEfIdvNLTVL7VDs4SxlgT1H0iSy
+X-Proofpoint-ORIG-GUID: bwKQIcEfIdvNLTVL7VDs4SxlgT1H0iSy
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzIwMDEzOSBTYWx0ZWRfX/fhaHtMPmgbK
+ H1jKtChQhQFVE/kikVw73qGjnXdT8qeW0Hr23J7IA9YO1Nw+GSAFg6ca7Jzvczd9RMU08mY5Ecf
+ 7bjMmugg6JixMv6TguANdajafrAXPVElE139H9J/EOMrsIt35v7jw7zlaw04qDLvJ80ti74ogYs
+ LX+BGR5TZkweoLiFCWoPeO52w1QatC+EmY2cqnKc7O0xQoCq5pysKt1VSDyVDfUPRgAFPEczEm/
+ KswaOLO7leoZ1u1posWvOy7+ditZQBYsmt/XBs6MAfKefdjFdva0a/ABYHgBq6iuKhICZmT+Njp
+ rLQN/MUN9BcIX7Z+7YusoFvRRQAJdzN2w6fJqThM5Ox1epHaWVaFoWHy2OM/2JiDo80H0cqye1i
+ nwjlQ8tDZGBTw56DUTxUT6feKD9Z5u+1yhEdhZKDiVo8ri4gApRbaty7vFSsvNwMw/ajULG9
+X-JNJ: AAAAAAABCWeOBdgR1Bd0TNIEAEwPW2WiGNIPWMF/s8CGugr3ugESI9242MAD8uVP0x0rhuFik0I5usQQIMX7SmfgwaSbCWkuKk0P/PbJglN/6ecMohUlYXvvqFLXtfDwsPzPG6G6bPAOGb9npBzjGh4s/0ehtpaS/a1YCWx7z7ifycAdfQtQNmFQjU3xk9Qf3TgbdnWJ2++B6a4d/p83VJFR6AzT2QQz2RQyXJKpnl2+J1jskR34DFk2H9ZNglhvrvnd8meI/XX1sQmaE6zrYxtC8jkzWADNFFYu82b+ML6N7TNqfEku3eWxvTbisl6SLkGuGF4BJNX6JXpitSKEGEPjC7iQMD/jdZm/ejhsXBshCvDgOGGjqINpk5p/BrvxT9mJbrvk8ni9+d9QF8oPTafoJEyxiDraalICp4WpJISuWFDFc+MgB1vsun1HG9A9SAZR/QrkaPjsyTwm9eAXHe1Coo7carkpBGtemH2mk98r2UwAJpXL4aWJDVlJ+qMK1JGrQBCZy/PJa+uPtR3JjhdyFbpO39R4QAttkpVDBHR6Jl6w+faCJue7Ep8s3evYLnOJo0PxYj3ORYPJLfOrccoMOpDbErmF50Q7RoOVhyR29udptcvXFqtL5L/dF8dhfy/iqk6TzmQwhMia9g358aplR4gUoYxyYTrgMyF8mtAL8OyybdlvalbSH1raq8H2OAPtddO4lDsRI+ugSjJoJ+eYEQgZ6H+pLJSZPFv+2X2kFMVIciEaasbctIsGXj4zn5Txm2zK9Ih7NIGANo8zBQAAWXQsRLS/L/oy+Gqs3S6k5Zj6Q3jwtD+pwGTuhc/yrxgKVrw7MOFCnD7+4Gxt5B71evDtO39T0vBOJgbqxqbXrNqzRsI2NwOd2nVVsM6d0c1TvsUPCXGm7Let2P+IA5UVe1/UUgMHtNLM8xzJVhfJfCVjmN4eLoX0J6G5pf5eD3Zf/Y9venru3n0=
+
+--ba1ba444f1c0039b543dbfe22f901964851653e192f90972b7250e4dac1b
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Mime-Version: 1.0
+
+The last items in your order have been delivered
+
+Crailtap
+
+Order #100918
+
+------------------------------------------------
+The last items in your order have been delivered
+------------------------------------------------
+
+Haven't received your package yet? Let us know
+( thegoat@crailtap.com )
+
+View your order=20
+( https://crailtap.com/2080114/orders/7dd6560edc5c2faf1c21293a4abc8286/auth=
+enticate?key=3Dshcct_VXM0dnVOM2Z0QUdiWTFzWXhvcytkNDQyTFFadFhxV3ZXV0o1elNkan=
+pJWGZlTWkzYWYrb29JWDBodytlUjdxdkR5bnYrMmMxWGtRRzFRVnBubHNINEhVakovbHIwVlIxd=
+kl5bU9FT0lPMVZrVW90UWlFU2o5L0xpY2J6UjJVSU9DeTJ3QmpOVlh4TmkzekRPYWh5bFBwMW1L=
+OGNseUhhSS82b1dPdjdYT1NVNnhkczd3SWxBM2htZlNnU3Z0aElGT2xjOHVpOW9yYmtEd3NzanM=
+zd3ZRSlA0SkpwNDNvczVnZHFzWWdIU3Q0V2FhK2ZaUE1lSEJhOU1uZ1BBQ3dvKzNnSUNVa2dGZn=
+Vpays3bWJlVDhFTkZsblMvMmtYUHpGVThFbys4eVVkWjJNV25DaEhBWlNXbUNEOVNmSlZ2SVZZd=
+m5pMVBFdHdGalRiZkV4YXlTQStxT3JCNFBvMXdIaU5ra0JjeStOeWZ3Z1ZzZERLRnJrQkMxL2px=
+MkhJWHJ4MFJrR0ZYbjYycVJuMS9aWit0VW5YWU1RTXViU2V3WWM3QjRMQVFCalMyUjVDaXFjR05=
+WWUc4d2NkdXJuanRqV2ZLWk5qTTVvT0FYU0tya2kzZjhTaHRBN0tUb2V5YWlUWTRQTnRzQWVHaE=
+x1S3NyQWxtQWpOaFplcjk1VU1aQVRnTnlTTndqZ3g0Rmdvd2gzNzhzK2NPQWZnbVBSRzZvcXVBV=
+GFrZEtHQ1d0U3p3Yk0vbnVoUCtVPS0tSnJJNHI1RXZlbDVXR0RWbi0tT2VKdHRvMnVrS3Vaby9n=
+Mi91ZHptdz09&syclid=3D309801dd-4bd4-4fdc-b88e-8f4954802071 )
+
+
+or Visit our store=20
+( https://crailtap.com?syclid=3D9a2da604-02a8-4676-91de-9f2c0486836a )
+
+
+UPS tracking number: 1ZE43G210300181198=20
+( http://wwwapps.ups.com/WebTracking/processRequest?HTMLVersion=3D5.0&Reque=
+ster=3DNES&AgreeToTermsAndConditions=3Dyes&loc=3Den_US&tracknum=3D1ZE43G210=
+300181198 )
+
+
+Items in this shipment
+----------------------
+
+Legends Heads Tee =D7 1
+
+L / CREAM
+
+Feather Tee =D7 1
+
+Charcoal / L
+
+National Hero Staple Wheels =D7 1
+
+55mm
+
+Anderson Lost Singles Deck =D7 1
+
+8.25" X 31.875"
+
+If you have any questions, reply to this email or
+contact us at thegoat@crailtap.com
+--ba1ba444f1c0039b543dbfe22f901964851653e192f90972b7250e4dac1b
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html; charset=iso-8859-1
+Mime-Version: 1.0
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w=
+3.org/TR/REC-html40/loose.dtd"><html><head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DUTF-8"/>
+<style>body {
+margin: 0;
+}
+h1 a:hover {
+font-size: 30px; color: #333;
+}
+h1 a:active {
+font-size: 30px; color: #333;
+}
+h1 a:visited {
+font-size: 30px; color: #333;
+}
+a:hover {
+text-decoration: none;
+}
+a:active {
+text-decoration: none;
+}
+a:visited {
+text-decoration: none;
+}
+.button__text:hover {
+color: #fff; text-decoration: none;
+}
+.button__text:active {
+color: #fff; text-decoration: none;
+}
+.button__text:visited {
+color: #fff; text-decoration: none;
+}
+a:hover {
+color: #F712B4;
+}
+a:active {
+color: #F712B4;
+}
+a:visited {
+color: #F712B4;
+}
+@media (max-width: 600px) {
+  .container {
+    width: 94% !important;
+  }
+  .main-action-cell {
+    float: none !important; margin-right: 0 !important;
+  }
+  .actions-buttons .actions-buttons__cell {
+    display: block !important; width: 100% !important; padding-left: 0 !imp=
+ortant; padding-right: 0 !important; padding-bottom: 10px !important;
+  }
+  .actions-buttons tr {
+    width: 100% !important; display: block !important;
+  }
+  .actions-buttons .button__cell--separator {
+    width: 100% !important; display: block !important;
+  }
+  .actions-buttons .button__cell.button__cell--primary {
+    width: 100% !important; display: block !important;
+  }
+  .actions-buttons .button__cell.button__cell--shop-app {
+    width: 100% !important; display: block !important;
+  }
+  .actions-buttons .button__cell.button__cell--shop-app {
+    mso-margin-top-alt: 15px !important;
+  }
+  .actions-buttons .button__cell--separator {
+    height: 15px !important; mso-padding-top-alt: 15px !important; mso-padd=
+ing-left-alt: 0 !important;
+  }
+  .actions-buttons .button__text--shop-app {
+    white-space: normal; line-height: 1.5; mso-line-height-rule: exactly;
+  }
+  .actions-buttons .button__shop-logo {
+    padding-bottom: 1px !important; vertical-align: middle !important;
+  }
+  .secondary-action-cell {
+    text-align: center; width: 100%;
+  }
+  .header {
+    margin-top: 20px !important; margin-bottom: 2px !important;
+  }
+  .shop-name__cell {
+    display: block;
+  }
+  .order-number__cell {
+    display: block; text-align: left !important; margin-top: 20px;
+  }
+  .po-number__cell {
+    display: block; text-align: left !important; margin-top: 5px;
+  }
+  .button {
+    width: 100%;
+  }
+  .or {
+    margin-right: 0 !important;
+  }
+  .apple-wallet-button {
+    text-align: center;
+  }
+  .customer-info__item {
+    display: block; width: 100% !important;
+  }
+  .spacer {
+    display: none;
+  }
+  .subtotal-spacer {
+    display: none;
+  }
+  .return__mobile-padding {
+    margin-top: 19px; padding-top: 19px;
+  }
+}
+</style>
+</head>
+<body style=3D"margin: 0;">
+
+
+
+ =20
+  <title>The last items in your order have been delivered</title>
+  <meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dutf-8"/=
+>
+  <meta name=3D"viewport" content=3D"width=3Ddevice-width"/>
+ =20
+ =20
+
+
+ =20
+    <table class=3D"body" style=3D"height: 100% !important; width: 100% !im=
+portant; border-spacing: 0; border-collapse: collapse;">
+      <tbody><tr>
+        <td style=3D"font-family: -apple-system, BlinkMacSystemFont, &#34;S=
+egoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen&#34;, &#34;Ubuntu&#34;, &#34;Ca=
+ntarell&#34;, &#34;Fira Sans&#34;, &#34;Droid Sans&#34;, &#34;Helvetica Neu=
+e&#34;, sans-serif;">
+          <table class=3D"header row" style=3D"width: 100%; border-spacing:=
+ 0; border-collapse: collapse; margin: 40px 0 20px;">
+  <tbody><tr>
+    <td class=3D"header__cell" style=3D"font-family: -apple-system, BlinkMa=
+cSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen&#34;, &#34;U=
+buntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Droid Sans&#34;,=
+ &#34;Helvetica Neue&#34;, sans-serif;">
+      <center>
+
+        <table class=3D"container" style=3D"width: 560px; text-align: left;=
+ border-spacing: 0; border-collapse: collapse; margin: 0 auto;">
+          <tbody><tr>
+            <td style=3D"font-family: -apple-system, BlinkMacSystemFont, &#=
+34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen&#34;, &#34;Ubuntu&#34;, &#3=
+4;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Droid Sans&#34;, &#34;Helvetica=
+ Neue&#34;, sans-serif;">
+
+              <table class=3D"row" style=3D"width: 100%; border-spacing: 0;=
+ border-collapse: collapse;">
+                <tbody><tr>
+                  <td class=3D"shop-name__cell" style=3D"font-family: -appl=
+e-system, BlinkMacSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Ox=
+ygen&#34;, &#34;Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;, &#34=
+;Droid Sans&#34;, &#34;Helvetica Neue&#34;, sans-serif;">
+                      <img src=3D"https://cdn.shopify.com/s/files/1/0208/01=
+14/files/crailtap-logo.png?v=3D125081" alt=3D"Crailtap" width=3D"145"/>
+                  </td>
+
+                    <td style=3D"font-family: -apple-system, BlinkMacSystem=
+Font, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen&#34;, &#34;Ubuntu&#=
+34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Droid Sans&#34;, &#34;H=
+elvetica Neue&#34;, sans-serif;">
+                      <table class=3D"order-po-number__container" style=3D"=
+border-spacing: 0; border-collapse: collapse; margin-left: auto; margin-rig=
+ht: 0;">
+                        <tbody><tr>
+                          <td class=3D"order-number__cell" style=3D"font-fa=
+mily: -apple-system, BlinkMacSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#3=
+4;, &#34;Oxygen&#34;, &#34;Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans=
+&#34;, &#34;Droid Sans&#34;, &#34;Helvetica Neue&#34;, sans-serif; text-tra=
+nsform: uppercase; font-size: 14px; color: #999;" align=3D"right">
+                            <span class=3D"order-number__text" style=3D"fon=
+t-size: 16px;">
+                              Order #100918
+                            </span>
+                          </td>
+                        </tr>
+                      </tbody></table>
+                    </td>
+                </tr>
+              </tbody></table>
+
+            </td>
+          </tr>
+        </tbody></table>
+
+      </center>
+    </td>
+  </tr>
+</tbody></table>
+
+          <table class=3D"row content" style=3D"width: 100%; border-spacing=
+: 0; border-collapse: collapse;">
+  <tbody><tr>
+    <td class=3D"content__cell" style=3D"font-family: -apple-system, BlinkM=
+acSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen&#34;, &#34;=
+Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Droid Sans&#34;=
+, &#34;Helvetica Neue&#34;, sans-serif; padding-bottom: 40px; border-width:=
+ 0;">
+      <center>
+        <table class=3D"container" style=3D"width: 560px; text-align: left;=
+ border-spacing: 0; border-collapse: collapse; margin: 0 auto;">
+          <tbody><tr>
+            <td style=3D"font-family: -apple-system, BlinkMacSystemFont, &#=
+34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen&#34;, &#34;Ubuntu&#34;, &#3=
+4;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Droid Sans&#34;, &#34;Helvetica=
+ Neue&#34;, sans-serif;">
+             =20
+            <h2 style=3D"font-weight: normal; font-size: 24px; margin: 0 0 =
+10px;">The last items in your order have been delivered</h2>
+            <table class=3D"text-icon-container" style=3D"border-spacing: 0=
+; border-collapse: collapse;">
+              <tbody><tr class=3D"text-icon-row">
+                <td class=3D"text-icon" style=3D"font-family: -apple-system=
+, BlinkMacSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen&#34=
+;, &#34;Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Droid S=
+ans&#34;, &#34;Helvetica Neue&#34;, sans-serif; padding-bottom: 5px; paddin=
+g-right: 8px;"><img src=3D"https://cdn.shopify.com/shopifycloud/shopify/ass=
+ets/themes_support/notifications/question-a6317f4ae913ee8f7a1baf241806a4a29=
+17e920c56d330e476cc94fccf8bef56.png" class=3D"text-icon__image" style=3D"wi=
+dth: 18px; height: 18px; display: inline-block; vertical-align: middle;"/><=
+/td>
+                <td class=3D"text" style=3D"font-family: -apple-system, Bli=
+nkMacSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen&#34;, &#=
+34;Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Droid Sans&#=
+34;, &#34;Helvetica Neue&#34;, sans-serif; padding-bottom: 5px;">
+                  <p style=3D"color: #777; line-height: 150%; font-size: 16=
+px; margin: 0;">Haven&#39;t received your package yet? <a href=3D"mailto:th=
+egoat@crailtap.com" style=3D"font-size: 16px; text-decoration: none; color:=
+ #F712B4;">Let us know</a></p>
+                </td>
+              </tr>
+            </tbody></table>
+           =20
+              <table class=3D"row actions" style=3D"width: 100%; border-spa=
+cing: 0; border-collapse: collapse; margin-top: 20px;">
+  <tbody><tr>
+    <td class=3D"empty-line" style=3D"font-family: -apple-system, BlinkMacS=
+ystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen&#34;, &#34;Ubu=
+ntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Droid Sans&#34;, &=
+#34;Helvetica Neue&#34;, sans-serif; line-height: 0em;">=A0</td>
+  </tr>
+  <tr>
+    <td class=3D"actions__cell" style=3D"font-family: -apple-system, BlinkM=
+acSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen&#34;, &#34;=
+Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Droid Sans&#34;=
+, &#34;Helvetica Neue&#34;, sans-serif;">
+      <table cellpadding=3D"0" cellspacing=3D"0" border=3D"0" style=3D"bord=
+er-spacing: 0; border-collapse: collapse;">
+        <tbody><tr>
+          <td valign=3D"middle" style=3D"font-family: -apple-system, BlinkM=
+acSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen&#34;, &#34;=
+Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Droid Sans&#34;=
+, &#34;Helvetica Neue&#34;, sans-serif;">
+            <table class=3D"button main-action-cell" style=3D"border-spacin=
+g: 0; border-collapse: collapse;">
+              <tbody><tr>
+                <td class=3D"button__cell" style=3D"font-family: -apple-sys=
+tem, BlinkMacSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen&=
+#34;, &#34;Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Droi=
+d Sans&#34;, &#34;Helvetica Neue&#34;, sans-serif; border-radius: 4px;" ali=
+gn=3D"center" bgcolor=3D"#F712B4"><a class=3D"button__text" href=3D"https:/=
+/crailtap.com/_t/c/v3/AADIKkxlIF8se1AKcZpUPpldw6wKS3fl4bbksVFXIdnnrEiVBpr5A=
+5FX3wGObGt4RwTaK53dRjs-4tpBrjM2N-eokjNzzcxFcJRcQUlvnKRlQxW-Kr03q0lUM0zUBWF1=
+ywh_BBsMd-nAhJOWpyoOQCc6_NVoiBjlAQbcaMT2shWCD4SBROFBeOmwkTsvQ9CPRsK1M_7AmQk=
+9XewMl25xE21R08MGHxuxKQ8Dh7B_bOSqGpgX4MRLgyPwX1GlrAMG_yi_24Ye4ijwAeV9VFDcUy=
+ai-EXVLGOSDYmI4kJUOY--jriQJ2Pb_uzGb7nUwPWD-iuVayIjM3TVFqSVYEWVslFCZLQoU-FYX=
+kRx21qzQK2YbRh43284UV21q1qIeaiGKFfl8WjovwSqg4THt406CJjdTP43HA7z6YSNHk4KUjl0=
+PteyFKhziGX5bHKkFfmLODyev9RdbsQjk4P9wpReu0gVv5b4xGZeuQrPlkAUR5ylDDmzPYMImFV=
+aYXxCROFn9jAzR-v7kLhbndXKnlLY-UbJ7cI7-nczt8nVHcJelNR0ssTkIiKB5eHULW9so33FA7=
+Wh_ZBB5FLQpyKhnjPX_SHgLNTYHTPl9nH60e_Nb1UlRUZiycd2JqbSvJOdBwGxtO8-dreUhVZNs=
+duSaqo_8BzHr1d8gzzLUPb3y9TN2hrEaWSQyfIieZG8t3bzJKn4HEMyCiNL7RTT2qOgEsOBJXl9=
+7Kqu0BSWDhXgqNes2rieLkZk5a0XGKn5bIoIQXrW80_y84jJuk_cwBYMAGk9QUuNzji7hy8BhQz=
+gD7orK0PXRCV0tiAgmCRaAAF9twFH4nNubo4GELVDSf7F5FLDcZ4lTPkfmgNiWo_9bdru68DfMY=
+tboSwV0e0xkslvuvQfItT4KetKzAmQFcFg7OUwC8oM4a7d9H59WQjrA9yN9NlU8gYl4gfm5OiJ0=
+NrU5vyzBfzCsY0k9WFbUOfxL1_ZcZ_ItxKCPLlQz1Iwktn99s-QBPdc6nvQP-5r67OhsYyXvMQK=
+cJUkKmg7i7pAbcftsKXzxY7NQZTJuGgseBMXcbM6EkTT_5fM-4VFwMLGL-2gU1Bux-078_u2-po=
+I6W-Qcpdf3VJUeXTILSjsatZp_WXggcELPUd1IbpZzzJPbTu8IQdpGH0tx1GB8vdO8MAH85qw7q=
+RX1ZDWr_WiYm_ikUKx94_wrUyrPX804XosNEgAU0X8hiXAxKyn5KZ60i848RbJs4qBs2TinobEd=
+l5-orC0sEvgNR-Ek7fiVFMaQ0X9iMHPMWn8PK5Mb_NL4ZVB1-el8_O9pmJxz7v-fJ0zAJIHRCob=
+kNO1q7GXHsryCQ1dj1sllmVaoF3ZLMjVN2ImgX6EztmjhRBc_dxx_nHedA1opTzcChjePbQFz9r=
+_KtwibKE7jZfHJqg7Vn97sLI8WzH2pmNt0p6698ToZmgjvBQqpeH5BPQgFyguv_6fOSfTqZ4RaJ=
+KEm6jZTcXr6qkysFr2bt_reySjYzvz0zS-P5xVNA=3D=3D" style=3D"font-size: 16px; t=
+ext-decoration: none; display: block; text-align: center; color: #fff; padd=
+ing: 20px 25px;">View your order</a></td>
+              </tr>
+            </tbody></table>
+          </td>
+          <td valign=3D"middle" style=3D"padding-left: 15px; font-family: -=
+apple-system, BlinkMacSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#3=
+4;Oxygen&#34;, &#34;Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;, =
+&#34;Droid Sans&#34;, &#34;Helvetica Neue&#34;, sans-serif;">
+           =20
+    <table class=3D"link secondary-action-cell" style=3D"margin-top: 0; ver=
+tical-align: middle; border-spacing: 0; border-collapse: collapse;">
+      <tbody><tr>
+        <td class=3D"link__cell" style=3D"font-family: -apple-system, Blink=
+MacSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen&#34;, &#34=
+;Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Droid Sans&#34=
+;, &#34;Helvetica Neue&#34;, sans-serif; border-radius: 4px;" align=3D"cent=
+er">or <a href=3D"https://crailtap.com/_t/c/v3/AABmh8S18SjYsaZluyqqo2T3iTjk=
+74w7RykMuJXgBdHo3lzXpUymL6nLexeo47_QW3cS_jC1FeV4tcFd66FM7QyYCP7Xv9LbInpfJy8=
+C9KzXdAUvtb0f280QB80fJ0C4cnSCCDfBpTGwFKE-bySUqY-djvjVEmcmaaM9sKRw53dIrA9thw=
+6KKSLCSSDALz5UOQhUBBWpybcOQTKTWEs8ZhIrdvAI5M3rTvL-05-irbOaG-lyqbKPHe_-If7sc=
+2MQIPHCSXsinqMYFdR3f0zyuSS88qX8A-sQTE-DrTWCnrODlHAUn3uooti8JT7pZYeMDEz2wZA=
+=3D" style=3D"font-size: 16px; text-decoration: none; color: #F712B4;">Visi=
+t our store</a>
+</td>
+      </tr>
+    </tbody></table>
+
+
+          </td>
+        </tr>
+      </tbody></table>
+    </td>
+  </tr>
+</tbody></table>
+
+           =20
+           =20
+  <p class=3D"disclaimer__subtext" style=3D"color: #999; line-height: 150%;=
+ font-size: 14px; margin: 0;">
+    <br/>
+   =20
+      UPS tracking number: <a href=3D"https://crailtap.com/_t/c/v3/AAAsR-B1=
+x3VkUSx15Q39RoD-IlWcXk5Fc3X6XUD4BGU7tCN2fcoD5IbColRvZkDe3q4wye7CNHikjsfJljp=
+mo35sFhKpcmrjev1CquIK9iIuRZHOn-twlMJTcd2AzG85Dod3EcVqQxnKi4l6RwrBj8RWlROrHq=
+ex9vaygfbxzwcBuGNLLV9GsKhJ9jPE6Vn1k4t_1umsmQ9k_hSVDy3FIn-tRcU-W8_I9eaSc5g7x=
+u5BlN2G0rRm7u-mKY23cA-vQei9QAVDsLq88pHaxN__PBNLJ6UvEqQxdomjFG3Ht52HyWM6UG0E=
+1KwPY8tw7mCaUCbimJcRe6rX-tqy-GOBTEXqQ_p-4N5JGmSt2Kx4sk4YVp7hhsJqWpYMsf-zBK6=
+fGMzajfV0tq-27LXZQoOQo5EiFMoDk81ThNSwUAEzqKfKjiutIlZaEsowizXAkmVF1ILNl325jW=
+24d9ro" style=3D"font-size: 14px; text-decoration: none; color: #F712B4;">1=
+ZE43G210300181198</a>
+   =20
+  </p>
+
+
+
+            </td>
+          </tr>
+        </tbody></table>
+      </center>
+    </td>
+  </tr>
+</tbody></table>
+
+          <table class=3D"row section" style=3D"width: 100%; border-spacing=
+: 0; border-collapse: collapse;">
+  <tbody><tr>
+    <td class=3D"section__cell" style=3D"font-family: -apple-system, BlinkM=
+acSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen&#34;, &#34;=
+Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Droid Sans&#34;=
+, &#34;Helvetica Neue&#34;, sans-serif; padding: 40px 0;">
+      <center>
+        <table class=3D"container" style=3D"width: 560px; text-align: left;=
+ border-spacing: 0; border-collapse: collapse; margin: 0 auto;">
+          <tbody><tr>
+            <td style=3D"font-family: -apple-system, BlinkMacSystemFont, &#=
+34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen&#34;, &#34;Ubuntu&#34;, &#3=
+4;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Droid Sans&#34;, &#34;Helvetica=
+ Neue&#34;, sans-serif;">
+              <h3 style=3D"font-weight: normal; font-size: 20px; margin: 0 =
+0 25px;">Items in this shipment</h3>
+            </td>
+          </tr>
+        </tbody></table>
+        <table class=3D"container" style=3D"width: 560px; text-align: left;=
+ border-spacing: 0; border-collapse: collapse; margin: 0 auto;">
+          <tbody><tr>
+            <td style=3D"font-family: -apple-system, BlinkMacSystemFont, &#=
+34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen&#34;, &#34;Ubuntu&#34;, &#3=
+4;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Droid Sans&#34;, &#34;Helvetica=
+ Neue&#34;, sans-serif;">
+             =20
+           =20
+  <table class=3D"row" style=3D"width: 100%; border-spacing: 0; border-coll=
+apse: collapse;">
+   =20
+     =20
+
+
+
+ =20
+ =20
+ =20
+ =20
+
+  <tbody><tr class=3D"order-list__item" style=3D"width: 100%; border-top-wi=
+dth: 1px; border-top-color: #e5e5e5; border-top-style: none;">
+    <td class=3D"order-list__item__cell " style=3D"font-family: -apple-syst=
+em, BlinkMacSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen&#=
+34;, &#34;Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Droid=
+ Sans&#34;, &#34;Helvetica Neue&#34;, sans-serif; padding-bottom: 15px;">
+      <table height=3D"100%" style=3D"border-spacing: 0; border-collapse: c=
+ollapse;">
+        <tbody><tr><td style=3D"padding-bottom: 0px; font-family: -apple-sy=
+stem, BlinkMacSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen=
+&#34;, &#34;Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Dro=
+id Sans&#34;, &#34;Helvetica Neue&#34;, sans-serif;">
+          <table height=3D"100%" style=3D"border-spacing: 0; border-collaps=
+e: collapse;">
+            <tbody><tr valign=3D"top">
+             =20
+                <td class=3D"order-list__image-cell" style=3D"font-family: =
+-apple-system, BlinkMacSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#=
+34;Oxygen&#34;, &#34;Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;,=
+ &#34;Droid Sans&#34;, &#34;Helvetica Neue&#34;, sans-serif;" valign=3D"mid=
+dle">
+                 =20
+                    <img src=3D"https://cdn.shopify.com/s/files/1/0208/0114=
+/files/W48D3G_modernica2_TEE_heads_cream_compact_cropped.jpg?v=3D1720935185=
+" align=3D"left" width=3D"60" height=3D"60" class=3D"order-list__product-im=
+age" style=3D"margin-right: 15px; border-radius: 8px; border: 1px solid #e5=
+e5e5;"/>
+                 =20
+                </td>
+             =20
+            </tr>
+           =20
+          </tbody></table>
+        </td>
+
+        <td class=3D"order-list__product-description-cell" style=3D"font-fa=
+mily: -apple-system, BlinkMacSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#3=
+4;, &#34;Oxygen&#34;, &#34;Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans=
+&#34;, &#34;Droid Sans&#34;, &#34;Helvetica Neue&#34;, sans-serif; width: 1=
+00%;">
+         =20
+         =20
+
+          <span class=3D"order-list__item-title" style=3D"font-size: 16px; =
+font-weight: 600; line-height: 1.4; color: #555;">Legends Heads Tee=A0=D7=
+=A01</span><br/>
+
+         =20
+            <span class=3D"order-list__item-variant" style=3D"font-size: 14=
+px; color: #999; font-weight: 400;">L / CREAM</span><br/>
+         =20
+
+         =20
+           =20
+         =20
+
+
+         =20
+
+         =20
+
+         =20
+           =20
+         =20
+        </td>
+       =20
+      </tr></tbody></table>
+    </td>
+  </tr>
+
+
+
+   =20
+     =20
+
+
+
+ =20
+ =20
+ =20
+ =20
+
+  <tr class=3D"order-list__item" style=3D"width: 100%; border-top-width: 1p=
+x; border-top-color: #e5e5e5; border-top-style: solid;">
+    <td class=3D"order-list__item__cell " style=3D"font-family: -apple-syst=
+em, BlinkMacSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen&#=
+34;, &#34;Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Droid=
+ Sans&#34;, &#34;Helvetica Neue&#34;, sans-serif; padding-top: 15px; paddin=
+g-bottom: 15px;">
+      <table height=3D"100%" style=3D"border-spacing: 0; border-collapse: c=
+ollapse;">
+        <tbody><tr><td style=3D"padding-bottom: 0px; font-family: -apple-sy=
+stem, BlinkMacSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen=
+&#34;, &#34;Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Dro=
+id Sans&#34;, &#34;Helvetica Neue&#34;, sans-serif;">
+          <table height=3D"100%" style=3D"border-spacing: 0; border-collaps=
+e: collapse;">
+            <tbody><tr valign=3D"top">
+             =20
+                <td class=3D"order-list__image-cell" style=3D"font-family: =
+-apple-system, BlinkMacSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#=
+34;Oxygen&#34;, &#34;Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;,=
+ &#34;Droid Sans&#34;, &#34;Helvetica Neue&#34;, sans-serif;" valign=3D"mid=
+dle">
+                 =20
+                    <img src=3D"https://cdn.shopify.com/s/files/1/0208/0114=
+/files/w49gd2featherteecharcoal_compact_cropped.jpg?v=3D1763668433" align=
+=3D"left" width=3D"60" height=3D"60" class=3D"order-list__product-image" st=
+yle=3D"margin-right: 15px; border-radius: 8px; border: 1px solid #e5e5e5;"/=
+>
+                 =20
+                </td>
+             =20
+            </tr>
+           =20
+          </tbody></table>
+        </td>
+
+        <td class=3D"order-list__product-description-cell" style=3D"font-fa=
+mily: -apple-system, BlinkMacSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#3=
+4;, &#34;Oxygen&#34;, &#34;Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans=
+&#34;, &#34;Droid Sans&#34;, &#34;Helvetica Neue&#34;, sans-serif; width: 1=
+00%;">
+         =20
+         =20
+
+          <span class=3D"order-list__item-title" style=3D"font-size: 16px; =
+font-weight: 600; line-height: 1.4; color: #555;">Feather Tee=A0=D7=A01</sp=
+an><br/>
+
+         =20
+            <span class=3D"order-list__item-variant" style=3D"font-size: 14=
+px; color: #999; font-weight: 400;">Charcoal / L</span><br/>
+         =20
+
+         =20
+           =20
+         =20
+
+
+         =20
+
+         =20
+
+         =20
+           =20
+         =20
+        </td>
+       =20
+      </tr></tbody></table>
+    </td>
+  </tr>
+
+
+
+   =20
+     =20
+
+
+
+ =20
+ =20
+ =20
+ =20
+
+  <tr class=3D"order-list__item" style=3D"width: 100%; border-top-width: 1p=
+x; border-top-color: #e5e5e5; border-top-style: solid;">
+    <td class=3D"order-list__item__cell " style=3D"font-family: -apple-syst=
+em, BlinkMacSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen&#=
+34;, &#34;Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Droid=
+ Sans&#34;, &#34;Helvetica Neue&#34;, sans-serif; padding-top: 15px; paddin=
+g-bottom: 15px;">
+      <table height=3D"100%" style=3D"border-spacing: 0; border-collapse: c=
+ollapse;">
+        <tbody><tr><td style=3D"padding-bottom: 0px; font-family: -apple-sy=
+stem, BlinkMacSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen=
+&#34;, &#34;Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Dro=
+id Sans&#34;, &#34;Helvetica Neue&#34;, sans-serif;">
+          <table height=3D"100%" style=3D"border-spacing: 0; border-collaps=
+e: collapse;">
+            <tbody><tr valign=3D"top">
+             =20
+                <td class=3D"order-list__image-cell" style=3D"font-family: =
+-apple-system, BlinkMacSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#=
+34;Oxygen&#34;, &#34;Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;,=
+ &#34;Droid Sans&#34;, &#34;Helvetica Neue&#34;, sans-serif;" valign=3D"mid=
+dle">
+                 =20
+                    <img src=3D"https://cdn.shopify.com/s/files/1/0208/0114=
+/products/national-hero-staple-wheels_3_size-55_compact_cropped.jpg?v=3D163=
+8161064" align=3D"left" width=3D"60" height=3D"60" class=3D"order-list__pro=
+duct-image" style=3D"margin-right: 15px; border-radius: 8px; border: 1px so=
+lid #e5e5e5;"/>
+                 =20
+                </td>
+             =20
+            </tr>
+           =20
+          </tbody></table>
+        </td>
+
+        <td class=3D"order-list__product-description-cell" style=3D"font-fa=
+mily: -apple-system, BlinkMacSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#3=
+4;, &#34;Oxygen&#34;, &#34;Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans=
+&#34;, &#34;Droid Sans&#34;, &#34;Helvetica Neue&#34;, sans-serif; width: 1=
+00%;">
+         =20
+         =20
+
+          <span class=3D"order-list__item-title" style=3D"font-size: 16px; =
+font-weight: 600; line-height: 1.4; color: #555;">National Hero Staple Whee=
+ls=A0=D7=A01</span><br/>
+
+         =20
+            <span class=3D"order-list__item-variant" style=3D"font-size: 14=
+px; color: #999; font-weight: 400;">55mm</span><br/>
+         =20
+
+         =20
+           =20
+         =20
+
+
+         =20
+
+         =20
+
+         =20
+           =20
+         =20
+        </td>
+       =20
+      </tr></tbody></table>
+    </td>
+  </tr>
+
+
+
+   =20
+     =20
+
+
+
+ =20
+ =20
+ =20
+ =20
+
+  <tr class=3D"order-list__item" style=3D"width: 100%; border-top-width: 1p=
+x; border-top-color: #e5e5e5; border-top-style: solid;">
+    <td class=3D"order-list__item__cell " style=3D"font-family: -apple-syst=
+em, BlinkMacSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen&#=
+34;, &#34;Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Droid=
+ Sans&#34;, &#34;Helvetica Neue&#34;, sans-serif; padding-top: 15px;">
+      <table height=3D"100%" style=3D"border-spacing: 0; border-collapse: c=
+ollapse;">
+        <tbody><tr><td style=3D"padding-bottom: 0px; font-family: -apple-sy=
+stem, BlinkMacSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen=
+&#34;, &#34;Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Dro=
+id Sans&#34;, &#34;Helvetica Neue&#34;, sans-serif;">
+          <table height=3D"100%" style=3D"border-spacing: 0; border-collaps=
+e: collapse;">
+            <tbody><tr valign=3D"top">
+             =20
+                <td class=3D"order-list__image-cell" style=3D"font-family: =
+-apple-system, BlinkMacSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#=
+34;Oxygen&#34;, &#34;Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;,=
+ &#34;Droid Sans&#34;, &#34;Helvetica Neue&#34;, sans-serif;" valign=3D"mid=
+dle">
+                 =20
+                    <img src=3D"https://cdn.shopify.com/s/files/1/0208/0114=
+/files/W50C_D2_LOSTSINGLES_KA_BOTTOM_compact_cropped.png?v=3D1775751974" al=
+ign=3D"left" width=3D"60" height=3D"60" class=3D"order-list__product-image"=
+ style=3D"margin-right: 15px; border-radius: 8px; border: 1px solid #e5e5e5=
+;"/>
+                 =20
+                </td>
+             =20
+            </tr>
+           =20
+          </tbody></table>
+        </td>
+
+        <td class=3D"order-list__product-description-cell" style=3D"font-fa=
+mily: -apple-system, BlinkMacSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#3=
+4;, &#34;Oxygen&#34;, &#34;Ubuntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans=
+&#34;, &#34;Droid Sans&#34;, &#34;Helvetica Neue&#34;, sans-serif; width: 1=
+00%;">
+         =20
+         =20
+
+          <span class=3D"order-list__item-title" style=3D"font-size: 16px; =
+font-weight: 600; line-height: 1.4; color: #555;">Anderson Lost Singles Dec=
+k=A0=D7=A01</span><br/>
+
+         =20
+            <span class=3D"order-list__item-variant" style=3D"font-size: 14=
+px; color: #999; font-weight: 400;">8.25&#34; X 31.875&#34;</span><br/>
+         =20
+
+         =20
+           =20
+         =20
+
+
+         =20
+
+         =20
+
+         =20
+           =20
+         =20
+        </td>
+       =20
+      </tr></tbody></table>
+    </td>
+  </tr>
+
+
+
+   =20
+  </tbody></table>
+
+
+            </td>
+          </tr>
+        </tbody></table>
+      </center>
+    </td>
+  </tr>
+</tbody></table>
+
+          <table class=3D"row footer" style=3D"width: 100%; border-spacing:=
+ 0; border-collapse: collapse; border-top-width: 1px; border-top-color: #e5=
+e5e5; border-top-style: solid;">
+  <tbody><tr>
+    <td class=3D"footer__cell" style=3D"font-family: -apple-system, BlinkMa=
+cSystemFont, &#34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen&#34;, &#34;U=
+buntu&#34;, &#34;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Droid Sans&#34;,=
+ &#34;Helvetica Neue&#34;, sans-serif; padding: 35px 0;">
+      <center>
+        <table class=3D"container" style=3D"width: 560px; text-align: left;=
+ border-spacing: 0; border-collapse: collapse; margin: 0 auto;">
+          <tbody><tr>
+            <td style=3D"font-family: -apple-system, BlinkMacSystemFont, &#=
+34;Segoe UI&#34;, &#34;Roboto&#34;, &#34;Oxygen&#34;, &#34;Ubuntu&#34;, &#3=
+4;Cantarell&#34;, &#34;Fira Sans&#34;, &#34;Droid Sans&#34;, &#34;Helvetica=
+ Neue&#34;, sans-serif;">
+             =20
+              <p class=3D"disclaimer__subtext" style=3D"color: #999; line-h=
+eight: 150%; font-size: 14px; margin: 0;">If you have any questions, reply =
+to this email or contact us at <a href=3D"mailto:thegoat@crailtap.com" styl=
+e=3D"font-size: 14px; text-decoration: none; color: #F712B4;">thegoat@crail=
+tap.com</a></p>
+            </td>
+          </tr>
+        </tbody></table>
+      </center>
+    </td>
+  </tr>
+</tbody></table>
+
+<img src=3D"https://cdn.shopify.com/shopifycloud/shopify/assets/themes_supp=
+ort/notifications/spacer-1a26dfd5c56b21ac888f9f1610ef81191b571603cb207c6c0f=
+564148473cab3c.png" class=3D"spacer" height=3D"1" style=3D"min-width: 600px=
+; height: 0;"/>
+
+        </td>
+      </tr>
+    </tbody></table>
+ =20
+
+
+
+</body></html>
+--ba1ba444f1c0039b543dbfe22f901964851653e192f90972b7250e4dac1b--

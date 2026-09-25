@@ -1,0 +1,372 @@
+Delivered-To: fixture-author@example.test
+Received: by 2002:a05:6214:1383:b0:8b4:eb00:b62f with SMTP id pp3csp522552qvb;
+        Thu, 16 Jul 2026 09:12:29 -0700 (PDT)
+X-Forwarded-Encrypted: i=4; AHgh+RqhA2M+eS+4wstIgN4YAMZDX4XNaBo0S4N6OOuhoj8kxsRinEZ0o7zNUtEk4KftRZ41ImwYbcXPNg==@thunderbird.net
+X-Received: by 2002:a05:620a:44d0:b0:915:92f3:54e3 with SMTP id af79cd13be357-930a5f106e5mr342817285a.4.1784218349772;
+        Thu, 16 Jul 2026 09:12:29 -0700 (PDT)
+ARC-Seal: i=3; a=rsa-sha256; t=1784218349; cv=pass;
+        d=google.com; s=arc-20260327;
+        b=T9l3qhK43c77KuCbZkSAeqDrNXNx/f2CRzm6QG0W1N12GSANBWSr3wcAFXcyyQETMk
+         3jpvziuFippcAMQXvd6vv3NV+qvxrS6xaR6wiUYnbrR8PkWxD4aYAAkscpp0OUduZLWT
+         4zl8hhKQO5k/xySP69VZQ39AGrsdOm7WzdQO6zCVj3j4F+P4StWJ/4DF96KdwjQavhf8
+         mZwqIz120IPADSfNz60mPUlVPRf7Ce3ogN/QhpkROIVJJ9LEYPPIWdcnnAnpRYFXrDZG
+         1n6ie7X9ch0DBPiqvKd3x1RPbtkvoQdGy3X+Vu+8fKubsoHb/MtkQ6RJD6k+c7GjnKLS
+         Be2Q==
+ARC-Message-Signature: i=3; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=topicbox-delivery-id:list-unsubscribe:content-transfer-encoding
+         :subject:reply-to:precedence:list-subscribe:list-software:list-post
+         :list-id:list-help:archived-at:topicbox-message-uuid
+         :topicbox-policy-reasoning:in-reply-to:autocrypt:from:references:to
+         :content-language:user-agent:mime-version:date:message-id
+         :dkim-signature;
+        bh=W1hmzPekDmwE9IAjHFvLR8ua6RP4UmEv9yPRB/Awcfs=;
+        fh=WBPb8mW8MB6+AVKcifBDPumzfG9sKx17eNbbBvO6FzI=;
+        b=bAWp+1JJrpQQxdt7+yBkJp1G/8osCozU8LSHL519ZZhrjp5kZfat4ulyXI7rRxdJbN
+         43dgoISN2QERSXwA9XGuggIQE58/CEHjNndAsTpJl+bvhaOVB1w+LnX9yUU9wQP72r55
+         mPlH1h4jh1Kq1kSvqNVYJpQ2gt5MPc70h+/mnIcZn93Ft/NV+zLr7cihDU4OzJ3vycm7
+         hATqP55vDFB4LDXmprocJPKQbZ8DsieUqH+oufeRFJsKW+RtwAqinIUsm6auXkXMKHTK
+         +EVWrBfBFEF8UEbA1mxa/u8NutOdFw0gBJdYI8bf05VKR335nBILOCfnFCg0mTfAEsAR
+         47Qg==;
+        dara=google.com
+ARC-Authentication-Results: i=3; mx.google.com;
+       dkim=pass header.i=@discuss.thunderbird.net header.s=dkim-1 header.b=Qg3RpKRC;
+       arc=pass (i=2 spf=pass spfdomain=kuix.de dkim=pass dkdomain=kuix.de dmarc=pass fromdomain=kuix.de);
+       spf=pass (google.com: domain of bounce.mm5ad8859f58a6f3adff7617f2.r2a69c34e-0b26-11f0-aa19-d9888eef7525@thunderbird.bounce.topicbox.com designates 103.168.172.225 as permitted sender) smtp.mailfrom=bounce.mM5ad8859f58a6f3adff7617f2.r2a69c34e-0b26-11f0-aa19-d9888eef7525@thunderbird.bounce.topicbox.com;
+       dmarc=fail (p=NONE sp=NONE dis=NONE arc=pass) header.from=kuix.de
+Return-Path: <bounce.mM5ad8859f58a6f3adff7617f2.r2a69c34e-0b26-11f0-aa19-d9888eef7525@thunderbird.bounce.topicbox.com>
+Received: from txout-a2-smtp.messagingengine.com (txout-a2-smtp.messagingengine.com. [103.168.172.225])
+        by mx.google.com with ESMTPS id af79cd13be357-92ee5ae1b9csi1934586985a.54.2026.07.16.09.12.29
+        for <fixture-author@example.test>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jul 2026 09:12:29 -0700 (PDT)
+Received-SPF: pass (google.com: domain of bounce.mm5ad8859f58a6f3adff7617f2.r2a69c34e-0b26-11f0-aa19-d9888eef7525@thunderbird.bounce.topicbox.com designates 103.168.172.225 as permitted sender) client-ip=103.168.172.225;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@discuss.thunderbird.net header.s=dkim-1 header.b=Qg3RpKRC;
+       arc=pass (i=2 spf=pass spfdomain=kuix.de dkim=pass dkdomain=kuix.de dmarc=pass fromdomain=kuix.de);
+       spf=pass (google.com: domain of bounce.mm5ad8859f58a6f3adff7617f2.r2a69c34e-0b26-11f0-aa19-d9888eef7525@thunderbird.bounce.topicbox.com designates 103.168.172.225 as permitted sender) smtp.mailfrom=bounce.mM5ad8859f58a6f3adff7617f2.r2a69c34e-0b26-11f0-aa19-d9888eef7525@thunderbird.bounce.topicbox.com;
+       dmarc=fail (p=NONE sp=NONE dis=NONE arc=pass) header.from=kuix.de
+Received: from relay.topicbox.com (phl-topicbox-01.internal [10.202.2.219])
+	by mailtxout.phl.internal (Postfix) with ESMTP id 6EEE91C0151
+	for <fixture-author@example.test>; Thu, 16 Jul 2026 12:12:29 -0400 (EDT)
+Received: from localhost.localdomain (phl-topicbox-01.internal [10.202.2.219])
+	by relay.topicbox.com (Postfix) with ESMTP id 6CB5B360C720
+	for <fixture-author@example.test>; Thu, 16 Jul 2026 12:12:29 -0400 (EDT)
+ARC-Authentication-Results: i=2; topicbox.com; arc=pass; dkim=pass (2048-bit rsa key
+ sha256) header.d=kuix.de header.i=@kuix.de header.b=dw+B9Sf+
+ header.a=rsa-sha256 header.s=2018 x-bits=2048; dmarc=pass
+ policy.published-domain-policy=none policy.applied-disposition=none
+ policy.evaluated-disposition=none (p=none,d=none,d.eval=none)
+ policy.policy-from=p header.from=kuix.de; spf=pass smtp.mailfrom=KaiE@kuix.de
+ smtp.helo=cloud.kuix.de; x-internal-arc=fail (as.1.topicbox.com=pass,
+ ams.1.topicbox.com=fail (message has been altered)) (Message modified while
+ forwarding at Topicbox)
+ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=
+	topicbox.com; h=message-id:date:mime-version:to:references:from
+	:in-reply-to:content-type:list-help:list-id:list-post
+	:list-subscribe:reply-to:subject:content-transfer-encoding
+	:list-unsubscribe; s=sysmsg-1; t=1784218349; bh=W1hmzPekDmwE9IAj
+	HFvLR8ua6RP4UmEv9yPRB/Awcfs=; b=FDCPBXeMMOgNWQivHYMfwgQjIeu2+GC8
+	c3JOOUwWQoOHBV66X+wj2MoW5/BPo7C3u6Y/ch6T5FhfhIYJsGVRaGbEmPa/+POo
+	BhZ4OweTdi/ntYUnWi9pu0J1OT9aRUuh1zxUToapYiBo3ow6yQ+Zdfk6X1Ahur7U
+	Q2oK5V6j7Ik=
+ARC-Seal: i=2; a=rsa-sha256; cv=pass; d=topicbox.com; s=sysmsg-1; t=
+	1784218349; b=eh+h6Cg6jOVHiFxS9ekf20IKWwJVS7Eg7HtVwKwa3zqGC8CcaV
+	H0uw0Xm0/adc0Nfwr6l0g/sAovZO7WaY6UZeYC5eX68+osevj7H/yntH7m1m8d92
+	CsqN06zWVWx2aztmcBt8lkwlZjEerGeQ3kVqnRxicPg8UPgVGc6kqtQLw=
+Authentication-Results: topicbox.com; arc=pass; dkim=pass (2048-bit rsa key
+ sha256) header.d=kuix.de header.i=@kuix.de header.b=dw+B9Sf+
+ header.a=rsa-sha256 header.s=2018 x-bits=2048; dmarc=pass
+ policy.published-domain-policy=none policy.applied-disposition=none
+ policy.evaluated-disposition=none (p=none,d=none,d.eval=none)
+ policy.policy-from=p header.from=kuix.de; spf=pass smtp.mailfrom=KaiE@kuix.de
+ smtp.helo=cloud.kuix.de; x-internal-arc=fail (as.1.topicbox.com=pass,
+ ams.1.topicbox.com=fail (message has been altered)) (Message modified while
+ forwarding at Topicbox)
+X-Received-Authentication-Results: authmilter.topicbox.com; arc=none (no
+ signatures found); bimi=skipped (DMARC Policy is not at enforcement);
+ dkim=pass (2048-bit rsa key sha256) header.d=kuix.de header.i=@kuix.de
+ header.b=dw+B9Sf+ header.a=rsa-sha256 header.s=2018 x-bits=2048; dmarc=pass
+ policy.published-domain-policy=none policy.applied-disposition=none
+ policy.evaluated-disposition=none (p=none,d=none,d.eval=none)
+ policy.policy-from=p header.from=kuix.de; iprev=pass
+ smtp.remote-ip=93.90.207.85 (cloud.kuix.de); spf=pass
+ smtp.mailfrom=KaiE@kuix.de smtp.helo=cloud.kuix.de; x-aligned-from=pass
+ (Address match); x-me-sender=none; x-ptr=pass smtp.helo=cloud.kuix.de
+ policy.ptr=cloud.kuix.de; x-return-mx=pass header.domain=kuix.de
+ policy.is_org=yes (MX Records found: cloud.kuix.de); x-return-mx=pass
+ smtp.domain=kuix.de policy.is_org=yes (MX Records found: cloud.kuix.de);
+ x-tls=pass smtp.version=TLSv1.3 smtp.cipher=TLS_AES_256_GCM_SHA384
+ smtp.bits=256/256; x-vs=clean score=-100 state=0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; d=discuss.thunderbird.net;
+	 h=message-id:date:mime-version:to:references:from:in-reply-to
+	:content-type:list-help:list-id:list-post:list-subscribe
+	:reply-to:subject:content-transfer-encoding:list-unsubscribe; s=
+	dkim-1; t=1784218349; x=1784304749; bh=W1hmzPekDmwE9IAjHFvLR8ua6
+	RP4UmEv9yPRB/Awcfs=; b=Qg3RpKRCswer2sIjTYF5hqlXszE2m9IAkWLCjQ+2X
+	23vlc+2HfB+UgBZ/XvKo18DW1EgEGkAkeUI28KjC9lj4Dzd2Qa7ZTL6GqJgob5O6
+	M47HYcLAyFypXKKSJDMPM+lq/ZikohQ3yuW0/EhVcFGezGn09iRoHeaMlekdgtg5
+	Q4=
+Received: from authmilter.topicbox.com (unknown [172.17.0.1])
+	by mx.topicbox.com (Postfix) with ESMTP id D72264D89C77
+	for <planning@discuss.thunderbird.net>; Thu, 16 Jul 2026 12:12:21 -0400 (EDT)
+Received: from mx.topicbox.com (172.17.0.1 [172.17.0.1])
+    by authmilter.topicbox.com (Authentication Milter) with ESMTP
+    id 8830B5F1ADE;
+    Thu, 16 Jul 2026 12:12:21 -0400
+ARC-Seal: i=1; a=rsa-sha256; cv=none; d=topicbox.com; s=arcseal; t=
+    1784218341; b=Dawz4GGCqudWq+yBeuCrad0g5DKUeZ/49YzrZjaoqbQo9qRzSw
+    DNejdiCg/RyWHAahXeuuz1QKXIUW0DiEJaiKcZpoRICXF8R1IvfAO4R5zOx77AMP
+    EOVS/396JepchH1CPDwtBWDaikWnj0D5zAUKMaVtR8UN6yiYbf4Y8PSNl/NMfzWe
+    YcsPmx8GU9pU+pkNCWauMLAsvc5r+V4I+qHTFPL7DocdEVphmAHPU2U0YjtFwGc0
+    iMs0ADcVnVTEjA4uYdUc1FNQZWe46mD+NPlLiQyXWEQ5yKgIKNjT+i3HibdXNLto
+    qcFUDAEeWaB++rcBey1MRJXTbtais4s43E5Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=
+    topicbox.com; h=message-id:date:mime-version:subject:to
+    :references:from:in-reply-to:content-type; s=arcseal; t=
+    1784218341; bh=iE5rFL6PFM60DMcA3bATRmTBQEv3NL5sV6sROI1Gxd4=; b=k
+    O6QQtSP2mNXFWRtVMFa6bRLOEtVgOILgi+ET/ry9w+iWfA4KR1+M5KrdgghMuMlL
+    uFaY1WwuoY+P6uRLCiIF36XP7/rHWJpno0H6nvuAspWKulP6pMp9wJ+ScYtOaEls
+    eL+6PFCLvUhlP01TWjFAJ/57N7aFZjWEvQN5FjNSR1ahCovm6GZyTsHzd18zRLl3
+    T/X1NNUySnxfzkagtQxzT5ue7xM0QWwX0zETojEHA5dzaLh8y1zRpql7cTwiqemO
+    lgZPW5K9TKMeJUPWm67Cd60GiNjYJpfpYPJ0FlaYIKeL0+hZntydhePKhgUT4w5y
+    5H2g/jRqIpUpdpIXP1FMQ==
+ARC-Authentication-Results: i=1; authmilter.topicbox.com;
+    arc=none (no signatures found);
+    bimi=skipped (DMARC Policy is not at enforcement);
+    dkim=pass (2048-bit rsa key sha256) header.d=kuix.de header.i=@kuix.de
+    header.b=dw+B9Sf+ header.a=rsa-sha256 header.s=2018 x-bits=2048;
+    dmarc=pass policy.published-domain-policy=none
+    policy.applied-disposition=none policy.evaluated-disposition=none
+    (p=none,d=none,d.eval=none) policy.policy-from=p header.from=kuix.de;
+    iprev=pass smtp.remote-ip=93.90.207.85 (cloud.kuix.de);
+    spf=pass smtp.mailfrom=KaiE@kuix.de smtp.helo=cloud.kuix.de;
+    x-aligned-from=pass (Address match);
+    x-me-sender=none;
+    x-ptr=pass smtp.helo=cloud.kuix.de policy.ptr=cloud.kuix.de;
+    x-return-mx=pass header.domain=kuix.de policy.is_org=yes
+    (MX Records found: cloud.kuix.de);
+    x-return-mx=pass smtp.domain=kuix.de policy.is_org=yes
+    (MX Records found: cloud.kuix.de);
+    x-tls=pass smtp.version=TLSv1.3 smtp.cipher=TLS_AES_256_GCM_SHA384
+    smtp.bits=256/256;
+    x-vs=clean score=-100 state=0
+X-ME-VSCause: gggruggvucftvghtrhhoucdtuddrgeefiedrtddugddvleejvdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpggftfghnshhusghstghrihgsvgdp
+    uffrtefokffrpgfnqfghnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivg
+    hnthhsucdlqddutddtmdenucfjughrpefkffggfgfuvfhfhfgjtgesmhdtreertddujeen
+    ucfhrhhomhepmfgrihcugfhnghgvrhhtuceomfgrihfgsehkuhhigidruggvqeenucggtf
+    frrghtthgvrhhnpeelgfdvvefhvddtleevleeuieeifefhjeelveejtdefveeggffgledv
+    ieefjeelueenucfkphepleefrdeltddrvddtjedrkeehpddvtddtfeemtgekmegrfhdufe
+    emfhdvtddtmehfsghffeemiedtfhemleduledtmeelleelieenucevlhhushhtvghrufhi
+    iigvpedtnecurfgrrhgrmhepihhnvghtpeelfedrledtrddvtdejrdekhedphhgvlhhope
+    gtlhhouhgurdhkuhhigidruggvpdhmrghilhhfrhhomhepoefmrghigfeskhhuihigrdgu
+    vgeqpdhnsggprhgtphhtthhopedupdhrtghpthhtohepoehplhgrnhhnihhnghesughish
+    gtuhhsshdrthhhuhhnuggvrhgsihhrugdrnhgvtheq
+X-ME-VSScore: -100
+X-ME-VSCategory: clean
+Received-SPF: pass
+    (kuix.de: 93.90.207.85 is authorized to use 'KaiE@kuix.de' in 'mfrom' identity (mechanism 'ip4:93.90.207.85' matched))
+    receiver=authmilter.topicbox.com;
+    identity=mailfrom;
+    envelope-from="KaiE@kuix.de";
+    helo=cloud.kuix.de;
+    client-ip=93.90.207.85
+Received: from cloud.kuix.de (cloud.kuix.de [93.90.207.85])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx.topicbox.com (Postfix) with ESMTPS
+	for <planning@discuss.thunderbird.net>; Thu, 16 Jul 2026 12:12:21 -0400 (EDT)
+Received: from [IPV6:2003:c8:af13:f200:fbf3:60f:9190:9996] (p200300c8af13f200fbf3060f91909996.dip0.t-ipconnect.de [IPv6:2003:c8:af13:f200:fbf3:60f:9190:9996])
+	by cloud.kuix.de (Postfix) with ESMTPSA id 99F9F1C2D56
+	for <planning@discuss.thunderbird.net>; Thu, 16 Jul 2026 16:12:19 +0000 (UTC)
+Message-ID: <8a93b3f7-e95d-4ce9-b5a7-a170240187c3@kuix.de>
+Date: Thu, 16 Jul 2026 18:12:19 +0200
+MIME-Version: 1.0
+User-Agent: Thunderbird Daily
+Content-Language: en-US
+To: Thunderbird Planning <planning@discuss.thunderbird.net>
+References: <76ea2d3d-b23d-49dc-8ce9-b4f944526992@kuix.de>
+ <3ebee309-b028-441b-af53-acc4ed568c17@kuix.de>
+ <0cfbfadb-ff0c-4a91-b1af-56219f961544@cdmnet.org>
+ <2c5d38c9-7bd1-4b4e-a6f2-7b9f42b9b0a9@thunderbird.net>
+ <456d815a-2736-4a4b-8510-de5c2bef9ed6@kuix.de>
+ <f5a615d5-e3dd-4061-b3f4-fa1719cd9c98@thunderbird.net>
+From: Kai Engert <KaiE@kuix.de>
+Autocrypt: addr=KaiE@kuix.de; keydata=
+ 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
+ v57v8GkeKAs=
+In-Reply-To: <f5a615d5-e3dd-4061-b3f4-fa1719cd9c98@thunderbird.net>
+Content-Type: multipart/mixed; boundary=------------0dvMkLMhfflKxgjfnKq9NoiA
+Topicbox-Policy-Reasoning: sub_allow: subscriber is permitted to post
+Topicbox-Message-UUID: 20bda46e-8131-11f1-8ae6-8375101b0b71
+Archived-At: =?UTF-8?B?PGh0dHBzOi8vdGh1bmRlcmJpcmQudG9waWNib3guY29tL2dy?=
+ =?UTF-8?B?b3Vwcy9wbGFubmluZy9UNDAxMzYxZmQ5OTYxYjEyNi1NNWFkODg1OWY1OGE2?=
+ =?UTF-8?B?ZjNhZGZmNzYxN2YyPg==?=
+List-Help: <https://thunderbird.topicbox.com/groups/planning>
+List-Id: "Thunderbird Planning" <planning.discuss.thunderbird.net>
+List-Post: <mailto:planning@discuss.thunderbird.net>
+List-Software: Topicbox v0
+List-Subscribe: <https://thunderbird.topicbox.com/groups/planning>
+Precedence: list
+Reply-To: "Thunderbird Planning" <planning@discuss.thunderbird.net>
+Subject: [tb-planning] Why signed-only email is useful
+Content-Transfer-Encoding: 7bit
+List-Unsubscribe: <https://thunderbird.topicbox.com/groups/planning>,
+ <mailto:planning+unsubscribe@discuss.thunderbird.net?subject=x-tx-unsubscribe:2:thunderbird:fb30d204-8f3f-11eb-aa0e-32e0282d11b0:2a69c34e-0b26-11f0-aa19-d9888eef7525:M5ad8859f58a6f3adff7617f2:1:V_hsx9tkuqRCifkeyLq2nilFgxqLjGc4eHJW15N6Rsc>
+Topicbox-Delivery-ID:
+ 2:thunderbird:fb30d204-8f3f-11eb-aa0e-32e0282d11b0:2a69c34e-0b26-11f0-aa19-d9888eef7525:M5ad8859f58a6f3adff7617f2:1:QDa9oslKO6mnYr6ZxiPO-0cPmw8RGLMZ4p4BT-a5bBk
+
+
+--------------0dvMkLMhfflKxgjfnKq9NoiA
+Sig: t=p; b=
+ wnsEABYIACMWIQTbU6PYxn9IFjJ1R6JpevsbNyK8BAUCalkC4wUDAAAAAAAKCRBpevsbNyK8BNtT
+ AQC5SBdStRbzJoCJnPP6TUSXtCDxgRP0EgIfaoE91bUtTAD/TuRMdwQISnkoWcDUSmu9aRF3gGRx
+ Uq2Vwm1YJr9cVgU=
+Message-ID: <8a93b3f7-e95d-4ce9-b5a7-a170240187c3@kuix.de>
+Date: Thu, 16 Jul 2026 18:12:19 +0200
+MIME-Version: 1.0
+User-Agent: Thunderbird Daily
+Subject: Why signed-only email is useful
+Content-Language: en-US
+To: Thunderbird Planning <planning@discuss.thunderbird.net>
+References: <76ea2d3d-b23d-49dc-8ce9-b4f944526992@kuix.de>
+ <3ebee309-b028-441b-af53-acc4ed568c17@kuix.de>
+ <0cfbfadb-ff0c-4a91-b1af-56219f961544@cdmnet.org>
+ <2c5d38c9-7bd1-4b4e-a6f2-7b9f42b9b0a9@thunderbird.net>
+ <456d815a-2736-4a4b-8510-de5c2bef9ed6@kuix.de>
+ <f5a615d5-e3dd-4061-b3f4-fa1719cd9c98@thunderbird.net>
+From: Kai Engert <KaiE@kuix.de>
+Autocrypt: addr=KaiE@kuix.de; keydata=
+ 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
+ v57v8GkeKAs=
+In-Reply-To: <f5a615d5-e3dd-4061-b3f4-fa1719cd9c98@thunderbird.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed; hp=clear
+Content-Transfer-Encoding: quoted-printable
+
+Hi Magnus,
+
+you said that signing-only email isn't really useful.
+
+I'd like to try to change your opinion with the following example.
+
+Imagine Mary, who is a maintainer of an open source project. She=20
+announces all new releases by email, and every announcement is digitally=20
+signed with her OpenPGP key.
+
+One day, Eve successfully phishes Mary and gains full control over her=20
+mailbox. Eve sends an email in Mary's name to the announce list:
+
+"Critical RCE in 3.2.x. Emergency hotfix attached. Please deploy=20
+immediately, full advisory to follow."
+
+Note that this mail will pass all the usual checks, SPF, DKIM and DMARC=20
+cleanly - because it really was sent from from Mary's account.
+
+Transport-level checks can't catch that it was Eve who sent the message.
+
+However, among the recipients of the announcements are people who are=20
+aware that email from Mary are usually signed. They have the chance to=20
+notice the "urgent" announcement is unsigned, which they will probably=20
+consider suspicious. Those who notify have the chance to warn others to=20
+be careful before believing in the message.
+
+Now consider the situation Mary is in once she discovers the abuse. She=20
+needs to send a follow-up: "There is no RCE in 3.2, don't install that=20
+hotfix. It was a false announcement, I don't know who sent it. Someone=20
+must have gotten control over my email account."
+
+But why should anyone believe that message? Her account was just=20
+demonstrably compromised. Any unsigned clarification is not convincing -=20
+recipients could think that the RCE warning was legitimate, and that=20
+rather the follow-up is sent by someone else.
+
+The solution is that only Mary has access to her secret key, which Eve=20
+couldn't obtain just by getting access to Mary's mail account.
+
+Mary can send a clarification email that is signed-only, and can point=20
+out three things that recipients can check:
+* all her previous authentic announcements were signed
+* the fake RCE mail was not
+* this clarification is signed again with the same key as always.
+
+The signature helps Mary to get out of this difficult situation.
+
+I hope this is convincing.
+
+Thanks,
+Kai
+
+
+------------------------------------------
+Thunderbird: Thunderbird Planning
+Permalink: https://thunderbird.topicbox.com/groups/planning/T401361fd9961b1=
+26-M5ad8859f58a6f3adff7617f2
+Delivery options: https://thunderbird.topicbox.com/groups/planning/subscrip=
+tion
+
+--------------0dvMkLMhfflKxgjfnKq9NoiA--

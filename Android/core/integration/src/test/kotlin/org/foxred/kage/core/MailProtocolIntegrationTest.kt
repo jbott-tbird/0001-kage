@@ -85,6 +85,128 @@ class MailProtocolIntegrationTest {
     }
 
     @Test
+    fun uidPagesContinueWithoutDuplicatesAndIgnoreLaterArrivals() {
+        repeat(7) { i ->
+            AngusSmtpClient()
+                .send(
+                    outgoing(),
+                    Authorization("password"),
+                    email()
+                        .copy(
+                            messageId = "<page-$i@example.net>",
+                            subject = "Page $i",
+                            bcc = emptyList(),
+                        ),
+                )
+        }
+        AngusImapClient().use { client ->
+            client.connect(incoming(), Authorization("password"))
+            val since = Instant.now().minusSeconds(86400)
+            val first = client.messagePage("INBOX", since, limit = 2)
+            assertEquals(2, first.messages.size)
+            assertNotNull(first.next)
+            AngusSmtpClient()
+                .send(
+                    outgoing(),
+                    Authorization("password"),
+                    email()
+                        .copy(messageId = "<late@example.net>", subject = "Late", bcc = emptyList()),
+                )
+            val seen = first.messages.toMutableList()
+            var next = first.next
+            while (next != null) {
+                val page = client.messagePage("INBOX", since, next, 2)
+                assertTrue(page.messages.size <= 2)
+                seen += page.messages
+                next = page.next
+            }
+            assertEquals(7, seen.size)
+            assertEquals(7, seen.map { it.identity }.distinct().size)
+            assertFalse(seen.any { it.subject == "Late" })
+            val reset =
+                assertThrows(MailFailure::class.java) {
+                    client.messagePage(
+                        "INBOX",
+                        since,
+                        first.next!!.copy(uidValidity = first.next!!.uidValidity + 1),
+                        2,
+                    )
+                }
+            assertEquals(FailureKind.PROTOCOL, reset.kind)
+            val empty = client.messagePage("INBOX", Instant.now().plusSeconds(86400), limit = 2)
+            assertTrue(empty.messages.isEmpty())
+            assertNotNull(empty.next)
+        }
+    }
+
+    @Test
+    fun messageBodyDoesNotConsumeLargeAttachmentsAndDownloadIsBounded() {
+        val payload = ByteArray(100_000) { (it % 127).toByte() }
+        AngusSmtpClient()
+            .send(
+                outgoing(),
+                Authorization("password"),
+                email()
+                    .copy(
+                        attachments =
+                            listOf(
+                                OutgoingAttachment("large.bin", "application/octet-stream", payload)
+                            )
+                    ),
+            )
+        AngusImapClient(64).use { client ->
+            client.connect(incoming(), Authorization("password"))
+            val identity =
+                client.messages("INBOX", Instant.now().minusSeconds(86400)).single().identity!!
+            val message = client.message(identity)
+            assertEquals(email().body.text, message.body.text)
+            val output = java.io.ByteArrayOutputStream()
+            val failure =
+                assertThrows(MailFailure::class.java) {
+                    client.downloadAttachment(identity, message.attachments.single().partId, output)
+                }
+            assertEquals(FailureKind.LIMIT_EXCEEDED, failure.kind)
+            assertTrue(output.size() <= 64)
+        }
+        AngusImapClient().use { client ->
+            client.connect(incoming(), Authorization("password"))
+            val identity =
+                client.messages("INBOX", Instant.now().minusSeconds(86400)).single().identity!!
+            val attachment = client.message(identity).attachments.single()
+            val output = java.io.ByteArrayOutputStream()
+            assertEquals(
+                payload.size.toLong(),
+                client.downloadAttachment(identity, attachment.partId, output),
+            )
+            assertArrayEquals(payload, output.toByteArray())
+            assertFalse(client.message(identity).read)
+        }
+    }
+
+    @Test
+    fun folderLifecycleAndAppendUseTheSameCoreContracts() {
+        AngusImapClient().use { client ->
+            client.connect(incoming(), Authorization("password"))
+            assertTrue(client.supports("IMAP4rev1"))
+            assertTrue(client.namespaces().isNotEmpty())
+            client.createMailbox("Draft Test")
+            client.subscribe("Draft Test", true)
+            val raw = org.foxred.kage.core.mime.AngusMimeCodec().encode(email())
+            client.append("Draft Test", raw, true)
+            assertEquals(1, client.status("Draft Test").messageCount)
+            assertEquals(0, client.status("Draft Test").unreadCount)
+            assertEquals(1, client.poll("Draft Test").messageCount)
+            client.renameMailbox("Draft Test", "Draft Renamed")
+            assertTrue(client.mailboxes().any { it.name == "Draft Renamed" })
+            val header = client.messages("Draft Renamed", Instant.EPOCH).single()
+            assertEquals(email().messageId, header.messageId)
+            client.subscribe("Draft Renamed", false)
+            client.deleteMailbox("Draft Renamed")
+            assertFalse(client.mailboxes().any { it.name == "Draft Renamed" })
+        }
+    }
+
+    @Test
     fun startTlsNeverFallsBackWhenServerDoesNotAdvertiseIt() {
         val failure =
             assertThrows(MailFailure::class.java) {

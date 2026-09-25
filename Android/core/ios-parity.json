@@ -1636,85 +1636,186 @@
     {
       "path": "Core/Tests/MIMETests/Resources/mime-body-1759430F.eml",
       "sha256": "42690159979eb145440ca56dc9230202238863c37841c22f25a528e11c916da0",
-      "adopted": false
+      "adopted": true,
+      "androidFixture": "Android/core/mime/src/test/resources/ios/mime-body-1759430F.eml",
+      "evidence": "IosMimeFixtureTest: original byte hash, independent normalized text/HTML hashes and decoded attachment hashes pass"
     },
     {
       "path": "Core/Tests/MIMETests/Resources/mime-body-2874E3C9.eml",
       "sha256": "a204a59a487c312c53cafc843ef5f700e87570e83f54069d1c4a5a403e79b966",
-      "adopted": false
+      "adopted": true,
+      "androidFixture": "Android/core/mime/src/test/resources/ios/mime-body-2874E3C9.eml",
+      "evidence": "IosMimeFixtureTest: original byte hash, independent normalized text/HTML hashes and decoded attachment hashes pass"
     },
     {
       "path": "Core/Tests/MIMETests/Resources/mime-body-2EA571DD.eml",
       "sha256": "a2c2bf2a5b5b0b4935743cdebc73c0d904badecb6357b2cefb9521334189f747",
-      "adopted": false
+      "adopted": true,
+      "androidFixture": "Android/core/mime/src/test/resources/ios/mime-body-2EA571DD.eml",
+      "evidence": "IosMimeFixtureTest: original byte hash, independent normalized text/HTML hashes and decoded attachment hashes pass"
     },
     {
       "path": "Core/Tests/MIMETests/Resources/mime-body-60EB5CAE.eml",
       "sha256": "d5ced0e6500b57efda100474b47d2829856d3fc4d8d29682fb9d4903db1031c1",
-      "adopted": false,
+      "adopted": true,
+      "androidFixture": "Android/core/mime/src/test/resources/ios/mime-body-60EB5CAE.eml",
+      "evidence": "IosMimeFixtureTest: sanitized raw hash and independent normalized body/attachment hashes; upstreamSha256 records source provenance",
       "upstreamSha256": "af63ccc25e6e8d267d619347cc516b3d916b2757ba3c04bcd33dde05cb4d29f9",
-      "modifications": "Two contributor email addresses replaced with reserved example.test identities; MIME transfer encoding preserved. Cryptographic signatures are fixture data and are not validated.",
-      "evidence": "IosMimeFixtureTest: sanitized raw hash and independent normalized body/attachment hashes; upstreamSha256 records source provenance"
+      "modifications": "Two contributor email addresses replaced with reserved example.test identities; MIME transfer encoding preserved. Cryptographic signatures are fixture data and are not validated."
     },
     {
       "path": "Core/Tests/MIMETests/Resources/mime-body-7A690F43.eml",
       "sha256": "4a7fd27ec23b41df2df080d71bc5cd868ee57355b8a16599d0c93281fb22ec0c",
-      "adopted": false,
+      "adopted": true,
+      "androidFixture": "Android/core/mime/src/test/resources/ios/mime-body-7A690F43.eml",
+      "evidence": "IosMimeFixtureTest: sanitized raw hash and independent normalized body/attachment hashes; upstreamSha256 records source provenance",
       "upstreamSha256": "4fd272136804a1afb0aef740c95727036b55f28362d8bed9f1ce65af7ab8190b",
-      "modifications": "Two contributor email addresses replaced with reserved example.test identities; MIME transfer encoding preserved. Cryptographic signatures are fixture data and are not validated.",
-      "evidence": "IosMimeFixtureTest: sanitized raw hash and independent normalized body/attachment hashes; upstreamSha256 records source provenance"
+      "modifications": "Two contributor email addresses replaced with reserved example.test identities; MIME transfer encoding preserved. Cryptographic signatures are fixture data and are not validated."
     },
     {
       "path": "Core/Tests/MIMETests/Resources/mime-body-86925F24.eml",
       "sha256": "5694b9be3a50c322d19754798d06d60dfeafbb882bff62da4b48e9c95badd929",
-      "adopted": false,
+      "adopted": true,
+      "androidFixture": "Android/core/mime/src/test/resources/ios/mime-body-86925F24.eml",
+      "evidence": "IosMimeFixtureTest: sanitized raw hash and independent normalized body/attachment hashes; upstreamSha256 records source provenance",
       "upstreamSha256": "c560ef1735b6bb23205e0edea2ee83dc0e3115e72b1797c155a644b51b09319a",
-      "modifications": "Two contributor email addresses replaced with reserved example.test identities; MIME transfer encoding preserved. Cryptographic signatures are fixture data and are not validated.",
-      "evidence": "IosMimeFixtureTest: sanitized raw hash and independent normalized body/attachment hashes; upstreamSha256 records source provenance"
+      "modifications": "Two contributor email addresses replaced with reserved example.test identities; MIME transfer encoding preserved. Cryptographic signatures are fixture data and are not validated."
     },
     {
       "path": "Core/Tests/MIMETests/Resources/mime-body-89526045.eml",
       "sha256": "acf164230d1f62298e2720eb055b0a366ff7e6ecb2ec4f1e54d9c7e5aabfd225",
-      "adopted": false,
+      "adopted": true,
+      "androidFixture": "Android/core/mime/src/test/resources/ios/mime-body-89526045.eml",
+      "evidence": "IosMimeFixtureTest: sanitized raw hash and independent normalized body/attachment hashes; upstreamSha256 records source provenance",
       "upstreamSha256": "7b67c3ba62da96619017002f7b8373519e1a8fd219c8cd2b220f4b11c8c7e47e",
-      "modifications": "Two contributor email addresses replaced with reserved example.test identities; MIME transfer encoding preserved. Cryptographic signatures are fixture data and are not validated.",
-      "evidence": "IosMimeFixtureTest: sanitized raw hash and independent normalized body/attachment hashes; upstreamSha256 records source provenance"
+      "modifications": "Two contributor email addresses replaced with reserved example.test identities; MIME transfer encoding preserved. Cryptographic signatures are fixture data and are not validated."
     },
     {
       "path": "Core/Tests/MIMETests/Resources/mime-body-976C6A94.eml",
       "sha256": "ba1e0cd1e0a39e6c2a63653bb9afd9fb3cfc96e18db2dd5b11ab41c011f8cdd7",
-      "adopted": false
+      "adopted": true,
+      "androidFixture": "Android/core/mime/src/test/resources/ios/mime-body-976C6A94.eml",
+      "evidence": "IosMimeFixtureTest: original byte hash, independent normalized text/HTML hashes and decoded attachment hashes pass"
     },
     {
       "path": "Core/Tests/MIMETests/Resources/mime-body-BFA06D93.eml",
       "sha256": "f930cf6d2d441a28cff591b55127f995a32aef600e0fe6772600b7fc1cf338b0",
-      "adopted": false
+      "adopted": true,
+      "androidFixture": "Android/core/mime/src/test/resources/ios/mime-body-BFA06D93.eml",
+      "evidence": "IosMimeFixtureTest: original byte hash, independent normalized text/HTML hashes and decoded attachment hashes pass"
     },
     {
       "path": "Core/Tests/MIMETests/Resources/mime-body-CFD4D3A3.eml",
       "sha256": "2f030930b819816492bfe59d9f57a770c0953c19b9d53835df6da57a2e6e3b3f",
-      "adopted": false
+      "adopted": true,
+      "androidFixture": "Android/core/mime/src/test/resources/ios/mime-body-CFD4D3A3.eml",
+      "evidence": "IosMimeFixtureTest: original byte hash, independent normalized text/HTML hashes and decoded attachment hashes pass"
     },
     {
       "path": "Core/Tests/MIMETests/Resources/mime-body-E18BEE81.eml",
       "sha256": "77f3cc08848a12962bcb0f51fa84fc0c6f208e50d887180a5337a21dba61febc",
-      "adopted": false,
+      "adopted": true,
+      "androidFixture": "Android/core/mime/src/test/resources/ios/mime-body-E18BEE81.eml",
+      "evidence": "IosMimeFixtureTest: sanitized raw hash and independent normalized body/attachment hashes; upstreamSha256 records source provenance",
       "upstreamSha256": "1f7201deadda6dbf4cccd0de14eb4904ee6c2129542ffb04f1591b5a61b0a2c9",
-      "modifications": "Two contributor email addresses replaced with reserved example.test identities; MIME transfer encoding preserved. Cryptographic signatures are fixture data and are not validated.",
-      "evidence": "IosMimeFixtureTest: sanitized raw hash and independent normalized body/attachment hashes; upstreamSha256 records source provenance"
+      "modifications": "Two contributor email addresses replaced with reserved example.test identities; MIME transfer encoding preserved. Cryptographic signatures are fixture data and are not validated."
     },
     {
       "path": "Core/Tests/MIMETests/Resources/mime-body-E1FA0690.eml",
       "sha256": "2119bc575ed1200c548ffa10cf64bca78c864d085bbd82e467b8909d7b646a9b",
-      "adopted": false,
+      "adopted": true,
+      "androidFixture": "Android/core/mime/src/test/resources/ios/mime-body-E1FA0690.eml",
+      "evidence": "IosMimeFixtureTest: sanitized raw hash and independent normalized body/attachment hashes; upstreamSha256 records source provenance",
       "upstreamSha256": "3f703b692db46e9aa61a18b8e3c903a2ad49186e885de59c52c31bec371302f5",
-      "modifications": "Two contributor email addresses replaced with reserved example.test identities; MIME transfer encoding preserved. Cryptographic signatures are fixture data and are not validated.",
-      "evidence": "IosMimeFixtureTest: sanitized raw hash and independent normalized body/attachment hashes; upstreamSha256 records source provenance"
+      "modifications": "Two contributor email addresses replaced with reserved example.test identities; MIME transfer encoding preserved. Cryptographic signatures are fixture data and are not validated."
     },
     {
       "path": "Core/Tests/MIMETests/Resources/mime-body-F02140B7.eml",
       "sha256": "574e62503268ae259de098b197f9d6e928359d0e3de94e686d2ff9864031a8f4",
-      "adopted": false
+      "adopted": true,
+      "androidFixture": "Android/core/mime/src/test/resources/ios/mime-body-F02140B7.eml",
+      "evidence": "IosMimeFixtureTest: original byte hash, independent normalized text/HTML hashes and decoded attachment hashes pass"
+    }
+  ],
+  "behaviorMappings": [
+    {
+      "ios": "Core/Sources/Account/Email.swift",
+      "android": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt:Email",
+      "status": "pending_port",
+      "matchedFields": [
+        "from",
+        "sender",
+        "replyTo",
+        "to",
+        "cc",
+        "bcc",
+        "received",
+        "sent",
+        "messageID",
+        "inReplyTo",
+        "body",
+        "uid"
+      ],
+      "differences": [
+        "messageId convenience is first messageIds value",
+        "IMAP UID includes mailbox and UIDVALIDITY",
+        "threadIds/blobId reserved but provider-specific fetching remains pending",
+        "group addresses flatten to domain address lists; group labels are not retained"
+      ],
+      "tests": [
+        "AngusMimeCodecTest.envelopePreservesReplyRoutingGroupsAndThreadHeaders"
+      ]
+    },
+    {
+      "ios": "Core/Sources/IMAP/IMAPClient.swift",
+      "android": "Android/core/imap/src/main/kotlin/org/foxred/kage/core/imap/AngusImapClient.kt",
+      "status": "pending_port",
+      "testedOperations": [
+        "connect/login",
+        "namespace",
+        "list",
+        "status",
+        "create",
+        "rename",
+        "delete",
+        "subscribe",
+        "unsubscribe",
+        "UID fetch",
+        "APPEND",
+        "NOOP",
+        "read/flag mutation",
+        "UIDVALIDITY guard",
+        "cancel/timeout",
+        "bounded UID pagination",
+        "streamed attachment download"
+      ],
+      "untestedOrIncomplete": [
+        "IDLE positive event/stop",
+        "MOVE capability fallback",
+        "all malformed response/reconnect cases",
+        "Android socket integration"
+      ],
+      "differences": [
+        "Each call scopes SELECT/EXAMINE and closes without expunge; no public mutable selected mailbox",
+        "UID pagination avoids volatile sequence number identity"
+      ]
+    },
+    {
+      "ios": "Core/Sources/MIME",
+      "android": "Android/core/mime",
+      "status": "pending_port",
+      "evidence": [
+        "13 unchanged upstream fixtures pass independent body/attachment expectations",
+        "deterministic outgoing MIME round-trip tests pass"
+      ],
+      "differences": [
+        "multipart/alternative selects last supported variant per representation",
+        "Explicit size/nesting/part-count limits",
+        "Bcc retained only in SMTP envelope on outgoing mail"
+      ],
+      "remaining": [
+        "broader malformed MIME cases and model-field audit"
+      ]
     }
   ]
 }

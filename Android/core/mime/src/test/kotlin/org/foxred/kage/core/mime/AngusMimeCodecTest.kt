@@ -38,6 +38,9 @@ class AngusMimeCodecTest {
         assertEquals(sample().body.text, result.body.text)
         assertEquals(sample().body.html, result.body.html)
         assertEquals(sample().messageId, result.messageId)
+        assertEquals(sample().references, result.references)
+        assertEquals(listOf(sample().inReplyTo), result.inReplyTo)
+        assertEquals(sample().to, result.to)
         assertEquals(sample().sentAt, result.receivedAt)
         assertEquals("résumé.bin", result.attachments.single().filename)
         assertArrayEquals(
@@ -57,6 +60,91 @@ class AngusMimeCodecTest {
         assertEquals("café review", result.subject)
         assertEquals("café\r\n", result.body.text)
         assertEquals("Roc", result.from.single().name)
+    }
+
+    @Test
+    fun alternativesSelectLastSupportedRepresentationRatherThanDuplicatingBody() {
+        val raw =
+            "Content-Type: multipart/alternative; boundary=x\r\n\r\n--x\r\nContent-Type: text/plain\r\n\r\nold\r\n--x\r\nContent-Type: text/plain\r\n\r\nnew\r\n--x--\r\n"
+                .toByteArray()
+        assertEquals("new", codec.decode(raw).body.text)
+    }
+
+    @Test
+    fun textAttachmentIsNotConcatenatedIntoMessageBody() {
+        val encoded =
+            codec.encode(
+                sample()
+                    .copy(
+                        attachments =
+                            listOf(
+                                OutgoingAttachment(
+                                    "note.txt",
+                                    "text/plain",
+                                    "secret attachment".toByteArray(),
+                                )
+                            )
+                    )
+            )
+        val decoded = codec.decode(encoded)
+        assertFalse(decoded.body.text!!.contains("secret attachment"))
+        assertEquals(1, decoded.attachments.size)
+    }
+
+    @Test
+    fun envelopePreservesReplyRoutingGroupsAndThreadHeaders() {
+        val raw =
+            "From: Author <author@example.net>\r\nSender: agent@example.net\r\nReply-To: replies@example.net\r\nTo: Reviewers: one@example.net, two@example.net;\r\nBcc: hidden@example.net\r\nMessage-ID: <child@example.net>\r\nReferences: <root@example.net> <parent@example.net>\r\nIn-Reply-To: <parent@example.net>\r\nDate: Fri, 25 Sep 2026 12:00:00 +0000\r\n\r\nbody"
+                .toByteArray()
+        val message = codec.decode(raw)
+        assertEquals("agent@example.net", message.sender.single().address)
+        assertEquals("replies@example.net", message.replyTo.single().address)
+        assertEquals(listOf("one@example.net", "two@example.net"), message.to.map { it.address })
+        assertEquals("hidden@example.net", message.bcc.single().address)
+        assertEquals(listOf("<child@example.net>"), message.messageIds)
+        assertEquals(listOf("<parent@example.net>"), message.inReplyTo)
+        assertEquals(listOf("<root@example.net>", "<parent@example.net>"), message.references)
+        assertEquals(Instant.parse("2026-09-25T12:00:00Z"), message.sentAt)
+    }
+
+    @Test
+    fun unknownCharsetProducesExplicitFailureInsteadOfCorruptText() {
+        val error =
+            assertThrows(MailFailure::class.java) {
+                codec.decode(
+                    "Content-Type: text/plain; charset=not-a-real-charset\r\n\r\nbody".toByteArray()
+                )
+            }
+        assertEquals(FailureKind.INVALID_MESSAGE, error.kind)
+    }
+
+    @Test
+    fun injectedBoundariesMakeOutgoingBytesDeterministic() {
+        val stable = AngusMimeCodec(boundary = { "test_$it" })
+        assertArrayEquals(stable.encode(sample()), stable.encode(sample()))
+        assertEquals(sample().subject, stable.decode(stable.encode(sample())).subject)
+    }
+
+    @Test
+    fun encodedSizeLimitIsEnforcedDuringSerialization() {
+        val failure =
+            assertThrows(MailFailure::class.java) {
+                AngusMimeCodec(maxBytes = 1024)
+                    .encode(
+                        sample()
+                            .copy(
+                                attachments =
+                                    listOf(
+                                        OutgoingAttachment(
+                                            "bytes.bin",
+                                            "application/octet-stream",
+                                            ByteArray(800),
+                                        )
+                                    )
+                            )
+                    )
+            }
+        assertEquals(FailureKind.LIMIT_EXCEEDED, failure.kind)
     }
 
     @Test

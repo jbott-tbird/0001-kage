@@ -1,0 +1,367 @@
+Delivered-To: fixture-author@example.test
+Received: by 2002:a05:6214:bd1:b0:8b4:eb00:b62f with SMTP id ff17csp2437426qvb;
+        Tue, 21 Jul 2026 15:00:58 -0700 (PDT)
+X-Received: by 2002:a05:6808:14d5:b0:4a4:934:b316 with SMTP id 5614622812f47-4a4d03a2e59mr10521899b6e.21.1784671258704;
+        Tue, 21 Jul 2026 15:00:58 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1784671258; cv=none;
+        d=google.com; s=arc-20260327;
+        b=GU+7OOUQeM2itQipca1ALoycmQyAVaQfqaQY3RBj+8D9PsC+uKm0ysXxrnkF+kr8ku
+         TNivDIzDDFJExH0rkXJ16YBCfGSTuSxLd2yXgIi4Hj9yESPeEPpRa5Dhly62G3ZSrs0P
+         Y6RjK9fRCAHw2W+M3f1wjJqCXw0OP+TmjtmPebXcGXJi+8T2IH30ZPeDmNvD/6hIxtRl
+         /Uc9EUfD8rjEpBkWL/v4JyNTGnyY4/Ap1FRUUIuPNLED+KiqGZlzdJe9tuuXjCHjLMfq
+         S4RLZYAPsjOWjihguzuPMXl3qkFQBSNxd8G1T9VFNm19WTZx4wSJjsZgEPsJe8UsvG6a
+         24ow==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=to:from:subject:message-id:gmsai:feedback-id:reply-to:date
+         :mime-version:dkim-signature;
+        bh=krDYmWHS18XA9X5VB2Z5KssbyaGukuV7jKgjBAZpxq8=;
+        fh=Li+SnyPo4r6Ux3ECTtqijeW7SFl0USPmuGc1gua5z/w=;
+        b=SfysZ1lwesutUEhe/mFSvplMc9GUfNXu5UpIkfxakxgALrfHaur42a7FS8jy2ehWlx
+         6oh9iLcrgHydZSIjfK5ktCIhybsuRLMKsw2+M7uV67+AOWbqVGNjmGWZzGi79hAYkR//
+         OqNJDWdXbwi9uRlXMx5ikbGAv+BHpRMrRQKALZJ74HJ+wW0+if3DJb2ynXi1qSz0HeOv
+         siN4rnqwnojS7lfPh314WiuKhJhow9s58J4TXBsb+JHMWA3Hs6uiAuxb8mi+5WFZx/Y+
+         G9UVZxyeLqaNZr/sTdSrShTtqd3coajaZxwzXTufeg7PVxWCp8tHwNfgcFj16ejXyKeF
+         BiKQ==;
+        dara=google.com
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@google.com header.s=20251104 header.b=n8GDKPq4;
+       spf=pass (google.com: domain of 3guxfah0kams45-8v62f-x55x2v62rf-uvcv256v8x55x2v.t53@scoutcamp.bounces.google.com designates 209.85.220.69 as permitted sender) smtp.mailfrom=3Guxfah0KAMs45-8v62F-x55x2v62rF-uvCv256v8x55x2v.t53@scoutcamp.bounces.google.com;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=google.com;
+       dara=neutral header.i=@thunderbird.net
+Return-Path: <3Guxfah0KAMs45-8v62F-x55x2v62rF-uvCv256v8x55x2v.t53@scoutcamp.bounces.google.com>
+Received: from mail-sor-f69.google.com (mail-sor-f69.google.com. [209.85.220.69])
+        by mx.google.com with SMTPS id 5614622812f47-4ab0c4aa041sor8511b6e.1.2026.07.21.15.00.58
+        for <fixture-author@example.test>
+        (Google Transport Security);
+        Tue, 21 Jul 2026 15:00:58 -0700 (PDT)
+Received-SPF: pass (google.com: domain of 3guxfah0kams45-8v62f-x55x2v62rf-uvcv256v8x55x2v.t53@scoutcamp.bounces.google.com designates 209.85.220.69 as permitted sender) client-ip=209.85.220.69;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@google.com header.s=20251104 header.b=n8GDKPq4;
+       spf=pass (google.com: domain of 3guxfah0kams45-8v62f-x55x2v62rf-uvcv256v8x55x2v.t53@scoutcamp.bounces.google.com designates 209.85.220.69 as permitted sender) smtp.mailfrom=3Guxfah0KAMs45-8v62F-x55x2v62rF-uvCv256v8x55x2v.t53@scoutcamp.bounces.google.com;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=google.com;
+       dara=neutral header.i=@thunderbird.net
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1784671258; x=1785276058; darn=thunderbird.net;
+        h=content-type:to:from:subject:message-id:gmsai:feedback-id:reply-to
+         :date:mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=krDYmWHS18XA9X5VB2Z5KssbyaGukuV7jKgjBAZpxq8=;
+        b=n8GDKPq4CqkyxEQNnXXTy36kLnXjVVQHlyCMqfhQ6kpCw5mbLDNZM1GFUu/K5pq4wf
+         M22O5pWTO1n5IbzaXZJmkQ50XPXJuu/C90ivau6Mlb9Oklxr0QYiQWkOBLmNwWpqNvMa
+         MrmVYmX4PRPFCeOP2UpHnuqTxA5CLMA1k9SG2UEERJxtYaaWWEEZKmqQQdgViBazk3zY
+         xJLZr0a9adkfOJpN+79uYfcUMZNRWAhvQlMtVVF8oVcznHpaMnlmhFypDL8iGxXa5CDK
+         s6MzJ0BMnoAhgKk4WBuvVu9i2z0pSj5tTzj3Kih5rTIsNwis6J9UC/1W3stRWEnDIxNI
+         OfBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784671258; x=1785276058;
+        h=content-type:to:from:subject:message-id:gmsai:feedback-id:reply-to
+         :date:mime-version:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=krDYmWHS18XA9X5VB2Z5KssbyaGukuV7jKgjBAZpxq8=;
+        b=PsmuAq6Us6hM8TID03dkNX5M1JWbjWTp+VePC+0VBnrczT56Z+4ymtPdX5f+FIiXao
+         whyfHqrM56WpoH0VjiJxCCZs2oY4xHwPWEz6Nr8EkhB4AjN8YxAeBdX5tT4NgnYYbYk4
+         15VFA557/VLHodAWNEgIn1g6c97CuObdb37g7ICq63fdQf6fj9iFgDibJrOiWO3prO7a
+         mPw9TIO8xD5T/0rJAa4g8ARzJaZ8neXuepdGZUwvYePwOaZFWps0+iIlWOhy/8MnaCCD
+         lVeE+LRzUvORauOJFVPRfaJptYNk8VHtoZQhyjLB/njCROiEi/hPV80PtNPobE9Era6I
+         F2Iw==
+X-Gm-Message-State: AOJu0YwVPcWHdGcVk1P9sPFi05ybHbgk9EDbLoWIM3Yi4aRGeKHkiBpi
+	VHmXrlxy103+ccGtbHmGX4rujqfjzW45+FOGFXhXewwV1FnGupeQtMTmE2a+
+MIME-Version: 1.0
+X-Received: by 2002:a05:6808:120d:b0:4a4:80be:3ae9 with SMTP id
+ 5614622812f47-4a4d03a4bf1mr9803812b6e.28.1784671258427; Tue, 21 Jul 2026
+ 15:00:58 -0700 (PDT)
+Date: Tue, 21 Jul 2026 15:00:58 -0700
+Reply-To: Google Play Support <no-reply-googleplay-developer@google.com>
+X-Google-Id: 310751
+Feedback-ID: P-70-0:C20097810:M110242748-en:gamma
+gmsai: true
+X-Google-Notification-Metadata: CgISAA
+X-Notifications: 600c78f7206e0000
+X-Notifications-Bounce-Info: AShsMT8gJXPcv8g5H0ISXZ3w40hE_VjyCT16Dax-igMwdDqhmdqTcScsNUnLBhfE93mMjPJHlqmceUYcxuVS25EkWV2gZuLyL_44uYmRSdUQzVsmjZ3SNc-nN7HCP3ioFIxOJNCkLN5mVKtnXufiCHtQQWy2YU_V_4do1ovb7pyYzYe53qr2r44JV6F98BptNOYxiPh7PUrz02u1ZcuL-oXasYvtGJO0sM8xeXXAkr8y1oZZB1Jxdpu1Pit5YRX3aBs7ZpwHbZtjQxF_lV2QZVzIg4k9zAhwsHbiTG1rilwJvVcHIMoW6QjVk_uGHJ_N7gPzSB-gkdVa4jEPfow1pKTNgRjfIwrs8yhjCywtMfMU7rWT0y6e6JFomHWfl1-dJI6ttW4ai8TQFRZrNuVy18G9IuRa_M-u02_0bxozj_nsIYAMlNhXZvAYUe6Zv2nwUn6DAewtM4TghbgBYBUF_65_cevw0A5vu9ZFAefNNO777fFq-Cmc2e7pRXiOCthfl1uYeF1eWlHyovOai_pdcRniiMJYRpm8FvduSciG3991-jyZNjAwNjA0MDQxNTM1NTk2OTMzMg
+Message-ID: <56096315b98ae3ab3c60dc5ced6eaf514d7fc3c2-20097810-110619858@google.com>
+Subject: [Action required] Your apps are affected by Google Play's target API
+ level requirements
+From: Google Play Support <no-reply-googleplay-developer@google.com>
+To: fixture-author@example.test
+Content-Type: multipart/alternative; boundary="00000000000066455f06572628c5"
+
+--00000000000066455f06572628c5
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Transfer-Encoding: base64
+
+R29vZ2xlIFBsYXkgQ29uc29sZSBsb2dvDQoNCg0KDQpDcml0aWNhbCBtZXNzYWdlIDQgb2YgeW91
+ciBhcHBzIGFyZSBhZmZlY3RlZCBieSBHb29nbGUgUGxheSdzIHRhcmdldCBBUEkgIA0KbGV2ZWwg
+cmVxdWlyZW1lbnRzDQoNCg0KV2UndmUgZGV0ZWN0ZWQgdGhhdCA0IG9mIHlvdXIgYXBwcyBhcmUg
+dGFyZ2V0aW5nIGFuIG9sZCB2ZXJzaW9uIG9mIEFuZHJvaWQuICANClRvIHByb3ZpZGUgdXNlcnMg
+d2l0aCBhIHNhZmUgYW5kIHNlY3VyZSBleHBlcmllbmNlLCBHb29nbGUgUGxheSByZXF1aXJlcyAg
+DQphbGwgYXBwcyB0byBtZWV0IHRhcmdldCBBUEkgbGV2ZWwgcmVxdWlyZW1lbnRzIGJlZm9yZSBB
+dWcgMzEsIDIwMjYuDQoNCkFjdGlvbiByZXF1aXJlZA0KDQpVcGRhdGUgdGhlIGZvbGxvd2luZyBh
+cHBzIHRvIHRhcmdldCB0aGUgbGF0ZXN0IEFuZHJvaWQgdmVyc2lvbjoNCg0KDQpLLTkgTWFpbCBL
+LTkgTWFpbCBWaWV3DQoNClRodW5kZXJiaXJkIEJldGEgZm9yIFRlc3RlcnMgVGh1bmRlcmJpcmQg
+QmV0YSBmb3IgVGVzdGVycyBWaWV3DQoNClRodW5kZXJiaXJkIERhaWx5IGZvciBEZXZzIFRodW5k
+ZXJiaXJkIERhaWx5IGZvciBEZXZzIFZpZXcNCg0KVGh1bmRlcmJpcmQ6IEZyZWUgWW91ciBJbmJv
+eCBUaHVuZGVyYmlyZDogRnJlZSBZb3VyIEluYm94IFZpZXcNCg0KDQoNCg0KDQpUaGFuayB5b3Us
+DQoNClRoZSBHb29nbGUgUGxheSBDb25zb2xlIHRlYW0NCg0KQ29ubmVjdCB3aXRoIHVzDQoNClBs
+YXkgQ29uc29sZSByZXNvdXJjZSBndWlkZXMgUGxheSBBY2FkZW15IEhlbHAgQ2VudGVyIE5ld3Ns
+ZXR0ZXINCg0KDQoNCg0KwqkgMjAyNiBHb29nbGUgTExDLCAxNjAwIEFtcGhpdGhlYXRyZSBQYXJr
+d2F5LCBNb3VudGFpbiBWaWV3LCBDQSA5NDA0MywgVVNBDQoNClRoaXMgbWVzc2FnZSB3YXMgc2Vu
+dCB0byBpbmZvcm0geW91IGFib3V0IGltcG9ydGFudCB1cGRhdGVzIG9uIHlvdXIgR29vZ2xlICAN
+ClBsYXkgQ29uc29sZSBkZXZlbG9wZXIgYWNjb3VudC4NCg0KDQoNCg0K
+--00000000000066455f06572628c5
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<html><head><meta http-equiv=3DContent-Type content=3D"text/html; charset=
+=3DUTF-8"><meta name=3Dviewport content=3Dwidth=3Ddevice-width,initial-scal=
+e=3D1,user-scalable=3Dyes><style>@import url(https://fonts.googleapis.com/c=
+ss?family=3DRoboto:400,500,700); a, u + #body a {color: #1a73e8;}</style></=
+head><body style=3D"-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 1=
+00%; background: #f1f3f4; color: black; font-family: Roboto, Arial, sans-se=
+rif; font-weight: normal; margin: 0; padding: 0; width: 100%" width=3D100%>=
+<style>@import url(https://fonts.googleapis.com/css?family=3DRoboto:400,500=
+,700); a, u + #body a {color: #1a73e8;}</style><table style=3D"margin: 0; w=
+idth: 100%;border-collapse:collapse;cellspacing:0;cellpadding:0;mso-table-l=
+space:0;mso-table-rspace:0" border=3D0 cellpadding=3D0 cellspacing=3D0 widt=
+h=3D100% align=3Dcenter><tbody><tr style=3Dborder-collapse:collapse;cellspa=
+cing:0;cellpadding:0; border=3D0 cellpadding=3D0 cellspacing=3D0><td style=
+=3Dborder-collapse:collapse;cellspacing:0;cellpadding:0; border=3D0 cellpad=
+ding=3D0 cellspacing=3D0><table style=3D"margin: 0 auto; width: 100%;border=
+-collapse:collapse;cellspacing:0;cellpadding:0;mso-table-lspace:0;mso-table=
+-rspace:0" border=3D0 cellpadding=3D0 cellspacing=3D0 width=3D100% align=3D=
+center><tbody><tr style=3Dborder-collapse:collapse;cellspacing:0;cellpaddin=
+g:0; border=3D0 cellpadding=3D0 cellspacing=3D0><td style=3D"background: #f=
+ff;;border-collapse:collapse;cellspacing:0;cellpadding:0;" border=3D0 cellp=
+adding=3D0 cellspacing=3D0><table style=3D"font-family: Roboto, Arial, sans=
+-serif; font-weight: normal; margin: 0 auto; max-width: 600px; width: 100%;=
+;border-collapse:collapse;cellspacing:0;cellpadding:0;mso-table-lspace:0;ms=
+o-table-rspace:0" border=3D0 cellpadding=3D0 cellspacing=3D0 width=3D100% a=
+lign=3Dcenter><tbody><tr style=3Dborder-collapse:collapse;cellspacing:0;cel=
+lpadding:0; border=3D0 cellpadding=3D0 cellspacing=3D0><td style=3D"font-si=
+ze: 0; padding: 8px 20px; text-align: center;;border-collapse:collapse;cell=
+spacing:0;cellpadding:0;" border=3D0 cellpadding=3D0 cellspacing=3D0 align=
+=3Dcenter><div style=3D"float: left; display: inline-block; font-family: Ro=
+boto, Arial, sans-serif; max-width: 290px; vertical-align: top; width: 100%=
+;" valign=3Dtop width=3D100%><table style=3Dborder-collapse:collapse;cellsp=
+acing:0;cellpadding:0;mso-table-lspace:0;mso-table-rspace:0 border=3D0 cell=
+padding=3D0 cellspacing=3D0 width=3D100%><tbody><tr style=3Dborder-collapse=
+:collapse;cellspacing:0;cellpadding:0; border=3D0 cellpadding=3D0 cellspaci=
+ng=3D0><td style=3D"text-align: left;;border-collapse:collapse;cellspacing:=
+0;cellpadding:0;" border=3D0 cellpadding=3D0 cellspacing=3D0><img src=3Dhtt=
+ps://play.google.com/console/static/messaging/email/play-console-logo-2023-=
+2x.png height=3D64px width=3Dauto alt=3D"Google Play Console logo"></td></t=
+r></tbody></table></div></td></tr></tbody></table></td></tr><tr style=3Dbor=
+der-collapse:collapse;cellspacing:0;cellpadding:0; border=3D0 cellpadding=
+=3D0 cellspacing=3D0 height=3D24px><td style=3D"background: #f8f9fa;;border=
+-collapse:collapse;cellspacing:0;cellpadding:0;" border=3D0 cellpadding=3D0=
+ cellspacing=3D0></td></tr><tr style=3Dborder-collapse:collapse;cellspacing=
+:0;cellpadding:0; border=3D0 cellpadding=3D0 cellspacing=3D0><td style=3D"b=
+ackground: #fff;;border-collapse:collapse;cellspacing:0;cellpadding:0;" bor=
+der=3D0 cellpadding=3D0 cellspacing=3D0><table style=3D"background: #fff; m=
+ax-width: 600px;;border-collapse:collapse;cellspacing:0;cellpadding:0;mso-t=
+able-lspace:0;mso-table-rspace:0" border=3D0 cellpadding=3D0 cellspacing=3D=
+0 width=3D100% align=3Dcenter><tbody><tr style=3Dborder-collapse:collapse;c=
+ellspacing:0;cellpadding:0; border=3D0 cellpadding=3D0 cellspacing=3D0><td =
+style=3D"background: #fff; width: 100%; height: auto;;border-collapse:colla=
+pse;cellspacing:0;cellpadding:0;" border=3D0 cellpadding=3D0 cellspacing=3D=
+0 height=3Dauto valign=3Dtop><div style=3D"height: auto; margin: 0 auto; ma=
+x-width: 600px; width: 100%" height=3Dauto><table style=3D"font-family: Rob=
+oto, Arial, sans-serif; font-weight: normal; margin: auto; max-width: 598px=
+;;border-collapse:collapse;cellspacing:0;cellpadding:0;mso-table-lspace:0;m=
+so-table-rspace:0" border=3D0 cellpadding=3D0 cellspacing=3D0 width=3D100%>=
+<tbody><tr style=3Dborder-collapse:collapse;cellspacing:0;cellpadding:0; bo=
+rder=3D0 cellpadding=3D0 cellspacing=3D0><td style=3D"min-height: 18px; tex=
+t-align: right; margin-left: auto; margin-right: 0; padding-left: 24px; pad=
+ding-right: 24px; padding-top: 16px;;border-collapse:collapse;cellspacing:0=
+;cellpadding:0;" border=3D0 cellpadding=3D0 cellspacing=3D0 align=3Dright><=
+table style=3Dborder-collapse:collapse;cellspacing:0;cellpadding:0;mso-tabl=
+e-lspace:0;mso-table-rspace:0 border=3D0 cellpadding=3D0 cellspacing=3D0 wi=
+dth=3D100%><tbody><tr style=3Dborder-collapse:collapse;cellspacing:0;cellpa=
+dding:0; border=3D0 cellpadding=3D0 cellspacing=3D0 align=3Dright><td style=
+=3D"color: #424242; font-family: Roboto, Arial, sans-serif; font-size: 14px=
+; width: 100%;;border-collapse:collapse;cellspacing:0;cellpadding:0;" borde=
+r=3D0 cellpadding=3D0 cellspacing=3D0></td><td style=3Dborder-collapse:coll=
+apse;cellspacing:0;cellpadding:0; border=3D0 cellpadding=3D0 cellspacing=3D=
+0></td></tr></tbody></table></td></tr><tr style=3Dborder-collapse:collapse;=
+cellspacing:0;cellpadding:0; border=3D0 cellpadding=3D0 cellspacing=3D0><td=
+ style=3D"padding-bottom: 0; text-align: left; color: #fff; font-size: 12px=
+; line-height: 24px; text-align: center;;border-collapse:collapse;cellspaci=
+ng:0;cellpadding:0;" border=3D0 cellpadding=3D0 cellspacing=3D0 align=3Dcen=
+ter><table style=3D"margin: auto; max-width: 600px; width: 100%;border-coll=
+apse:collapse;cellspacing:0;cellpadding:0;mso-table-lspace:0;mso-table-rspa=
+ce:0" border=3D0 cellpadding=3D0 cellspacing=3D0 width=3D100%><tbody><tr st=
+yle=3Dborder-collapse:collapse;cellspacing:0;cellpadding:0; border=3D0 cell=
+padding=3D0 cellspacing=3D0><td style=3D"border-collapse: collapse; color: =
+#424242; font-family: Roboto, Arial, sans-serif; font-size: 25px; font-weig=
+ht: 500; line-height: 30px; padding-bottom: 18px; padding-left: 24px; paddi=
+ng-right: 24px; padding-top: 18px; text-align: left; word-break: break-word=
+;;border-collapse:collapse;cellspacing:0;cellpadding:0;" border=3D0 cellpad=
+ding=3D0 cellspacing=3D0 align=3Dleft><span style=3Dwhite-space:nowrap;><im=
+g src=3Dhttps://play.google.com/console/static/messaging/email/treatments/c=
+ritical_24dp.png alt=3D"Critical message" style=3D"display: inline; vertica=
+l-align: middle;" height=3D24 width=3Dauto>=C2=A0</span><span style=3D"vert=
+ical-align: middle" role=3Dheading aria-level=3D1>4 of your apps are affect=
+ed by Google Play&#39;s target API level requirements</span></td></tr><tr s=
+tyle=3Dborder-collapse:collapse;cellspacing:0;cellpadding:0; border=3D0 cel=
+lpadding=3D0 cellspacing=3D0><td style=3D"border-collapse: collapse; color:=
+ #424242; font-family: Roboto, Arial, sans-serif; font-size: 14px; font-wei=
+ght: normal; line-height: 22px; padding-bottom: 24px; padding-left: 24px; p=
+adding-right: 24px; text-align: left;;border-collapse:collapse;cellspacing:=
+0;cellpadding:0;" border=3D0 cellpadding=3D0 cellspacing=3D0 align=3Dcenter=
+><p>We&#39;ve detected that 4 of your apps are targeting an old version of =
+Android. To provide users with a safe and secure experience, Google Play re=
+quires all apps to meet target API level requirements before Aug 31, 2026.<=
+/p><div style=3D"color:#424242;font-family:Roboto,Arial,sans-serif;font-wei=
+ght:300;font-size:20px;margin:40px 0 0 0;white-space:nowrap">Action require=
+d</div><p>Update the following apps to target the latest Android version:</=
+p><table style=3Dmargin:auto;width:100%;border-collapse:collapse border=3D0=
+ cellpadding=3D0 cellspacing=3D0 width=3D100%><tbody><tr style=3D"display:f=
+lex;padding:8px 0;border-collapse:collapse" border=3D0 cellpadding=3D0 cell=
+spacing=3D0><td style=3Dborder-collapse:collapse border=3D0 cellpadding=3D0=
+ cellspacing=3D0><img src=3Dhttps://lh3.googleusercontent.com/14NO0m0A4HsPP=
+x_5NE1t00HZA3M2rV0gRAM7609uDeazxcVD7IvzUphL5FV3yf5WLU8 style=3Ddisplay:inli=
+ne-block;vertical-align:middle;border-radius:4px;font-size:0;height:27px;li=
+ne-height:0;width:27px alt=3D"K-9 Mail"></td><td style=3Dborder-collapse:co=
+llapse border=3D0 cellpadding=3D0 cellspacing=3D0><span style=3D"color:#424=
+242;display:table-cell;vertical-align:middle;padding:0 16px;font-family:Rob=
+oto,Arial,sans-serif;font-size:15px;height:27px;max-width:350px;overflow:hi=
+dden;text-overflow:ellipsis;white-space:nowrap">K-9 Mail</span></td><td sty=
+le=3Dmargin-left:auto;border-collapse:collapse border=3D0 cellpadding=3D0 c=
+ellspacing=3D0 align=3Dright><a target=3D_blank href=3Dhttps://c.gle/AKMee0=
+cs03knf5IqZbkbmSCGJIdA1VO4FsxrXykVIFZAoML2bGGK2TnBE0W6B7vg1vT5aRpiMVY21zLP6=
+MqT_hE3X5vtx5Y1u-RvDkZTFRQFatTi6-RxUKPqpSuE8sqdf8W766D7xGEb9hWb6wHoq7jNwq-9=
+jIrnCw6nFp028tMMd6md7DoRKZdd67WgRtJ6CxTStxBXnFV78NawoJkWMAnPtg style=3Dcolo=
+r:#1a73e8;display:table-cell;vertical-align:middle;height:27px;font-family:=
+Roboto,Arial,sans-serif;font-size:15px;text-decoration:none;white-space:now=
+rap align=3Dright><span align=3Dright>View</span></a></td></tr><tr style=3D=
+"display:flex;padding:8px 0;border-collapse:collapse" border=3D0 cellpaddin=
+g=3D0 cellspacing=3D0><td style=3Dborder-collapse:collapse border=3D0 cellp=
+adding=3D0 cellspacing=3D0><img src=3Dhttps://lh3.googleusercontent.com/RhR=
+4WnViDIJysyFDf8V4nE0H4URqDM7pclYuIf8oQkGjJKqo-2Nh1a_DQda-2tQAlA style=3Ddis=
+play:inline-block;vertical-align:middle;border-radius:4px;font-size:0;heigh=
+t:27px;line-height:0;width:27px alt=3D"Thunderbird Beta for Testers"></td><=
+td style=3Dborder-collapse:collapse border=3D0 cellpadding=3D0 cellspacing=
+=3D0><span style=3D"color:#424242;display:table-cell;vertical-align:middle;=
+padding:0 16px;font-family:Roboto,Arial,sans-serif;font-size:15px;height:27=
+px;max-width:350px;overflow:hidden;text-overflow:ellipsis;white-space:nowra=
+p">Thunderbird Beta for Testers</span></td><td style=3Dmargin-left:auto;bor=
+der-collapse:collapse border=3D0 cellpadding=3D0 cellspacing=3D0 align=3Dri=
+ght><a target=3D_blank href=3Dhttps://c.gle/AKMee0e3YppfdifdF4Ry4PVdm6K76AB=
+FOwzIzbbEKCp9iPLv3uG9kOD7aYs72-jMlu6SaXjCN8fpKtkJV-9z3uzxsn8ISeyhigZ6_t5inB=
+DtrF00jySNab4EFBUUUtgciyIxPzNXnKQSJrPThqlmcBHByT-LIoHR40iiCtH41tEgT1QxO39sz=
+IA9u3RWA7stnCpHtQ7mnFxYrEAhW2dFj13Suw style=3Dcolor:#1a73e8;display:table-c=
+ell;vertical-align:middle;height:27px;font-family:Roboto,Arial,sans-serif;f=
+ont-size:15px;text-decoration:none;white-space:nowrap align=3Dright><span a=
+lign=3Dright>View</span></a></td></tr><tr style=3D"display:flex;padding:8px=
+ 0;border-collapse:collapse" border=3D0 cellpadding=3D0 cellspacing=3D0><td=
+ style=3Dborder-collapse:collapse border=3D0 cellpadding=3D0 cellspacing=3D=
+0><img src=3Dhttps://lh3.googleusercontent.com/o_uVZMpS0aNg6dKDNZLS13QccFYv=
+L3w4tGjxb_G4aW3Wa0LuQgS-NDCB_ULOFIXA4rA style=3Ddisplay:inline-block;vertic=
+al-align:middle;border-radius:4px;font-size:0;height:27px;line-height:0;wid=
+th:27px alt=3D"Thunderbird Daily for Devs"></td><td style=3Dborder-collapse=
+:collapse border=3D0 cellpadding=3D0 cellspacing=3D0><span style=3D"color:#=
+424242;display:table-cell;vertical-align:middle;padding:0 16px;font-family:=
+Roboto,Arial,sans-serif;font-size:15px;height:27px;max-width:350px;overflow=
+:hidden;text-overflow:ellipsis;white-space:nowrap">Thunderbird Daily for De=
+vs</span></td><td style=3Dmargin-left:auto;border-collapse:collapse border=
+=3D0 cellpadding=3D0 cellspacing=3D0 align=3Dright><a target=3D_blank href=
+=3Dhttps://c.gle/AKMee0cuZbonhlJX8Xl0U19F2wOEibb5jNOUls8Dm-Jxt_CkC3UW8-wp2B=
+zbI797Z582_GO9wkliubG_GLLjfmPuNbsMsQpwFcmhgIrBzxLJn1gwCydtD2c80od3B3Bm_uScE=
+xBrkhN2WRqtfsSZDiFowg-VRnbIZIDRHKhPY3aR--JXGX4vm72RG2S7Pruz9pWEZyh7Jv4Npz6H=
+AhH0yEdUXA style=3Dcolor:#1a73e8;display:table-cell;vertical-align:middle;h=
+eight:27px;font-family:Roboto,Arial,sans-serif;font-size:15px;text-decorati=
+on:none;white-space:nowrap align=3Dright><span align=3Dright>View</span></a=
+></td></tr><tr style=3D"display:flex;padding:8px 0;border-collapse:collapse=
+" border=3D0 cellpadding=3D0 cellspacing=3D0><td style=3Dborder-collapse:co=
+llapse border=3D0 cellpadding=3D0 cellspacing=3D0><img src=3Dhttps://lh3.go=
+ogleusercontent.com/1KXrx11Eau8eZrNQz1irg2XHJZPqxDt2xhj6lGBjS9Kj-2aoGMp-NQw=
+0ejNC3ePBwlQ style=3Ddisplay:inline-block;vertical-align:middle;border-radi=
+us:4px;font-size:0;height:27px;line-height:0;width:27px alt=3D"Thunderbird:=
+ Free Your Inbox"></td><td style=3Dborder-collapse:collapse border=3D0 cell=
+padding=3D0 cellspacing=3D0><span style=3D"color:#424242;display:table-cell=
+;vertical-align:middle;padding:0 16px;font-family:Roboto,Arial,sans-serif;f=
+ont-size:15px;height:27px;max-width:350px;overflow:hidden;text-overflow:ell=
+ipsis;white-space:nowrap">Thunderbird: Free Your Inbox</span></td><td style=
+=3Dmargin-left:auto;border-collapse:collapse border=3D0 cellpadding=3D0 cel=
+lspacing=3D0 align=3Dright><a target=3D_blank href=3Dhttps://c.gle/AKMee0cQ=
+er7wGzdH_OC2IH259x7ncpnOaanmwnrhipUbz8NrJrzJib3S6KIaFX2ib_UZT1GAbPn-cKfQpTO=
+-THmpX1v07h69LID2Rh6uZA6yAuSw5srrMVtcc9wIFvbw727ujB0J_vFIPMqfn7UVKi7-966zSm=
+r3aFPwnMxS_ipfdwjTVZtFuOAGy0ePUr4m-SBj1gms7wqbVfF0fdciykziIw style=3Dcolor:=
+#1a73e8;display:table-cell;vertical-align:middle;height:27px;font-family:Ro=
+boto,Arial,sans-serif;font-size:15px;text-decoration:none;white-space:nowra=
+p align=3Dright><span align=3Dright>View</span></a></td></tr></tbody></tabl=
+e></td></tr><tr style=3Dborder-collapse:collapse;cellspacing:0;cellpadding:=
+0; border=3D0 cellpadding=3D0 cellspacing=3D0><td style=3D"color: #424242; =
+font-family: Roboto, Arial, sans-serif; padding-left: 24px; padding-right: =
+24px; padding-top: 8px; text-align: left;;border-collapse:collapse;cellspac=
+ing:0;cellpadding:0;" border=3D0 cellpadding=3D0 cellspacing=3D0><table sty=
+le=3Dborder-collapse:collapse;cellspacing:0;cellpadding:0;mso-table-lspace:=
+0;mso-table-rspace:0 border=3D0 cellpadding=3D0 cellspacing=3D0 width=3D100=
+%><tbody><tr style=3Dborder-collapse:collapse;cellspacing:0;cellpadding:0; =
+border=3D0 cellpadding=3D0 cellspacing=3D0><td style=3D"color: #424242; fon=
+t-family: Roboto, Arial, sans-serif; font-size: 14px; line-height: 28px;;bo=
+rder-collapse:collapse;cellspacing:0;cellpadding:0;" border=3D0 cellpadding=
+=3D0 cellspacing=3D0>Thank you,</td></tr><tr style=3Dborder-collapse:collap=
+se;cellspacing:0;cellpadding:0; border=3D0 cellpadding=3D0 cellspacing=3D0>=
+<td style=3D"color: #424242; font-family: Roboto, Arial, sans-serif; font-s=
+ize: 20px; line-height: 28px; padding-bottom: 28px;;border-collapse:collaps=
+e;cellspacing:0;cellpadding:0;" border=3D0 cellpadding=3D0 cellspacing=3D0>=
+The Google Play Console team</td></tr><tr style=3Dborder-collapse:collapse;=
+cellspacing:0;cellpadding:0; border=3D0 cellpadding=3D0 cellspacing=3D0><td=
+ style=3D"color: #424242; font-family: Roboto, Arial, sans-serif; font-size=
+: 14px; line-height: 16px;;border-collapse:collapse;cellspacing:0;cellpaddi=
+ng:0;" border=3D0 cellpadding=3D0 cellspacing=3D0>Connect with us</td></tr>=
+<tr style=3Dborder-collapse:collapse;cellspacing:0;cellpadding:0; border=3D=
+0 cellpadding=3D0 cellspacing=3D0><td style=3D"padding-top: 12px; padding-b=
+ottom: 28px;;border-collapse:collapse;cellspacing:0;cellpadding:0;" border=
+=3D0 cellpadding=3D0 cellspacing=3D0><a href=3Dhttps://c.gle/AKMee0cKICH62V=
+yO8VvCUZ7WK7BKC8g-xukHbfFgPm80QymopJ6snO88QU6hyTpel2T-HKjnsHQ0L_rkNo4o-kypW=
+HCrHMnlXbTthhH6J1C6XToZa0vlH8CAMO18i0R37z4mK00 style=3D"height: 28px; width=
+: 28px; margin-right: 12px; margin-bottom: 12px;"><img src=3Dhttps://play.g=
+oogle.com/console/static/messaging/email/resource-guides-icon-3x.png alt=3D=
+"Play Console resource guides" style=3D"border-radius: 100%; height: 28px; =
+width: 28px;"></a><a href=3Dhttps://c.gle/AKMee0fQAUNDPCBO2LVlpKKeLvyj8B7Jt=
+GMaqfiedgN0vhJjR-FYg4U6SztJxzRjRxpCnv2UMMjGfdkH-gs63kWWK4u2ZdjGITDMoAiMGKH0=
+oq7KkSkjry4xw1nNEZo style=3D"height: 28px; width: 28px; margin-right: 12px;=
+ margin-bottom: 12px;"><img src=3Dhttps://play.google.com/console/static/me=
+ssaging/email/play-academy-icon-3x.png alt=3D"Play Academy" style=3D"border=
+-radius: 100%; height: 28px; width: 28px;"></a><a href=3Dhttps://c.gle/AKMe=
+e0c5gCopu1zUtuvuUhhZl-m87gyZnQwae6dP8fnOQcRDwHS_QioJxKuVkE1B3DRpNJrna-hqSFP=
+b1jjP24Pm4UDUjqJRAYPtXyn5DdEoH0r5K8kr4G_UWZMkqOlfRdwcrihgPpB_XtddXd2bK-roX7=
+1xGaM style=3D"height: 28px; width: 28px; margin-right: 12px; margin-bottom=
+: 12px;"><img src=3Dhttps://play.google.com/console/static/messaging/email/=
+help-center-icon-3x.png alt=3D"Help Center" style=3D"border-radius: 100%; h=
+eight: 28px; width: 28px;"></a><a href=3Dhttps://c.gle/AKMee0f7j8G6MJVCDLlO=
+QgUwLhnXDKKQyhItXck8F9t_liBlMaDxQW2s5GSnwNmPKhmUy5JvigTnQtaq47pGDU8jX8pyhJY=
+JR0PG5o6Q0qm5GJ7Mt5EwHoKKKlxkA-2FInU6yMlE0w style=3D"height: 28px; width: 2=
+8px; margin-right: 12px; margin-bottom: 12px;"><img src=3Dhttps://play.goog=
+le.com/console/static/messaging/email/newsletter-icon-3x.png alt=3DNewslett=
+er style=3D"border-radius: 100%; height: 28px; width: 28px;"></a></td></tr>=
+</tbody></table></td></tr></tbody></table></td></tr></tbody></table></div><=
+/td></tr></tbody></table></td></tr><tr style=3Dborder-collapse:collapse;cel=
+lspacing:0;cellpadding:0; border=3D0 cellpadding=3D0 cellspacing=3D0><td st=
+yle=3D"background-color: #f1f3f4;;border-collapse:collapse;cellspacing:0;ce=
+llpadding:0;" border=3D0 cellpadding=3D0 cellspacing=3D0><table style=3D"ma=
+x-width: 600px;;border-collapse:collapse;cellspacing:0;cellpadding:0;mso-ta=
+ble-lspace:0;mso-table-rspace:0" border=3D0 cellpadding=3D0 cellspacing=3D0=
+ width=3D100% align=3Dcenter><tbody><tr style=3Dborder-collapse:collapse;ce=
+llspacing:0;cellpadding:0; border=3D0 cellpadding=3D0 cellspacing=3D0><td s=
+tyle=3D"background-color: #f1f3f4; max-width: 600px; padding-bottom: 28px; =
+padding-left: 24px; padding-right: 24px; padding-top: 28px;;border-collapse=
+:collapse;cellspacing:0;cellpadding:0;" border=3D0 cellpadding=3D0 cellspac=
+ing=3D0><table style=3Dborder-collapse:collapse;cellspacing:0;cellpadding:0=
+;mso-table-lspace:0;mso-table-rspace:0 border=3D0 cellpadding=3D0 cellspaci=
+ng=3D0 width=3D100% align=3Dcenter><tbody><tr style=3Dborder-collapse:colla=
+pse;cellspacing:0;cellpadding:0; border=3D0 cellpadding=3D0 cellspacing=3D0=
+><td style=3D"color: #424242; font-size: 12px; line-height: 16px; padding-b=
+ottom: 20px; text-align: center;;border-collapse:collapse;cellspacing:0;cel=
+lpadding:0;" border=3D0 cellpadding=3D0 cellspacing=3D0>=C2=A9 2026 Google =
+LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA</td></tr><tr s=
+tyle=3Dborder-collapse:collapse;cellspacing:0;cellpadding:0; border=3D0 cel=
+lpadding=3D0 cellspacing=3D0><td style=3D"color: #424242; font-size: 12px; =
+line-height: 16px; padding-bottom: 20px; text-align: center;;border-collaps=
+e:collapse;cellspacing:0;cellpadding:0;" border=3D0 cellpadding=3D0 cellspa=
+cing=3D0>This message was sent to inform you about important updates on you=
+r Google Play Console developer account.</td></tr></tbody></table></td></tr=
+></tbody></table></td></tr></tbody></table></td></tr></tbody></table></body=
+></html>
+--00000000000066455f06572628c5--

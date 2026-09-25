@@ -1,0 +1,817 @@
+Return-Path: <noreply@fastmail.com>
+Received: from phl-compute-07.internal (phl-compute-07.internal [10.202.2.47])
+	 by slotpi08m12 (Cyrus 3.13.0-alpha0-1341-g6c10bd1c5-fm-20251013.001-g6c10bd1c) with LMTPA;
+	 Wed, 29 Oct 2025 02:33:25 -0400
+X-Cyrus-Session-Id: slotpi08m12-1761719605-3765379-2-13106390022393012179
+X-Sieve: CMU Sieve 3.0
+X-Spam-known-sender: yes ("The Fastmail Team"); trusted-sender
+X-Spam-sender-reputation: 500 (none)
+X-Spam-score: 0.0
+X-Spam-hits: ALL_TRUSTED -1, HTML_IMAGE_RATIO_06 0.001, HTML_MESSAGE 0.001,
+  ME_PHISHING_URL 10, ME_SC_NH -0.001, ME_SENDERREP_NEUTRAL 0.001,
+  ME_VADESPAM_HIGH_NB 5, SPF_PASS -0.001, LANGUAGES en, BAYES_USED none,
+  SA_VERSION 4.0.1
+X-Backscatter: NotFound1
+X-Backscatter-Hosts: 
+X-Spam-source: IP='Unknown', Host='unk', Country='unk', FromHeader='com', MailFrom='com'
+X-Spam-charsets: subject='utf-8', plain='utf-8', html='utf-8'
+X-Resolved-to: user@example.com
+X-Delivered-to: user@example.com
+X-Mail-from: noreply@fastmail.com
+Received: from phl-mx-02 ([10.202.2.201])
+  by phl-compute-07.internal (LMTPProxy); Wed, 29 Oct 2025 02:33:25 -0400
+Received: from phl-mx-02.messagingengine.com (localhost [127.0.0.1])
+	by mailmx.phl.internal (Postfix) with ESMTP id 07B9F30A0038
+	for <user@example.com>; Wed, 29 Oct 2025 02:33:25 -0400 (EDT)
+Received: from mailmx.phl.internal (localhost [127.0.0.1])
+    by phl-mx-02.messagingengine.com (Authentication Milter) with ESMTP
+    id 5C11A86910C.DDEB930A0039;
+    Wed, 29 Oct 2025 02:33:25 -0400
+ARC-Seal: i=1; a=rsa-sha256; cv=none; d=messagingengine.com; s=fm3; t=
+    1761719605; b=exktBQqa4WxRM20jy0ROSkHuvtYPcLt89OEAh9zdae0b0fbN6q
+    CIbpSU7TLZgjQsS775r6gCSbuYk/wVoSiefnQcmpMzt6IJ5pqSo9Hb5MB1esVFSX
+    UOEVJniWQJ9yRV/Hl21BXTOWS8j/6qqnA0jX0fhtZouJP1n6l29gP4XFaHFHlMuz
+    LDSGm7Rr5fLgh9VvDPu/ur6PtRpN+1DyUR3BvAQJdDX1qiJnAto1OE+ec/XuwnaR
+    7eUuSJ/eL94bz/p/qjM0hJW42PlSSgjbhApG473cwTiaTpXxpgRiJJNiQX7jX1EM
+    mbdaqZ2ZgV3iGVz4g5jNYRPXIOzyyvnyvEkA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=
+    messagingengine.com; h=mime-version:content-transfer-encoding
+    :content-type:date:subject:message-id:reply-to:list-unsubscribe
+    :to:from; s=fm3; t=1761719605; bh=Nr5hInyekog7iCZTelLC5upgSufTU/
+    lbCGMvcT6RixE=; b=mzxHqM8eYDptrWWt+3RpMl2s8jOvA+mms3/ppMUsdgk3YU
+    EclZILWSuOGI4x4cdmuzYKfbkSvI8zBwUL3CM5BbGVlskRZjjjZ4hnfnhvdOGako
+    aedJi+m7lDkQE6hPMBD7j5m3zLLxMHg8HDuzvn/axPl/dYCqe2SXWkCrph3Imv9h
+    B5QrruZZkBIuqJ56L5VjOr+N4sAMlxTHuJJX4ids12weASuUnLS7Ukrx4F0LcJxy
+    iwAOcWPucMXcy7LFG7Tkj3Dj+V5w+/jbwepxojbem13jX7J74orBujWQ8oODduqf
+    5rqq6httnRwqse6amkB2tG/BSvwC998n1UfhpIGQ==
+ARC-Authentication-Results: i=1; phl-mx-02.messagingengine.com;
+    x-csa=none;
+    x-me-sender=pass
+    policy.xms=
+    NbUBadB9k1Uq5BUEQX3szkK0zZ1RpxUeO9Hd0jIhI5QC4FkHCdohnrIttEAEouNClVIPxEGEriJTaNQpQGhVsy30xhp5PlZoNa0zxXVG4THCy2ol3Z4qCAwkEdhVbDMrj2vR8iEI3DFwSmix8JLSydxNdt6_Sf64Ctq-E9_O_AYDycfE6F-HeeQsGfxW5aIhTNhQ-wC_;
+    x-ptr=pass smtp.helo=fsystem-a1-smtp.messagingengine.com
+    policy.ptr=fsystem-a1-smtp.messagingengine.com;
+    bimi=skipped (DMARC Policy is not at enforcement);
+    arc=none (no signatures found);
+    dkim=pass (2048-bit rsa key sha256) header.d=fastmail.com
+    header.i=@fastmail.com header.b=dcQWBnGY header.a=rsa-sha256
+    header.s=fm3;
+    dkim=pass (2048-bit rsa key sha256) header.d=messagingengine.com
+    header.i=@messagingengine.com header.b=02eGAeh/ header.a=rsa-sha256
+    header.s=fm3;
+    dmarc=pass policy.published-domain-policy=none
+    policy.published-subdomain-policy=none policy.applied-disposition=none
+    policy.evaluated-disposition=none (p=none,sp=none,d=none,d.eval=none)
+    policy.policy-from=p header.from=fastmail.com;
+    iprev=pass smtp.remote-ip=103.168.172.134
+    (fsystem-a1-smtp.messagingengine.com);
+    spf=pass smtp.mailfrom=noreply@fastmail.com
+    smtp.helo=fsystem-a1-smtp.messagingengine.com
+X-ME-Authentication-Results: phl-mx-02.messagingengine.com;
+    x-tls=pass smtp.version=TLSv1.3 smtp.cipher=TLS_AES_256_GCM_SHA384
+      smtp.bits=256/256;
+    x-vs=spam:high score=500 state=1
+Authentication-Results: phl-mx-02.messagingengine.com;
+    x-csa=none;
+    x-me-sender=pass
+      policy.xms=
+      NbUBadB9k1Uq5BUEQX3szkK0zZ1RpxUeO9Hd0jIhI5QC4FkHCdohnrIttEAEouNClVIPxEGEriJTaNQpQGhVsy30xhp5PlZoNa0zxXVG4THCy2ol3Z4qCAwkEdhVbDMrj2vR8iEI3DFwSmix8JLSydxNdt6_Sf64Ctq-E9_O_AYDycfE6F-HeeQsGfxW5aIhTNhQ-wC_;
+    x-ptr=pass smtp.helo=fsystem-a1-smtp.messagingengine.com
+      policy.ptr=fsystem-a1-smtp.messagingengine.com
+Authentication-Results: phl-mx-02.messagingengine.com;
+    bimi=skipped (DMARC Policy is not at enforcement)
+Authentication-Results: phl-mx-02.messagingengine.com;
+    arc=none (no signatures found)
+Authentication-Results: phl-mx-02.messagingengine.com;
+    dkim=pass (2048-bit rsa key sha256) header.d=fastmail.com
+      header.i=@fastmail.com header.b=dcQWBnGY header.a=rsa-sha256
+      header.s=fm3;
+    dkim=pass (2048-bit rsa key sha256) header.d=messagingengine.com
+      header.i=@messagingengine.com header.b=02eGAeh/ header.a=rsa-sha256
+      header.s=fm3;
+    dmarc=pass policy.published-domain-policy=none
+      policy.published-subdomain-policy=none policy.applied-disposition=none
+      policy.evaluated-disposition=none (p=none,sp=none,d=none,d.eval=none)
+      policy.policy-from=p header.from=fastmail.com;
+    iprev=pass smtp.remote-ip=103.168.172.134
+      (fsystem-a1-smtp.messagingengine.com);
+    spf=pass smtp.mailfrom=noreply@fastmail.com
+      smtp.helo=fsystem-a1-smtp.messagingengine.com
+X-ME-VSCause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdeggdduieeftdduucetufdoteggodetrf
+    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
+    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnegouf
+    hprghmufhusghjvggtthculdeftddtmdenogfuphgrmhetlhhphhgrufhusghjvggtthcu
+    ldeftddtmdenucfjughrpegggfgtfffukfhrjffvvgfhsegrkeerredttdejnecuhfhroh
+    hmpefvhhgvucfhrghsthhmrghilhcuvfgvrghmuceonhgvfihslhgvthhtvghrsehfrghs
+    thhmrghilhdrtghomheqnecuggftrfgrthhtvghrnhepudffvdfhvdfhtdegheejveelfe
+    ejgedtleegjeefkeeltddvgfeitdejveejheeinecuffhomhgrihhnpehfrghsthhmrghi
+    lhdrtghomhdpfhgrtggvsghoohhkrdgtohhmpdhinhhsthgrghhrrghmrdgtohhmpdhlih
+    hnkhgvughinhdrtghomhdpgidrtghomhdpsghskhihrdgrphhppdhmrghsthhoughonhdr
+    shhotghirghlnecukfhppedutdefrdduieekrddujedvrddufeegnecuufhprghmjfgurh
+    epggfgtgffuffkrhfjvfgvhfesrgekreertddtjeenucfuphgrmhfuohhrthfjughrpeff
+    gffhjffkuffvgggtvghrsegrkeerredttdejnecuufhprghmufhusghjvggtthephghhrg
+    htkdhsuchnvgifucgrthcuhfgrshhtmhgrihhlnecuufhprghmtehlphhhrgfuuhgsjhgv
+    tghtpeifhhgrthhsnhgvfigrthijfhhrohhmpggrlhhirghspghprghrthdvlienucevlh
+    hushhtvghrufhiiigvpeeifeenucfrrghrrghmpehinhgvthepuddtfedrudeikedrudej
+    vddrudefgedphhgvlhhopehfshihshhtvghmqdgruddqshhmthhprdhmvghsshgrghhinh
+    hgvghnghhinhgvrdgtohhmpdhmrghilhhfrhhomhepoehnohhrvghplhihsehfrghsthhm
+    rghilhdrtghomheqpdhnsggprhgtphhtthhopedupdhrtghpthhtohepoehtohguughhvg
+    grshhlvgihsehfrghsthhmrghilhdrtghomheq
+X-ME-VSScore: 500
+X-ME-VSCategory: spam:high
+X-ME-CSA: none
+X-ME-Received: <xmx:NLUBaaSMAzQRO9NeI_Zg1OvU0qu6nu5Pu1Z7Q9E-urx1Zz1HZvuUxg>
+X-ME-Received: <xmx:NLUBaTyHT5HIqirnEKSsZ9WKTjFl716ZDuPKx_cjjEbhwnawGukseQ>
+Received-SPF: pass
+    (fastmail.com: Sender is authorized to use 'noreply@fastmail.com' in 'mfrom' identity (mechanism 'include:spf.messagingengine.com' matched))
+    receiver=phl-mx-02.messagingengine.com;
+    identity=mailfrom;
+    envelope-from="noreply@fastmail.com";
+    helo=fsystem-a1-smtp.messagingengine.com;
+    client-ip=103.168.172.134
+Received: from mailfsystem.phl.internal (phl-outbound-01.internal [10.202.2.181])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits))
+	(No client certificate requested)
+	by mailmx.phl.internal (Postfix) with ESMTPS id DDEB930A0039
+	for <user@example.com>; Wed, 29 Oct 2025 02:33:24 -0400 (EDT)
+Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
+	by mailfsystem.phl.internal (Postfix) with ESMTP id D1E041E00772
+	for <user@example.com>; Wed, 29 Oct 2025 02:33:24 -0400 (EDT)
+Received: from phl-dogfoodweb-01 ([10.202.2.8])
+  by phl-compute-04.internal (MEProxy); Wed, 29 Oct 2025 02:33:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fastmail.com; h=
+	cc:content-transfer-encoding:content-type:content-type:date:date
+	:from:from:in-reply-to:list-unsubscribe:list-unsubscribe-post
+	:message-id:mime-version:reply-to:reply-to:subject:subject:to
+	:to; s=fm3; t=1761719604; x=1761806004; bh=Nr5hInyekog7iCZTelLC5
+	upgSufTU/lbCGMvcT6RixE=; b=dcQWBnGYmhkBHcH/3Hv/85jinPBTihj2/W5mv
+	kAZtA1a3oWbDdTCaf4eI7XHd8RePvCEeqIGrwPnnHMrINFTpLMn13Rb/vtZ43jXj
+	ZOvd8qmTmeAFw6agqnoxYOCSRLsA4yU3jZFfQx5XjsPA7J7IlXXyIfJUVMHc6fIq
+	xHVEiY3O1FO+88KfKrfFLjfHKYfz7+kT16uKnSe8uA/9BxZHa9pwo9u+P+9eiLD+
+	ioTf+cZ7JQgcJc2rCYNqKms8aJx9YRtYHDJXkzvk4f61QlfgazEuMHHwy5h4JMek
+	u6e1i6npmzKbKc9XOWoLbPmahsGMOGDCFPywvfimH1tJUPb3A==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:content-transfer-encoding:content-type
+	:content-type:date:date:feedback-id:feedback-id:from:from
+	:in-reply-to:list-unsubscribe:list-unsubscribe-post:message-id
+	:mime-version:reply-to:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1761719604; x=
+	1761806004; bh=Nr5hInyekog7iCZTelLC5upgSufTU/lbCGMvcT6RixE=; b=0
+	2eGAeh/JEuD5iPZ7hVtuAPWmzgRX/nuAER6/23tQyIiLlAtVPAJdcHD9759UU/Ss
+	iZwJ8v7MuCcXX/8EvGG0FPcqDI6TW2MzZ0KPk2p6Oa9DjAx49fZvuB5FV8STrYl/
+	5J4i7FYHyraboQqoZ3EQBPS/V727OZ1XGyCtSDYFsrcLtwHPzZ3Lj7CAURuMZiXR
+	0GU6cJJd5tZ1UBIZG3haAnwCwMLU3nM3n/d4GhnCt4NxLO822imvTr5Svll3BjDS
+	0+T+7/WCZm1qHV5aM4H5wmcIaRjP9sf8wz+8QBMirEiVKztoC0+rPBsz1FoyoQxs
+	MoczvMzqVZKMbC+x4d6kA==
+X-ME-Sender: <xms:NLUBaTR_nIuhciQE6y7VMzCinMbPcrrxGzoGlmW6Aezp-qO2PS-brMw0aFJvTT-7>
+    <xme:NLUBaRPB4K4MMS6HtdGTef17geDrhTha_eFDAQd0RavhhzJPNESgfMWX6z3Lo1FvD
+    H3RIDPFE9HMFyO_IVPYMXTFls9mmLg4OX8IvvmPsTECnKnpFw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdeggdduieeftddvucetufdoteggodetrf
+    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
+    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnegouf
+    hprghmtehlphhhrgfuuhgsjhgvtghtqdhouhhtucdlhedttddmnecujfgurhepggfgtgff
+    uffkrhfjvfgvhfesrgekreertddtjeenucfhrhhomhepvfhhvgcuhfgrshhtmhgrihhluc
+    fvvggrmhcuoehnvgifshhlvghtthgvrhesfhgrshhtmhgrihhlrdgtohhmqeenucggtffr
+    rghtthgvrhhnpeduffdvhfdvhfdtgeehjeevleefjeegtdelgeejfeekledtvdfgiedtje
+    evjeehieenucffohhmrghinhepfhgrshhtmhgrihhlrdgtohhmpdhfrggtvggsohhokhdr
+    tghomhdpihhnshhtrghgrhgrmhdrtghomhdplhhinhhkvgguihhnrdgtohhmpdigrdgtoh
+    hmpdgsshhkhidrrghpphdpmhgrshhtohguohhnrdhsohgtihgrlhenucfuphgrmhfjughr
+    pegggfgtfffukfhrjffvvgfhsegrkeerredttdejnecuufhprghmufhorhhtjfgurhepff
+    fghffjkffuvfggtggvrhesrgekreertddtjeenucfuphgrmhfuuhgsjhgvtghtpeghhhgr
+    thdkshcunhgvficurghtucfhrghsthhmrghilhenucfuphgrmhetlhhphhgrufhusghjvg
+    gtthepfihhrghtshhnvgifrghtjihfrhhomhgprghlihgrshgpphgrrhhtvdilnecuvehl
+    uhhsthgvrhfuihiivgepudekjeenucfrrghrrghmpehmrghilhhfrhhomhepnhhorhgvph
+    hlhiesfhgrshhtmhgrihhlrdgtohhmpdhnsggprhgtphhtthhopedupdhmohguvgepshhm
+    thhpohhuthdprhgtphhtthhopehtohguughhvggrshhlvgihsehfrghsthhmrghilhdrtg
+    homh
+X-ME-Proxy: <xmx:NLUBaXBE-TgPp-Udeghr7We6alsB7jU56Pyy1smmO1ImU6jtD761Lw>
+    <xmx:NLUBaeNLRTevPORvivpnhenK7jnDVcr8-vRkgRyZi0sMw5VlUD8TqA>
+    <xmx:NLUBacJ0MwLVnVawWQ7qqNBaLt4-w823w8TxGZMbLHY2xrUX2CcKtQ>
+    <xmx:NLUBaY1TuQKoB8VZ6zREJluPFJ-Xb6PLb8kMwoOmYpJZLlqeg1uA0g>
+    <xmx:NLUBaSVKYruDZbA8MET5DKC9x1J7qm3fIJrXhCLlmFoRxscwRzH5ckK1>
+Feedback-ID: i35d941ae:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 8006)
+	id AD34CDA005E; Wed, 29 Oct 2025 02:33:24 -0400 (EDT)
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: multipart/alternative; boundary="_----------=_17617196041979919223967"
+Date: Wed, 29 Oct 2025 02:33:24 -0400
+Subject: =?utf-8?Q?What=E2=80=99s=20new=20at=20Fastmail?=
+Message-Id: <1761719604.1979919.35282611@newsletter.messagingengine.com>
+Reply-To: support@fastmail.com
+List-Unsubscribe: <https://api.fastmail.com/unsubscribe/?u=7a5e4041&a=unsubscribe&t=1761719604&k=dc8bbcb7043c5a439780ef04ac44b22940922c66974da89738c2c6cbdedc0c6f>
+To: Example User <user@example.com>
+List-Unsubscribe-Post: List-Unsubscribe=One-Click
+Errors-To: bounce@messagingengine.com
+From: The Fastmail Team <newsletter@fastmail.com>
+Auto-Submitted: auto-generated
+
+This is a multi-part message in MIME format.
+
+--_----------=_17617196041979919223967
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8; charset="utf-8"
+
+Introducing the Fastmail desktop app, plus offline support in our mobile ap=
+ps, faster navigation, and more.=20=20=20=20=20=20=20=20=20=20=20=20=20=20=
+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=
+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20
+
+    Fastmail
+October 2025
+# What=E2=80=99s new
+
+As a Fastmail subscriber, we send you occasional updates to let you know ab=
+out the latest improvements to the service. Thanks for supporting a paid se=
+rvice that prioritises privacy <https://www.fastmail.com/features/privacy/>=
+, security <https://www.fastmail.com/features/security/>, and productivity =
+<https://www.fastmail.com/features/>.
+
+Don=E2=80=99t want updates like this? Unsubscribe <https://api.fastmail.com=
+/unsubscribe/?u=3D7a5e4041&a=3Dunsubscribe&t=3D1761719604&k=3Ddc8bbcb7043c5=
+a439780ef04ac44b22940922c66974da89738c2c6cbdedc0c6f> in one click.
+
+=20
+## Introducing the Fastmail desktop app=20=20
+
+Whether you=E2=80=99re on macOS, Windows, or your favourite Linux distribut=
+ion, you=E2=80=99ll find the app feels right at home, with native notificat=
+ions, menus, and system integrations.
+
+Download the app =E2=86=92 <https://www.fastmail.com/download/>
+
+=20
+With our desktop app you can:
+
+ * Launch Fastmail from your dock or taskbar and find it in your platform=
+=E2=80=99s app switcher.
+ * Make Fastmail your default email client, so email links create a new mes=
+sage directly in Fastmail.
+ * Work whenever, wherever, with full offline support, just like our mobile=
+ apps. You can always read your mail, manage your calendar, and write repli=
+es =E2=80=94 your changes sync back seamlessly when you reconnect.
+Ready to give it a go? Download the app, log in, and enjoy a cleaner, more =
+focused way to manage your email.
+
+Download the app =E2=86=92 <https://www.fastmail.com/download/>
+
+=20
+=20
+
+## Offline support now available
+
+The internet still isn=E2=80=99t everywhere, but now your email and calenda=
+r can be.
+
+Enable in Settings =E2=86=92 Offline <https://app.fastmail.com/settings/off=
+line>
+
+=20
+=20
+
+## Resize images in compose
+
+Click/tap an image to get resize handles.
+Drag to make it smaller or larger.
+
+=20
+=20
+
+## Faster navigation
+
+Switch between your mail, calendar, and other apps in just one click =E2=80=
+=94 choose which apps to show in the settings.
+
+## Refer a friend, get rewards
+
+Give your friends and family 10% off a new Fastmail account, and earn $10 f=
+or yourself. Find your unique link <https://app.fastmail.com/settings/refer=
+rals> to get started.
+
+## Questions?
+
+Our support team is always here to help. Just email support@fastmail.com.
+
+Happy emailing,*The Fastmail Team*
+
+Powered by  Fastmail <https://www.fastmail.com> =E2=80=A2  Get support <htt=
+ps://www.fastmail.com/support/> =E2=80=A2  Privacy policy <https://www.fast=
+mail.com/policies/privacy/> =E2=80=A2  Read our blog <https://www.fastmail.=
+com/blog/>
+
+You=E2=80=99re receiving this email because you are signed up for the Fastm=
+ail newsletter. If you no longer wish to receive these emails, please updat=
+e your preferences <https://api.fastmail.com/unsubscribe/?u=3D7a5e4041&a=3D=
+unsubscribe&t=3D1761719604&k=3Ddc8bbcb7043c5a439780ef04ac44b22940922c66974d=
+a89738c2c6cbdedc0c6f>.
+
+
+--_----------=_17617196041979919223967
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html; charset=utf-8; charset="utf-8"
+
+<!DOCTYPE html>
+<html lang=3D"en">
+<head>
+    <meta charset=3D"UTF-8">
+    <meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=
+=3D1.0">
+    <title>What=E2=80=99s new at Fastmail</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: "Proxima Nova", system-ui, -apple-system, BlinkMac=
+SystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'He=
+lvetica Neue', sans-serif;
+            line-height: 1.4285714286;
+        }
+
+        body {
+            margin: auto;
+            padding: 0;
+            background-color: #fff;
+            color: #1b1e20;
+        }
+
+        h1 {
+            position: relative;
+            overflow: hidden;
+            margin: auto;
+            width: 200px;
+            color: #0067b9;
+            font-size: 32px;
+            white-space: nowrap;
+        }
+        h1::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -14px;
+            margin-left: -100px;
+            width: 200px;
+            height: 27px;
+            background-image: url(https://app.fastmail.com/static/images/em=
+ailtemplates/whatsnew-light.svg);
+            background-position: 50%;
+            background-repeat: no-repeat;
+        }
+
+        h2 {
+            font-size: 126.5%;
+            line-height: 1.3544;
+            font-weight: 600;
+        }
+
+        ul {
+            margin: 0 32px 0 24px;
+        }
+
+        li {
+            margin: 12px 0;
+            font-size: 112.5%;
+        }
+
+        p {
+            margin: 20px 0;
+            font-size: 112.5%;
+        }
+
+        a {
+            color: #0067b9;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .arrow {
+            display: inline-block;
+            position: relative;
+            margin-left: 4px;
+            top: 1px;
+            font-family: system-ui;
+        }
+
+        .header {
+            margin: 0 auto;
+            max-width: 680px;
+            padding: 16px 0 24px;
+            background-color: #f0f7fc;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+            background-image:
+                url(https://app.fastmail.com/static/images/emailtemplates/s=
+hape-triangle.svg),
+                url(https://app.fastmail.com/static/images/emailtemplates/s=
+hape-circle.svg),
+                url(https://app.fastmail.com/static/images/emailtemplates/s=
+hape-email.svg);
+            background-repeat: no-repeat;
+            background-size: 32px 32px, 12px 12px, 24px 24px;
+            background-position: 24px 50%, 64px 90%, 95% 40%;
+        }
+        .logo {
+            position: relative;
+            overflow: hidden;
+            margin: auto;
+            width: 120px;
+            height: 30px;
+            text-indent: 120px;
+            white-space: nowrap;
+        }
+        .logo img {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .date {
+            opacity: 0.8;
+            margin-top: 20px;
+            font-size: 113%;
+        }
+
+        .section {
+            padding: 0 24px;
+            max-width: 600px;
+            margin: 40px auto;
+        }
+
+        .main {
+            border-radius: 20px;
+            border: 1px solid #eaebec;
+            padding: 32px 28px 8px;
+        }
+        .main-headline {
+            margin: 0 32px;
+            text-align: center;
+        }
+        .main h2 {
+            font-size: 180%;
+            line-height: 1.26883;
+        }
+        .main img {
+            position: relative;
+            width: 100%;
+        }
+
+        .card {
+            overflow: hidden;
+            display: flex;
+            flex-direction: row-reverse;
+            flex-wrap: wrap;
+            justify-content: center;
+            border-radius: 20px;
+            border: 1px solid transparent;
+            padding: 8px;
+        }
+        .card--blue {
+            background-color: #f0f7fc;
+        }
+        .card--yellow {
+            background-color: #fff8e6;
+        }
+        .card--pink {
+            background-color: #fff6f9;
+        }
+        .card--green {
+            background-color: #f6faf9;
+        }
+        .card-image {
+            align-self: center;
+            flex: 0 0 180px;
+            padding: 20px;
+            width: 180px;
+            height: 180px;
+        }
+        .card-text {
+            flex: 1 0 0;
+            min-width: 250px;
+            max-width: 100%;
+            padding: 20px;
+        }
+        .card-text > p {
+            margin: 0;
+            color: #333e48;
+        }
+        .card-text > * + h2,
+        .card-text > * + p {
+            margin-top: 12px;
+        }
+
+        .footer {
+            position: relative;
+            margin-top: 40px;
+            border-top: 4px solid #0067b9;
+            padding-top: 40px;
+            color: #70777e;
+            font-size: 88%;
+            text-align: center;
+        }
+        .footer::before {
+            content: "";
+            position: absolute;
+            top: -4px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ffa0c3 1.4865%, #0067b9 1.4=
+865%, #0067b9 77.2973%, #69b3e7 77.2973%, #69b3e7 83.1081%, #ffc107 83.1081=
+%);
+        }
+        .footer a {
+            color: inherit;
+            text-decoration: underline;
+        }
+        .footer img {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .socials {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .socials > li {
+            list-style: none;
+        }
+        .socials a {
+            overflow: hidden;
+            display: block;
+            position: relative;
+            width: 24px;
+            height: 24px;
+            padding: 0 12px;
+            background-position: 50%;
+            background-repeat: no-repeat;
+            text-indent: 48px;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 640px) {
+            .main {
+                padding: 24px 24px 8px;
+            }
+            .main-headline {
+                margin: 0;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .light {
+                display: none;
+            }
+            .dark {
+                display: unset !important;
+            }
+            body {
+                background-color: #1b1e20;
+                color: #f4f5f5;
+            }
+            h1,
+            a {
+                color: #69b3e7;
+            }
+            h1::after {
+                background-image: url(https://app.fastmail.com/static/image=
+s/emailtemplates/whatsnew-dark.svg);
+            }
+            .header {
+                background-color: #333f48;
+            }
+            .footer {
+                border-top-color: #69b3e7;
+                color: #999ea3;
+            }
+            .footer::before {
+                background: linear-gradient(90deg, #ffa0c3 1.4865%, #0067b9=
+ 1.4865%, #0067b9 77.2973%, #69b3e7 77.2973%, #69b3e7 83.1081%, #ffc107 83.=
+1081%);
+            }
+            .main {
+                border-color: #373c41;
+            }
+            .card--blue {
+                background-color: #3f4d62;
+            }
+            .card--yellow {
+                background-color: #6a311c;
+            }
+            .card--pink {
+                background-color: #5c353d;
+            }
+            .card--green {
+                background-color: #38574e;
+            }
+            .card-text p {
+                color: #ccced1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<p style=3D"display:none">Introducing the Fastmail desktop app, plus offlin=
+e support in our mobile apps, faster navigation, and more.=E2=80=83=E2=80=
+=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=
+=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=
+=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=
+=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=
+=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=
+=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=83=E2=80=
+=83=E2=80=83=E2=80=83=E2=80=83</p>
+
+<div class=3D"header">
+    <div class=3D"logo">
+        <img class=3D"light" width=3D"120" height=3D"30" src=3D"https://app=
+.fastmail.com/static/images/emailtemplates/FM-Logo-RGB-240-2x.png">
+        <img class=3D"dark" style=3D"display:none" width=3D"120" height=3D"=
+30" src=3D"https://app.fastmail.com/static/images/emailtemplates/FM-Logo-Da=
+rk-BG-RBG-240-2x.png">Fastmail</div>
+    <div class=3D"date">October 2025</div>
+    <h1>What=E2=80=99s new</h1>
+</div>
+
+<div class=3D"section">
+<p>As a Fastmail subscriber, we send you occasional updates to let you know=
+ about the latest improvements to the service. Thanks for supporting a paid=
+ service that prioritises <a href=3D"https://www.fastmail.com/features/priv=
+acy/">privacy</a>, <a href=3D"https://www.fastmail.com/features/security/">=
+security</a>, and <a href=3D"https://www.fastmail.com/features/">productivi=
+ty</a>.</p>
+<p>Don=E2=80=99t want updates like this? <a href=3D"https://api.fastmail.co=
+m/unsubscribe/?u=3D7a5e4041&a=3Dunsubscribe&t=3D1761719604&k=3Ddc8bbcb7043c=
+5a439780ef04ac44b22940922c66974da89738c2c6cbdedc0c6f">Unsubscribe</a> in on=
+e click.</p>
+</div>
+
+<div class=3D"section">
+<div class=3D"main">
+    <div class=3D"main-headline">
+    <div><img style=3D"width:100%;height:auto" width=3D"478" height=3D"175"=
+ src=3D"https://app.fastmail.com/static/images/email/2025-10-newsletter/des=
+ktop-hero.png"></div>
+    <h2>Introducing the Fastmail desktop=C2=A0app</h1>
+    <p>Whether you=E2=80=99re on macOS, Windows, or your favourite Linux di=
+stribution, you=E2=80=99ll find the app feels right at home, with native no=
+tifications, menus, and system integrations.</p>
+    <p><a href=3D"https://www.fastmail.com/download/">Download the app<span=
+ class=3D"arrow"> =E2=86=92</span></a></p>
+    </div>
+    <div><img style=3D"width:100%;height:auto" width=3D"542" height=3D"279"=
+ src=3D"https://app.fastmail.com/static/images/email/2025-10-newsletter/des=
+ktop-screenshot.png"></div>
+    <p style=3D"font-weight: 600;">With our desktop app you can:</p>
+    <ul>
+        <li>Launch Fastmail from your dock or taskbar and find it in your p=
+latform=E2=80=99s app switcher.</li>
+        <li>Make Fastmail your default email client, so email links create =
+a new message directly in Fastmail.</li>
+        <li>Work whenever, wherever, with full offline support, just like o=
+ur mobile apps. You can always read your mail, manage your calendar, and wr=
+ite replies =E2=80=94 your changes sync back seamlessly when you reconnect.=
+</li>
+    </ul>
+    <p>Ready to give it a go? Download the app, log in, and enjoy a cleaner=
+, more focused way to manage your email.</p>
+    <p><a href=3D"https://www.fastmail.com/download/">Download the app<span=
+ class=3D"arrow"> =E2=86=92</span></a></p>
+</div>
+</div>
+
+<div class=3D"section">
+<div class=3D"card card--blue">
+    <div class=3D"card-image"><img width=3D"180" height=3D"180" src=3D"http=
+s://app.fastmail.com/static/images/email/2025-10-newsletter/offline.png"></=
+div>
+    <div class=3D"card-text">
+    <p><img width=3D"40" height=3D"40" src=3D"https://app.fastmail.com/stat=
+ic/images/email/2025-10-newsletter/offline-icon.svg"></p>
+    <h2>Offline support now available</h2>
+    <p>The internet still isn=E2=80=99t everywhere, but now your email and =
+calendar can be.</p>
+    <p><a href=3D"https://app.fastmail.com/settings/offline">Enable in Sett=
+ings =E2=86=92 Offline</a></p>
+    </div>
+</div>
+</div>
+
+<div class=3D"section">
+<div class=3D"card card--yellow">
+    <div class=3D"card-image"><img width=3D"180" height=3D"180" src=3D"http=
+s://app.fastmail.com/static/images/email/2025-10-newsletter/resize.png"></d=
+iv>
+    <div class=3D"card-text">
+    <p><img width=3D"40" height=3D"40" src=3D"https://app.fastmail.com/stat=
+ic/images/email/2025-10-newsletter/resize-icon.svg"></p>
+    <h2>Resize images in compose</h2>
+    <p>Click/tap an image to get resize handles.<br>Drag to make it smaller=
+ or larger.</p>
+    </div>
+</div>
+</div>
+
+<div class=3D"section">
+<div class=3D"card card--pink">
+    <div class=3D"card-image"><img width=3D"180" height=3D"180" src=3D"http=
+s://app.fastmail.com/static/images/email/2025-10-newsletter/faster.png"></d=
+iv>
+    <div class=3D"card-text">
+    <p><img width=3D"40" height=3D"40" src=3D"https://app.fastmail.com/stat=
+ic/images/email/2025-10-newsletter/faster-icon.svg"></p>
+    <h2>Faster navigation</h2>
+    <p>Switch between your mail, calendar, and other apps in just one click=
+ =E2=80=94 choose which apps to show in the settings.</p>
+    </div>
+</div>
+</div>
+
+<div class=3D"section">
+<div class=3D"card card--green">
+    <div class=3D"card-text">
+    <h2>Refer a friend, get rewards</h2>
+    <p>Give your friends and family 10% off a new Fastmail account, and ear=
+n $10 for yourself. <a href=3D"https://app.fastmail.com/settings/referrals"=
+>Find your unique link</a> to get started.</p>
+    </div>
+</div>
+</div>
+
+<div class=3D"section">
+<h2>Questions?</h2>
+<p>Our support team is always here to help. Just email <a href=3D"mailto:su=
+pport@fastmail.com">support@fastmail.com</a>.</p>
+<p>Happy emailing,</br><b>The Fastmail Team</b></p>
+</div>
+
+<div class=3D"section">
+<div class=3D"footer">
+    <ul class=3D"socials">
+        <li><a class=3D"social-facebook" href=3D"https://www.facebook.com/F=
+astmail/"><img width=3D"24" height=3D"24" class=3D"light" src=3D"https://ap=
+p.fastmail.com/static/images/emailtemplates/light/social/facebook.svg">
+<img width=3D"24" height=3D"24" class=3D"dark" style=3D"display:none" src=
+=3D"https://app.fastmail.com/static/images/emailtemplates/dark/social/faceb=
+ook.svg">Facebook</a></li>
+        <li><a class=3D"social-instagram" href=3D"https://www.instagram.com=
+/teamfastmail/"><img width=3D"24" height=3D"24" class=3D"light" src=3D"http=
+s://app.fastmail.com/static/images/emailtemplates/light/social/instagram.sv=
+g">
+<img width=3D"24" height=3D"24" class=3D"dark" style=3D"display:none" src=
+=3D"https://app.fastmail.com/static/images/emailtemplates/dark/social/insta=
+gram.svg">Instagram</a></li>
+        <li><a class=3D"social-linkedin" href=3D"https://www.linkedin.com/c=
+ompany/fastmail"><img width=3D"24" height=3D"24" class=3D"light" src=3D"htt=
+ps://app.fastmail.com/static/images/emailtemplates/light/social/linkedin.sv=
+g">
+<img width=3D"24" height=3D"24" class=3D"dark" style=3D"display:none" src=
+=3D"https://app.fastmail.com/static/images/emailtemplates/dark/social/linke=
+din.svg">LinkedIn</a></li>
+        <li><a class=3D"social-x" href=3D"https://www.x.com/fastmail"><img =
+width=3D"24" height=3D"24" class=3D"light" src=3D"https://app.fastmail.com/=
+static/images/emailtemplates/light/social/x.svg">
+<img width=3D"24" height=3D"24" class=3D"dark" style=3D"display:none" src=
+=3D"https://app.fastmail.com/static/images/emailtemplates/dark/social/x.svg=
+">X</a></li>
+        <li><a class=3D"social-bluesky" href=3D"https://bsky.app/profile/fa=
+stmail.com"><img width=3D"24" height=3D"24" class=3D"light" src=3D"https://=
+app.fastmail.com/static/images/emailtemplates/light/social/bluesky.svg">
+<img width=3D"24" height=3D"24" class=3D"dark" style=3D"display:none" src=
+=3D"https://app.fastmail.com/static/images/emailtemplates/dark/social/blues=
+ky.svg">Bluesky</a></li>
+        <li><a class=3D"social-mastodon" href=3D"https://mastodon.social/@f=
+astmail"><img width=3D"24" height=3D"24" class=3D"light" src=3D"https://app=
+.fastmail.com/static/images/emailtemplates/light/social/mastodon.svg">
+<img width=3D"24" height=3D"24" class=3D"dark" style=3D"display:none" src=
+=3D"https://app.fastmail.com/static/images/emailtemplates/dark/social/masto=
+don.svg">Mastodon</a></li>
+    </ul>
+    <p>Powered by
+        <a href=3D"https://www.fastmail.com">Fastmail</a> =E2=80=A2
+        <a href=3D"https://www.fastmail.com/support/">Get support</a> =E2=
+=80=A2
+        <a href=3D"https://www.fastmail.com/policies/privacy/">Privacy=C2=
+=A0policy</a> =E2=80=A2
+        <a href=3D"https://www.fastmail.com/blog/">Read=C2=A0our=C2=A0blog<=
+/a>
+    </p>
+    <p>You=E2=80=99re receiving this email because you are signed up for th=
+e Fastmail newsletter. If you no longer wish to receive these emails, <a hr=
+ef=3D"https://api.fastmail.com/unsubscribe/?u=3D7a5e4041&a=3Dunsubscribe&t=
+=3D1761719604&k=3Ddc8bbcb7043c5a439780ef04ac44b22940922c66974da89738c2c6cbd=
+edc0c6f">please update your preferences</a>.</p>
+</div>
+</div>
+
+</body>
+</html>
+
+--_----------=_17617196041979919223967--
+

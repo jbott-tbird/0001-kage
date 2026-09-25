@@ -1,0 +1,5 @@
+Fixtures derived from thunderbird-ios/Core/Tests/MIMETests/Resources at commit 5322c9dda2bbec1eb68ce59828346d95b34a3f8b. Source repository: https://github.com/thunderbird/thunderbird-ios
+Mozilla Public License 2.0; see LICENSE.txt.
+
+Local modifications: two contributor email addresses were replaced with fixture-author@example.test and fixture-reviewer@example.test for privacy. MIME structure and attachments are retained; affected encoded text bodies were re-encoded. Existing DKIM/signature fields are test data, not valid authenticity evidence for modified messages.
+The parity ledger records original upstream hashes separately from sanitized fixture hashes. Expectations compare decoded content and attachment hashes, not iOS runtime output (iOS was not built).

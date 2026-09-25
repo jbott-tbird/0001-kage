@@ -5,12 +5,27 @@ import jakarta.mail.internet.InternetAddress
 import jakarta.mail.internet.MimeMessage
 import org.foxred.kage.core.account.*
 import org.foxred.kage.core.mime.AngusMimeCodec
+import org.foxred.kage.core.transport.ConnectionControl
 import org.foxred.kage.core.transport.connectionProperties
 
-class AngusSmtpClient(private val codec: MimeCodec = AngusMimeCodec()) : MailSubmission {
+class AngusSmtpClient(
+    private val codec: MimeCodec = AngusMimeCodec(),
+    private val timeoutMillis: Int = 15000,
+) : MailSubmission {
+    @Volatile private var control: ConnectionControl? = null
+
+    override fun cancel() {
+        control?.cancel()
+    }
+
+    @Synchronized
     override fun send(server: Server, authorization: Authorization, email: OutgoingEmail) {
         require(server.protocol == ServerProtocol.SMTP)
-        val session = Session.getInstance(connectionProperties(server, authorization))
+        val operation = ConnectionControl()
+        control = operation
+        val properties = connectionProperties(server, authorization, timeoutMillis)
+        operation.install(properties, "smtp")
+        val session = Session.getInstance(properties)
         val raw = codec.encode(email)
         val message = MimeMessage(session, raw.inputStream())
         val recipients =
@@ -33,13 +48,16 @@ class AngusSmtpClient(private val codec: MimeCodec = AngusMimeCodec()) : MailSub
             throw MailFailure(kind, "SMTP rejected delivery for one or more recipients", e)
         } catch (e: Exception) {
             throw MailFailure(
-                if (submitting) FailureKind.UNCERTAIN_DELIVERY else FailureKind.CONNECTION,
+                if (submitting) FailureKind.UNCERTAIN_DELIVERY
+                else if (operation.cancelled) FailureKind.CANCELLED else FailureKind.CONNECTION,
                 if (submitting) "Delivery outcome is unknown; check Sent before retrying"
                 else "SMTP connection failed",
                 e,
             )
         } finally {
+            operation.cancel()
             runCatching { transport.close() }
+            control = null
         }
     }
 }

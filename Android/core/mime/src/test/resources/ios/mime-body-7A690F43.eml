@@ -1,0 +1,317 @@
+Delivered-To: fixture-author@example.test
+Received: by 2002:ad4:44ac:0:b0:8df:7f20:ebd6 with SMTP id n12csp741274qvt;
+        Thu, 16 Jul 2026 11:24:14 -0700 (PDT)
+X-Forwarded-Encrypted: i=4; AHgh+RpHrzrUcqO+9m25L7UbFSwag7KfmAqeIeGN0aJSQoIu9cbxyEkPF51L7quxfez2Ysb5C2WhHUmWYg==@thunderbird.net
+X-Received: by 2002:a05:622a:428c:b0:519:89b6:78b4 with SMTP id d75a77b69052e-520be789b4fmr7686861cf.40.1784226254604;
+        Thu, 16 Jul 2026 11:24:14 -0700 (PDT)
+ARC-Seal: i=3; a=rsa-sha256; t=1784226254; cv=pass;
+        d=google.com; s=arc-20260327;
+        b=HwKkH6Bzlq1tjyU2IqAh9iWZeUAPRgUXAm4/KpkMT7YdqsO8Gu7sOHXKlwJU7dhFl+
+         TmuE+c7ilEb75QScxx1PpKBWmglfVKnOjFAYWqw2besICAhCTf46Qh+FfnQjkDXLP3Xg
+         RXfyRVUO53UaKf91SpNCl8ALjIi3NmbibJ4Jp04Z/QBZdOD6Zlh7uQ1OpN0OsxVPBkJG
+         hJyRr3I2fUoFL6ZcVOHG0I1kenXI80uKEW/hvzFn3PgUw9rnjfZP/tdNEHVkAP8tsL0M
+         Eh2F2I/qqd8cKVBqzAZsI6aAldF22RJ/l90GCjwo8ehB1++KJN8sWcpIgu3k5JIPucIG
+         K7mA==
+ARC-Message-Signature: i=3; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=topicbox-delivery-id:list-unsubscribe:from:reply-to:precedence
+         :list-subscribe:list-software:list-post:list-id:list-help
+         :archived-at:topicbox-message-uuid:topicbox-policy-reasoning
+         :content-transfer-encoding:in-reply-to:autocrypt:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id
+         :dkim-signature;
+        bh=vPR/L+lPhRT+DPSWgKB6ZUxb+SIW48PzOU6V/nh+aEE=;
+        fh=0w5IDn1NjJO0JuGGAmFia+Y4ZvZyBZGOHQtDaFvme6U=;
+        b=gfEfQGGhfjySU3/GRhq+SM5asbkxC/0CyrTp0zQglc4P32mZ56WISkM8SgtIENxz0G
+         4yVda7HlXp0+MCJ5xTytrcDIRjPSx1esDV5DQkpcccUw/XTgbu7lHVroIlYtvMV3S/0F
+         fCTc7wHYT+O3FMy0Afkhpy/JvpwC107JML1LQme8symRyANMHlVIEFa2CZ5Z+RH+E+E9
+         vuBVznJN/SLRKyrD4HgefPe6hKQUvnqRMChDHcdOSwfS34lQmddmf5asxCN+evql1pTo
+         4oVkq4NCj+IYS2+DXpRPtFG8PKEK5IlpeXRpClIj9pdmt4lTKwb4/oyxwFG4UWs1bi+F
+         HazA==;
+        dara=google.com
+ARC-Authentication-Results: i=3; mx.google.com;
+       dkim=pass header.i=@discuss.thunderbird.net header.s=dkim-1 header.b=OeZW6dXa;
+       arc=pass (i=2 spf=pass spfdomain=thunderbird.net dkim=pass dkdomain=thunderbird.net dmarc=pass fromdomain=thunderbird.net);
+       spf=pass (google.com: domain of bounce.mmececf3b9d6db1aacedfe7c3a.r2a69c34e-0b26-11f0-aa19-d9888eef7525@thunderbird.bounce.topicbox.com designates 103.168.172.224 as permitted sender) smtp.mailfrom=bounce.mMececf3b9d6db1aacedfe7c3a.r2a69c34e-0b26-11f0-aa19-d9888eef7525@thunderbird.bounce.topicbox.com;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=thunderbird.net
+Return-Path: <bounce.mMececf3b9d6db1aacedfe7c3a.r2a69c34e-0b26-11f0-aa19-d9888eef7525@thunderbird.bounce.topicbox.com>
+Received: from txout-a1-smtp.messagingengine.com (txout-a1-smtp.messagingengine.com. [103.168.172.224])
+        by mx.google.com with ESMTPS id d75a77b69052e-51f5387a5bfsi39221041cf.246.2026.07.16.11.24.14
+        for <fixture-author@example.test>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jul 2026 11:24:14 -0700 (PDT)
+Received-SPF: pass (google.com: domain of bounce.mmececf3b9d6db1aacedfe7c3a.r2a69c34e-0b26-11f0-aa19-d9888eef7525@thunderbird.bounce.topicbox.com designates 103.168.172.224 as permitted sender) client-ip=103.168.172.224;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@discuss.thunderbird.net header.s=dkim-1 header.b=OeZW6dXa;
+       arc=pass (i=2 spf=pass spfdomain=thunderbird.net dkim=pass dkdomain=thunderbird.net dmarc=pass fromdomain=thunderbird.net);
+       spf=pass (google.com: domain of bounce.mmececf3b9d6db1aacedfe7c3a.r2a69c34e-0b26-11f0-aa19-d9888eef7525@thunderbird.bounce.topicbox.com designates 103.168.172.224 as permitted sender) smtp.mailfrom=bounce.mMececf3b9d6db1aacedfe7c3a.r2a69c34e-0b26-11f0-aa19-d9888eef7525@thunderbird.bounce.topicbox.com;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=thunderbird.net
+Received: from relay.topicbox.com (phl-topicbox-01.internal [10.202.2.219])
+	by mailtxout.phl.internal (Postfix) with ESMTP id 41BAB1C01B6
+	for <fixture-author@example.test>; Thu, 16 Jul 2026 14:24:14 -0400 (EDT)
+Received: from localhost.localdomain (phl-topicbox-01.internal [10.202.2.219])
+	by relay.topicbox.com (Postfix) with ESMTP id 3E454360C7DD
+	for <fixture-author@example.test>; Thu, 16 Jul 2026 14:24:14 -0400 (EDT)
+ARC-Authentication-Results: i=2; topicbox.com; arc=pass; dkim=pass (2048-bit rsa key
+ sha256) header.d=thunderbird.net header.i=@thunderbird.net header.b=h0HXTmoC
+ header.a=rsa-sha256 header.s=google x-bits=2048; dmarc=pass
+ policy.published-domain-policy=reject policy.applied-disposition=none
+ policy.evaluated-disposition=none (p=reject,d=none,d.eval=none)
+ policy.policy-from=p header.from=thunderbird.net; spf=pass
+ smtp.mailfrom=fixture-reviewer@example.test smtp.helo=mail-qk1-f178.google.com;
+ x-internal-arc=fail (as.1.topicbox.com=pass, ams.1.topicbox.com=fail (message
+ has been altered)) (Message modified while forwarding at Topicbox)
+ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=
+	topicbox.com; h=message-id:date:mime-version:subject:to
+	:references:in-reply-to:content-type:content-transfer-encoding
+	:list-help:list-id:list-post:list-subscribe:reply-to:from
+	:list-unsubscribe; s=sysmsg-1; t=1784226254; bh=vPR/L+lPhRT+DPSW
+	gKB6ZUxb+SIW48PzOU6V/nh+aEE=; b=QAIDwwqTXtqCytO04/iUQK33D2wVnb5b
+	POIMgtOpovrsjq4dNzroY2RBe0zqc8gicufNzrMlwGsR3m/sIb0oFsVsf8s/j4Wj
+	WnZ7OMieg2mGKkrHXUc+CT62RJvqjGnyudZ95uQqxyrUslj0EI1Ipa5ObYttfnJm
+	VIMCBcQjYHw=
+ARC-Seal: i=2; a=rsa-sha256; cv=pass; d=topicbox.com; s=sysmsg-1; t=
+	1784226254; b=q07fG/b+aojXk1FTDy7xoNnU02PNxR3V74uXG3O6cWuIZHfl+w
+	BGWdsmackrxQXcVG5JmFYKDHc63CIqznsysXh6i1HVo+opudptpDSxr6BqG3FX4M
+	6msRAvl3rvSNOZDYdceseUZ5uFTGfLAVuuFB3HYpFf32N6RwDigmgaH8A=
+Authentication-Results: topicbox.com; arc=pass; dkim=pass (2048-bit rsa key
+ sha256) header.d=thunderbird.net header.i=@thunderbird.net header.b=h0HXTmoC
+ header.a=rsa-sha256 header.s=google x-bits=2048; dmarc=pass
+ policy.published-domain-policy=reject policy.applied-disposition=none
+ policy.evaluated-disposition=none (p=reject,d=none,d.eval=none)
+ policy.policy-from=p header.from=thunderbird.net; spf=pass
+ smtp.mailfrom=fixture-reviewer@example.test smtp.helo=mail-qk1-f178.google.com;
+ x-internal-arc=fail (as.1.topicbox.com=pass, ams.1.topicbox.com=fail (message
+ has been altered)) (Message modified while forwarding at Topicbox)
+X-Received-Authentication-Results: authmilter.topicbox.com; arc=none (no
+ signatures found); bimi=none (No BIMI records found); dkim=pass (2048-bit rsa
+ key sha256) header.d=thunderbird.net header.i=@thunderbird.net
+ header.b=h0HXTmoC header.a=rsa-sha256 header.s=google x-bits=2048; dmarc=pass
+ policy.published-domain-policy=reject policy.applied-disposition=none
+ policy.evaluated-disposition=none (p=reject,d=none,d.eval=none)
+ policy.policy-from=p header.from=thunderbird.net; iprev=pass
+ smtp.remote-ip=209.85.222.178 (mail-qk1-f178.google.com); spf=pass
+ smtp.mailfrom=fixture-reviewer@example.test smtp.helo=mail-qk1-f178.google.com;
+ x-aligned-from=pass (Address match); x-google-dkim=pass (2048-bit rsa key)
+ header.d=1e100.net header.i=@1e100.net header.b=PD6vZxnW; x-me-sender=none;
+ x-ptr=pass smtp.helo=mail-qk1-f178.google.com
+ policy.ptr=mail-qk1-f178.google.com; x-return-mx=pass
+ header.domain=thunderbird.net policy.is_org=yes (MX Records found:
+ alt1.aspmx.l.google.com,alt2.aspmx.l.google.com,alt3.aspmx.l.google.com,alt4.aspmx.l.google.com,aspmx.l.google.com); x-return-mx=pass smtp.domain=thunderbird.net policy.is_org=yes (MX Records found: alt1.aspmx.l.google.com,alt3.aspmx.l.google.com,alt4.aspmx.l.google.com,alt2.aspmx.l.google.com,aspmx.l.google.com); x-tls=pass smtp.version=TLSv1.3 smtp.cipher=TLS_AES_128_GCM_SHA256 smtp.bits=128/128; x-vs=clean score=0 state=0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; d=discuss.thunderbird.net;
+	 h=message-id:date:mime-version:subject:to:references
+	:in-reply-to:content-type:content-transfer-encoding:list-help
+	:list-id:list-post:list-subscribe:reply-to:from
+	:list-unsubscribe; s=dkim-1; t=1784226254; x=1784312654; bh=hB5v
+	Z9sgTr5oVFS8gyUZ1fHH+FZsHFs6x5+6Tcpv9Ts=; b=OeZW6dXau3i9YmOsyHrn
+	HwjNsvPIkKnSGn8+Jze8lhLIH1eFsvftAOlOKLbEKqVDoQhpqyymt5GNTKpePWjs
+	hGKtFJs5Sq1dTDKAL6d0pVU2oPXmWtzUFWzOS8I2CIfRz5/QQQZGy4HgpZ4Xmeaf
+	hJ2IbE9AYtw4L+Jai5dMT6o=
+Received: from authmilter.topicbox.com (unknown [172.17.0.1])
+	by mx.topicbox.com (Postfix) with ESMTP id 5CA4835C8A6A
+	for <planning@discuss.thunderbird.net>; Thu, 16 Jul 2026 14:24:06 -0400 (EDT)
+Received: from mx.topicbox.com (172.17.0.1 [172.17.0.1])
+    by authmilter.topicbox.com (Authentication Milter) with ESMTP
+    id 5CA9A2304F2;
+    Thu, 16 Jul 2026 14:24:06 -0400
+ARC-Seal: i=1; a=rsa-sha256; cv=none; d=topicbox.com; s=arcseal; t=
+    1784226246; b=AuhavRso90oqiJMLJObhdCstVJkE1AXpQaaxOL8ETmniyjstOc
+    Db9XWz5j2pv9dBPW5uZiFwfXdKXbehCdKWHIwOLgd+irif3/5lwm6+MlNEuAhkzb
+    wdIRcwbcqLv3kEraLQXHBYA6bQ4Ockb7LChgxUOv3DC1mcn4wSqyD3cH8dbgNwDk
+    DuPE5IkvODrBGwHLXBd1qhHQ3jBKyn4ob8kNa2fa00g7NgdgSHWqZlXmYDJSMWYG
+    7+fIxCYTwrJ4fMC2HIwC4ZUM0TNWAmarS/72P0J06uQD45Jiau/5ydzHwZT0U8cv
+    nfQcDh22l3TjTD/b8UmuGrXdHTp0dEhUINhQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=
+    topicbox.com; h=message-id:date:mime-version:subject:to
+    :references:from:in-reply-to:content-type
+    :content-transfer-encoding; s=arcseal; t=1784226246; bh=0gvTmgE8
+    IdRy8dOsV92B1qXZ1Gsp7s4m21bLy/yoD2s=; b=H+VesM+nCPUG234TuN3pbAf/
+    CayFKvPZ1lsxO5FwinD41Yp6+45wp9kLPFGBhnrGlH9KGvB7xE2W2/wjIzr5Xwg7
+    bcBul/TovVld/iv4NLAvUcRYwwI7AUcIUG8zFUXbeTHtaf5Wwqda3L9h0fujiT2w
+    MDGrPvNIqd2vIqtH3VWZsH2Rn5Pt++gaBJ+eZ7Mn3cXs+/WDl5mfQxSLlTVe4+iJ
+    sexOucwC8ox7DN0iqnEEYXRHopwrAFVjmlq3vHmPGYIrd8zRSeLwo2m9UkG0TqYr
+    fZPDvaiX9mGl3KNhq5Q6Htn3ELMerjqZOi4fKKzNMrmOMayZeSDMs5bF0ou7rg==
+ARC-Authentication-Results: i=1; authmilter.topicbox.com;
+    arc=none (no signatures found);
+    bimi=none (No BIMI records found);
+    dkim=pass (2048-bit rsa key sha256) header.d=thunderbird.net
+    header.i=@thunderbird.net header.b=h0HXTmoC header.a=rsa-sha256
+    header.s=google x-bits=2048;
+    dmarc=pass policy.published-domain-policy=reject
+    policy.applied-disposition=none policy.evaluated-disposition=none
+    (p=reject,d=none,d.eval=none) policy.policy-from=p
+    header.from=thunderbird.net;
+    iprev=pass smtp.remote-ip=209.85.222.178 (mail-qk1-f178.google.com);
+    spf=pass smtp.mailfrom=fixture-reviewer@example.test
+    smtp.helo=mail-qk1-f178.google.com;
+    x-aligned-from=pass (Address match);
+    x-google-dkim=pass (2048-bit rsa key) header.d=1e100.net
+    header.i=@1e100.net header.b=PD6vZxnW;
+    x-me-sender=none;
+    x-ptr=pass smtp.helo=mail-qk1-f178.google.com
+    policy.ptr=mail-qk1-f178.google.com;
+    x-return-mx=pass header.domain=thunderbird.net policy.is_org=yes
+    (MX Records found: alt1.aspmx.l.google.com,alt2.aspmx.l.google.com,alt3.aspmx.l.google.com,alt4.aspmx.l.google.com,aspmx.l.google.com);
+    x-return-mx=pass smtp.domain=thunderbird.net policy.is_org=yes
+    (MX Records found: alt1.aspmx.l.google.com,alt3.aspmx.l.google.com,alt4.aspmx.l.google.com,alt2.aspmx.l.google.com,aspmx.l.google.com);
+    x-tls=pass smtp.version=TLSv1.3 smtp.cipher=TLS_AES_128_GCM_SHA256
+    smtp.bits=128/128;
+    x-vs=clean score=0 state=0
+X-ME-VSCause: gggruggvucftvghtrhhoucdtuddrgeefiedrtddugddvleelkecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpggftfghnshhusghstghrihgsvgdp
+    uffrtefokffrpgfnqfghnecuuegrihhlohhuthemuceftddtnecunecujfgurhepkfffgg
+    gfuffvfhfhjggtgfesthekredttddujeenucfhrhhomheplfhushhtihhnucfvrhgrtggv
+    hicuoehjthhrrggtvgihsehthhhunhguvghrsghirhgurdhnvghtqeenucggtffrrghtth
+    gvrhhnpeejvdegvedthffghfefueettdelhfdvudfhvddutefgveeggeevtdehueeukedu
+    teenucfkphepvddtledrkeehrddvvddvrddujeekpdeliedrvdegiedruddurdduudekne
+    cuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvddtledrkeehrddv
+    vddvrddujeekpdhhvghlohepmhgrihhlqdhqkhduqdhfudejkedrghhoohhglhgvrdgtoh
+    hmpdhmrghilhhfrhhomhepoehjthhrrggtvgihsehthhhunhguvghrsghirhgurdhnvght
+    qedpnhgspghrtghpthhtohepuddprhgtphhtthhopeeophhlrghnnhhinhhgseguihhstg
+    hushhsrdhthhhunhguvghrsghirhgurdhnvghtqe
+X-ME-VSScore: 0
+X-ME-VSCategory: clean
+Received-SPF: pass
+    (thunderbird.net: Sender is authorized to use 'fixture-reviewer@example.test' in 'mfrom' identity (mechanism 'include:%{i}._ip.%{h}._ehlo.%{d}._spf.vali.email' matched))
+    receiver=authmilter.topicbox.com;
+    identity=mailfrom;
+    envelope-from="fixture-reviewer@example.test";
+    helo=mail-qk1-f178.google.com;
+    client-ip=209.85.222.178
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx.topicbox.com (Postfix) with ESMTPS
+	for <planning@discuss.thunderbird.net>; Thu, 16 Jul 2026 14:24:06 -0400 (EDT)
+Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-92e67555e24so272233785a.3
+        for <planning@discuss.thunderbird.net>; Thu, 16 Jul 2026 11:24:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784226245; x=1784831045;
+        h=content-transfer-encoding:content-type:in-reply-to:autocrypt:from
+         :content-language:references:to:subject:user-agent:mime-version:date
+         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=0gvTmgE8IdRy8dOsV92B1qXZ1Gsp7s4m21bLy/yoD2s=;
+        b=PD6vZxnWdd3kmuDaBhp89zPmPQ7WdJMtmSwth2d0Ft1SAvZjzOepy6f8b0+PSFzoX9
+         V+PwS829K72fSsgh3fXYNxbe+BoaOvbaNIMAT8lxMGTRY28jFO+lV9irCFZ35lTg62aN
+         zN1HBT/DtJdbFvwB5JjmVkglWw76jrloVdw5R/dKpQRrqx0bD8pjAHEUu1mXwP0LcKl9
+         af0z91MZX6n14lYwfF8MJCWjqJ8HQVq4RouHuKXvTV9YvMP9jcxio0H+pv2m5Pb7og4A
+         COtitjMd3PvMZ+rPVsqIONeqM4PFiL4tHSSu/glEdKZEKINzDhOr3gW8ERjKZmqY88KF
+         VhXQ==
+X-Gm-Message-State: AOJu0YwC2q83nX9fEVWN/gDcg6mCWUK/tyg2VXNpjYW+F3JUrTVNArIS
+	/FRAyomAm9VTJCAk9r9VsOqxOXclOjMDng0zgxL3KWgaYZiyn8A+uGK6a9BUXbE/NotjivkKiXA
+	gzPQ5hM9N
+X-Gm-Gg: AfdE7clBa1/8J/6sEOy4u0zZsLG7yuvofS5O7SUUzEUrWqcy6NIJunlmDIiAiJDS1L5
+	HcR3AcbbgkExb49wZgchtn5ossjnK4IeiBhKNrb9IiLJlBOVk11Pw+kbXpJRhZn7pGcQSiax+K8
+	jbgdakngP1NtdJ1ShmJ1NikLQ9rGmPt9ZvAnmNWAKcA4dYePszYBIGvZEg1Rf1LeYV5f58fQHg+
+	3s2jUUiWd3g5X7IxeN3OOSDH0b7gluPVtBgQ9o4TU2D2b/TKgqqF/jXobDC2PXldgvgYg4IhW8W
+	iVwoZsoM5mC3mpCeB1GnGpvpI2oNR4EmPpvtW0eKUU2Rwalu/A7u/yst9hjedW6hWykN463lx0G
+	MOE7Xu2NBeZ8cdsYp8bIJHJVLEwqKv8uZ0RBzt17n3lzQGoeAOXAhZPyAUjDnrWEwOtb37iVTsV
+	QTwGDsLe4n3dU98aAckaT22qAE/WHmtPOQw6q/KA==
+X-Received: by 2002:a05:620a:4107:b0:92e:c118:18cd with SMTP id af79cd13be357-930b08977a7mr62073585a.88.1784226245298;
+        Thu, 16 Jul 2026 11:24:05 -0700 (PDT)
+Received: from [192.168.1.153] ([96.246.11.118])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-92ee5b8eebbsm2055988385a.17.2026.07.16.11.24.04
+        for <planning@discuss.thunderbird.net>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Jul 2026 11:24:04 -0700 (PDT)
+Message-ID: <715694b9-f6be-41cd-899e-6178a562e387@thunderbird.net>
+Date: Thu, 16 Jul 2026 14:24:04 -0400
+MIME-Version: 1.0
+User-Agent: Thunderbird Daily
+Subject: Re: [tb-planning] Update on OpenPGP Unobtrusive Signatures (UO)
+To: planning@discuss.thunderbird.net
+References: <76ea2d3d-b23d-49dc-8ce9-b4f944526992@kuix.de>
+ <3ebee309-b028-441b-af53-acc4ed568c17@kuix.de>
+ <0cfbfadb-ff0c-4a91-b1af-56219f961544@cdmnet.org>
+ <2c5d38c9-7bd1-4b4e-a6f2-7b9f42b9b0a9@thunderbird.net>
+ <456d815a-2736-4a4b-8510-de5c2bef9ed6@kuix.de>
+ <f5a615d5-e3dd-4061-b3f4-fa1719cd9c98@thunderbird.net>
+ <c3f931ee-1eba-4959-bbd1-c5e283fb380f@thunderbird.net>
+Content-Language: en-US
+Autocrypt: addr=fixture-reviewer@example.test; keydata=
+ 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
+ TLRL4Oq/63ScPgnDtBbb1EOYT2NGuM27
+In-Reply-To: <c3f931ee-1eba-4959-bbd1-c5e283fb380f@thunderbird.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Topicbox-Policy-Reasoning: sub_allow: subscriber is permitted to post
+Topicbox-Message-UUID: 886efaa6-8143-11f1-920d-598b397a43e0
+Archived-At: =?UTF-8?B?PGh0dHBzOi8vdGh1bmRlcmJpcmQudG9waWNib3guY29tL2dy?=
+ =?UTF-8?B?b3Vwcy9wbGFubmluZy9UN2YyMDMzNjJjMDFhYmZmMi1NZWNlY2YzYjlkNmRi?=
+ =?UTF-8?B?MWFhY2VkZmU3YzNhPg==?=
+List-Help: <https://thunderbird.topicbox.com/groups/planning>
+List-Id: "Thunderbird Planning" <planning.discuss.thunderbird.net>
+List-Post: <mailto:planning@discuss.thunderbird.net>
+List-Software: Topicbox v0
+List-Subscribe: <https://thunderbird.topicbox.com/groups/planning>
+Precedence: list
+Reply-To: "Thunderbird Planning" <planning@discuss.thunderbird.net>
+From: "Justin Tracey via Thunderbird Planning"
+ <planning@discuss.thunderbird.net>
+List-Unsubscribe: <https://thunderbird.topicbox.com/groups/planning>,
+ <mailto:planning+unsubscribe@discuss.thunderbird.net?subject=x-tx-unsubscribe:2:thunderbird:fb30d204-8f3f-11eb-aa0e-32e0282d11b0:2a69c34e-0b26-11f0-aa19-d9888eef7525:Mececf3b9d6db1aacedfe7c3a:1:vMAG09ubQWUqwdLWxlU4TXlTljx5HyLXclV4NZHaeq0>
+Topicbox-Delivery-ID:
+ 2:thunderbird:fb30d204-8f3f-11eb-aa0e-32e0282d11b0:2a69c34e-0b26-11f0-aa19-d9888eef7525:Mececf3b9d6db1aacedfe7c3a:1:kHH1X9D-bpavFNy2bqHS9Arwjnlqkep1OKtA2B99R5Y
+
+If I may add another, more abstract motivation to Kai and Eleanor's=20
+security concerns: signatures help move authority out of centralized=20
+silos and towards users (especially for PGP, though even S/MIME is a=20
+more distributed trust model than just server-side validation). Right=20
+now, users have to have a considerable amount of confidence in their=20
+email provider, both that the provider itself would not do anything=20
+nefarious (e.g., inserting ads or trackers into emails you send), and=20
+that they are sufficiently skilled at preventing/handling compromise. In=20
+practice, this looks like decades of "just use Yahoo/GMail/Microsoft"=20
+advice to average users for securing mail, since these are the providers=20
+that are "too big to fail". Implicitly signing all emails is part of the=20
+process of being able to shift that trust away from the provider and=20
+towards user's devices. While I would of course love encrypted mail to=20
+be the default, signing gets us closer to that user-side trust, and is a=20
+lot less likely to cause breakage. It is in many ways true that the=20
+utility of signatures is proportional to the ability to expect one, but=20
+that was true for HTTPS certificates too, and now look where we=20
+are=E2=80=94browsers that warn when a site doesn't have one. "Every journey=
+=20
+starts with a single step", and all that.
+
+  - Justin
+
+
+------------------------------------------
+Thunderbird: Thunderbird Planning
+Permalink: https://thunderbird.topicbox.com/groups/planning/T7f203362c01abf=
+f2-Mececf3b9d6db1aacedfe7c3a
+Delivery options: https://thunderbird.topicbox.com/groups/planning/subscrip=
+tion

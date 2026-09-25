@@ -17,15 +17,17 @@ export function DialogContent({
   return (
     <Primitive.Portal>
       <Primitive.Overlay className="dialog-overlay" />
-      <Primitive.Content
-        className={cn(drawer ? "drawer-panel" : "dialog-panel", className)}
-        {...props}
-      >
-        {children}
-        <Primitive.Close className="dialog-close" aria-label="Close">
-          <X size={21} />
-        </Primitive.Close>
-      </Primitive.Content>
+      <div className={drawer ? "drawer-viewport" : undefined}>
+        <Primitive.Content
+          className={cn(drawer ? "drawer-panel" : "dialog-panel", className)}
+          {...props}
+        >
+          {children}
+          <Primitive.Close className="dialog-close" aria-label="Close">
+            <X size={21} />
+          </Primitive.Close>
+        </Primitive.Content>
+      </div>
     </Primitive.Portal>
   );
 }

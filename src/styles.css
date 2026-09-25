@@ -835,12 +835,23 @@ select {
   gap: 10px;
   margin-top: 27px;
 }
-.drawer-panel {
+.drawer-viewport {
+  /* Clip the moving drawer and its shadow to the simulated device screen. */
   position: fixed;
   top: 0;
   bottom: 0;
   left: calc((100vw - var(--phone-width)) / 2);
+  width: var(--phone-width);
+  overflow: hidden;
+  pointer-events: none;
   z-index: 50;
+}
+.drawer-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: auto;
   background: #f7f7f8;
   width: calc(var(--phone-width) - 42px);
   padding: 26px 17px 14px;

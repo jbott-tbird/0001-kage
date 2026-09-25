@@ -63,8 +63,10 @@ class MailProtocolIntegrationTest {
             assertTrue(client.mailboxes().any { it.name.equals("INBOX", true) })
             val headers = client.messages("INBOX", Instant.now().minusSeconds(86400))
             assertEquals(1, headers.size)
+            assertFalse(headers.single().bodyDownloaded)
             val identity = headers.single().identity!!
             val message = client.message(identity)
+            assertTrue(message.bodyDownloaded)
             assertEquals(email().subject, message.subject)
             assertEquals(email().body.text, message.body.text)
             assertFalse(message.read)
@@ -159,6 +161,7 @@ class MailProtocolIntegrationTest {
             val identity =
                 client.messages("INBOX", Instant.now().minusSeconds(86400)).single().identity!!
             val message = client.message(identity)
+            assertTrue(message.bodyDownloaded)
             assertEquals(email().body.text, message.body.text)
             val output = java.io.ByteArrayOutputStream()
             val failure =

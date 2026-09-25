@@ -1855,5 +1855,735 @@
         "database and UI mapping"
       ]
     }
-  ]
+  ],
+  "entityFieldMappings": [
+    {
+      "iosPath": "Core/Sources/Account/Account.swift",
+      "iosSymbol": "Account.name",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Account.name",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Account.swift",
+      "iosSymbol": "Account.deletePolicy",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Account.deletePolicy",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Account.swift",
+      "iosSymbol": "Account.identities",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Account.identities",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Account.swift",
+      "iosSymbol": "Account.servers",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Account.servers",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": "Exactly one incoming IMAP and outgoing SMTP server initially; JMAP deferred"
+    },
+    {
+      "iosPath": "Core/Sources/Account/Account.swift",
+      "iosSymbol": "Account.avatarColor",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Account.avatarColor",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Account.swift",
+      "iosSymbol": "Account.authConfig",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Account.authConfig",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Account.swift",
+      "iosSymbol": "Account.incomingServer",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Account.incomingServer",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Account.swift",
+      "iosSymbol": "Account.outgoingServer",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Account.outgoingServer",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Account.swift",
+      "iosSymbol": "Account.emailAddress",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Account.emailAddress",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Account.swift",
+      "iosSymbol": "Account.id",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Account.id",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": "String identifier; Room mapping pending"
+    },
+    {
+      "iosPath": "Core/Sources/Account/Account.swift",
+      "iosSymbol": "Account.authorization",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": null,
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "acceptance": "Not yet implemented",
+      "notes": "Credential provider will own secrets outside Room under T06"
+    },
+    {
+      "iosPath": "Core/Sources/Account/Account.swift",
+      "iosSymbol": "Account.emailProtocol",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": null,
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "acceptance": "Not yet implemented",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Server.swift",
+      "iosSymbol": "Server.serverProtocol",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Server.protocol",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Server.swift",
+      "iosSymbol": "Server.connectionSecurity",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Server.security",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": "TLS and required STARTTLS only; insecure transport intentionally excluded"
+    },
+    {
+      "iosPath": "Core/Sources/Account/Server.swift",
+      "iosSymbol": "Server.authenticationType",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Server.authenticationType",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Server.swift",
+      "iosSymbol": "Server.username",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Server.username",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Server.swift",
+      "iosSymbol": "Server.hostname",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Server.hostname",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Server.swift",
+      "iosSymbol": "Server.port",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Server.port",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Server.swift",
+      "iosSymbol": "Server.id",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Server.id",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Server.swift",
+      "iosSymbol": "Server.defaultPort",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": null,
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "acceptance": "Not yet implemented",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Mailbox.swift",
+      "iosSymbol": "Mailbox.role",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Mailbox.role",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": "Derived from IMAP SPECIAL-USE attributes and INBOX name"
+    },
+    {
+      "iosPath": "Core/Sources/Account/Mailbox.swift",
+      "iosSymbol": "Mailbox.rights",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Mailbox.rights",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": "Unknown permissions are nullable; ACL fetching not implemented"
+    },
+    {
+      "iosPath": "Core/Sources/Account/Mailbox.swift",
+      "iosSymbol": "Mailbox.name",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Mailbox.name",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Mailbox.swift",
+      "iosSymbol": "Mailbox.isSubscribed",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Mailbox.isSubscribed",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Mailbox.swift",
+      "iosSymbol": "Mailbox.unreadEmails",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Mailbox.unreadEmails",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": "Model exists; counts fetched separately via MailStore.status"
+    },
+    {
+      "iosPath": "Core/Sources/Account/Mailbox.swift",
+      "iosSymbol": "Mailbox.totalEmails",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Mailbox.totalEmails",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": "Model exists; counts fetched separately via MailStore.status"
+    },
+    {
+      "iosPath": "Core/Sources/Account/Mailbox.swift",
+      "iosSymbol": "Mailbox.id",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Mailbox.id",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": "Nullable until persistence assigns local identity; wire name is the IMAP path"
+    },
+    {
+      "iosPath": "Core/Sources/Account/Folder.swift",
+      "iosSymbol": "Folder.name",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Folder.name",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": "Derived using server delimiter; no synthetic nullable root currently"
+    },
+    {
+      "iosPath": "Core/Sources/Account/Folder.swift",
+      "iosSymbol": "Folder.path",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Folder.path",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Folder.swift",
+      "iosSymbol": "Folder.unreadEmails",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Folder.unreadEmails",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Folder.swift",
+      "iosSymbol": "Folder.totalEmails",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Folder.totalEmails",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Folder.swift",
+      "iosSymbol": "Folder.id",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Folder.id",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": "Account ID and wire path distinguish local folders"
+    },
+    {
+      "iosPath": "Core/Sources/Account/Folder.swift",
+      "iosSymbol": "Folder.mailbox",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Folder.mailbox",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Folder.swift",
+      "iosSymbol": "Folder.subfolders",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Folder.subfolders",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Email.swift",
+      "iosSymbol": "Email.from",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Email.from",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Email.swift",
+      "iosSymbol": "Email.sender",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Email.sender",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Email.swift",
+      "iosSymbol": "Email.replyTo",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Email.replyTo",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Email.swift",
+      "iosSymbol": "Email.to",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Email.to",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Email.swift",
+      "iosSymbol": "Email.bcc",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Email.bcc",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Email.swift",
+      "iosSymbol": "Email.cc",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Email.cc",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Email.swift",
+      "iosSymbol": "Email.received",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Email.receivedAt",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Email.swift",
+      "iosSymbol": "Email.sent",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Email.sentAt",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Email.swift",
+      "iosSymbol": "Email.messageID",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Email.messageIds",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Email.swift",
+      "iosSymbol": "Email.threadID",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Email.threadIds",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": "Reserved; Gmail X-GM-THRID and OBJECTID fetch remain pending"
+    },
+    {
+      "iosPath": "Core/Sources/Account/Email.swift",
+      "iosSymbol": "Email.inReplyTo",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Email.inReplyTo",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/Email.swift",
+      "iosSymbol": "Email.subject",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Email.subject",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": "Empty string substitutes for missing nullable subject"
+    },
+    {
+      "iosPath": "Core/Sources/Account/Email.swift",
+      "iosSymbol": "Email.body",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Email.body",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": "Non-null EmailBody plus bodyDownloaded distinguishes not-downloaded from decoded empty body; database mapping pending"
+    },
+    {
+      "iosPath": "Core/Sources/Account/Email.swift",
+      "iosSymbol": "Email.blobID",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Email.blobId",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": "Reserved for deferred JMAP"
+    },
+    {
+      "iosPath": "Core/Sources/Account/Email.swift",
+      "iosSymbol": "Email.uid",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Email.identity",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": "Mailbox + UIDVALIDITY + UID; account scoping belongs to repository"
+    },
+    {
+      "iosPath": "Core/Sources/Account/Email.swift",
+      "iosSymbol": "Email.id",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": null,
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "acceptance": "Not yet implemented",
+      "notes": "Remote EMAILID/X-GM-MSGID not fetched yet; do not substitute Message-ID for unique database identity"
+    },
+    {
+      "iosPath": "Core/Sources/Account/EmailBody.swift",
+      "iosSymbol": "EmailBody.text",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "EmailBody.text",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/EmailBody.swift",
+      "iosSymbol": "EmailBody.html",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "EmailBody.html",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": "Unmodified HTML source; rendering/sanitization/CID resolution belongs to UI integration"
+    },
+    {
+      "iosPath": "Core/Sources/Account/EmailBody.swift",
+      "iosSymbol": "EmailBody.preview",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "EmailBody.preview",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": "Locally derived from text up to 200 characters; upstream currently returns server preview only"
+    },
+    {
+      "iosPath": "Core/Sources/Account/EmailBody.swift",
+      "iosSymbol": "EmailBody.attachments",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Email.attachments",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": "Descriptors live on Email so part metadata is available without downloading body bytes"
+    },
+    {
+      "iosPath": "Core/Sources/Account/EmailAttachment.swift",
+      "iosSymbol": "EmailAttachment.contentDisposition",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "EmailAttachment.inline",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": "Inline boolean plus filename; full disposition parameters not retained"
+    },
+    {
+      "iosPath": "Core/Sources/Account/EmailAttachment.swift",
+      "iosSymbol": "EmailAttachment.contentID",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "EmailAttachment.contentId",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/EmailAttachment.swift",
+      "iosSymbol": "EmailAttachment.contentType",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "EmailAttachment.mediaType",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    },
+    {
+      "iosPath": "Core/Sources/Account/EmailAttachment.swift",
+      "iosSymbol": "EmailAttachment.data",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": null,
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "acceptance": "Not yet implemented",
+      "notes": "On-demand streaming through MailStore.downloadAttachment; no eager attachment bytes stored in descriptor"
+    },
+    {
+      "iosPath": "Core/Sources/Account/Authorization.swift",
+      "iosSymbol": "Authorization.user",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Server.username",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": "Server owns independent incoming/outgoing usernames"
+    },
+    {
+      "iosPath": "Core/Sources/Account/Authorization.swift",
+      "iosSymbol": "Authorization.value",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": null,
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "acceptance": "Not yet implemented",
+      "notes": "No authorization header string exposed; provider encodes protocol authentication"
+    },
+    {
+      "iosPath": "Core/Sources/Account/Authorization.swift",
+      "iosSymbol": "Authorization.password",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Authorization.secret",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": "Raw credential retained only in runtime credential object; no Basic prefix"
+    },
+    {
+      "iosPath": "Core/Sources/Account/Authorization.swift",
+      "iosSymbol": "Authorization.isExpired",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Authorization.isExpired",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": "Expiry inclusive at instant; NONE is unexpired for unauthenticated server use"
+    },
+    {
+      "iosPath": "Core/Sources/Account/Authorization.swift",
+      "iosSymbol": "Authorization.refreshToken",
+      "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "androidSymbol": "Authorization.refreshToken",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "acceptance": "Field exists; end-to-end population and persistence acceptance pending",
+      "notes": ""
+    }
+  ],
+  "entityFieldMappingContract": {
+    "statusValues": [
+      "matched",
+      "pending_port",
+      "intentionally_different",
+      "not_applicable"
+    ],
+    "baseline": "lastReviewedRevision",
+    "implementationCommit": "01f5026",
+    "meaning": "implemented means the target model member exists, not end-to-end adoption; pending_port remains until population, behavior tests and explicit differences are accepted",
+    "testsByEntity": {
+      "Account": [
+        "AccountModelTest"
+      ],
+      "Server": [
+        "ConnectionPropertiesTest"
+      ],
+      "Folder": [
+        "AccountModelTest"
+      ],
+      "Authorization": [
+        "AccountModelTest",
+        "ConnectionPropertiesTest"
+      ],
+      "Email": [
+        "AngusMimeCodecTest.envelopePreservesReplyRoutingGroupsAndThreadHeaders"
+      ],
+      "EmailBody": [
+        "IosMimeFixtureTest"
+      ],
+      "EmailAttachment": [
+        "IosMimeFixtureTest"
+      ]
+    }
+  }
 }

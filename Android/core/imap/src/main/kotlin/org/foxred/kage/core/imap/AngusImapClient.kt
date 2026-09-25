@@ -232,7 +232,8 @@ class AngusImapClient(
             val m = identified(f, identity)
             f.fetch(arrayOf(m), FetchProfile().apply { add(FetchProfile.Item.CONTENT_INFO) })
             val content = partReader.read(m)
-            envelope(f, m).copy(body = content.body, attachments = content.attachments)
+            envelope(f, m)
+                .copy(body = content.body, attachments = content.attachments, bodyDownloaded = true)
         }
 
     @Synchronized

@@ -219,6 +219,7 @@ data class Email(
     val inReplyTo: List<String> = emptyList(),
     val references: List<String> = emptyList(),
     val blobId: String? = null,
+    val bodyDownloaded: Boolean = false,
 )
 
 data class OutgoingAttachment(val filename: String, val mediaType: String, val data: ByteArray)

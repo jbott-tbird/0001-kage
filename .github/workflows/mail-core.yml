@@ -1,10 +1,10 @@
 name: Mail core
 on:
   pull_request:
-    paths: ['Android/**', '.github/workflows/mail-core.yml']
+    paths: ['Android/**', 'scripts/**', '.github/workflows/mail-core.yml']
   push:
     branches: [main]
-    paths: ['Android/**', '.github/workflows/mail-core.yml']
+    paths: ['Android/**', 'scripts/**', '.github/workflows/mail-core.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -23,3 +23,5 @@ jobs:
       - name: Test standalone mail libraries without Android SDK or external mail accounts
         working-directory: Android
         run: ./gradlew -PmailCoreOnly=true :core:account:test :core:mime:test :core:transport:test :core:integration:test --no-daemon
+      - name: Test upstream review tooling
+        run: python3 -m unittest discover -s scripts/tests -v

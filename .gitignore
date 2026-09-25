@@ -7,3 +7,7 @@ z_ignore/
 .env*
 
 .vite/
+
+# Python tooling caches
+__pycache__/
+*.pyc

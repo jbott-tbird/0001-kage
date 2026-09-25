@@ -6,6 +6,15 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class AngusMimeCodecTest {
+    @Test
+    fun decodedEmptyBodyIsDistinctFromHeadersOnly() {
+        val message =
+            AngusMimeCodec()
+                .decode("Subject: Empty\r\nContent-Type: text/plain\r\n\r\n".toByteArray())
+        assertTrue(message.bodyDownloaded)
+        assertEquals("", message.body.text)
+    }
+
     private val codec = AngusMimeCodec()
 
     private fun sample() =

@@ -29,7 +29,7 @@ class AngusMimeCodec(
             val message = parse(raw)
             val content = AngusPartReader(maxBytes, maxDepth).read(message)
             AngusEnvelopeReader.read(message)
-                .copy(body = content.body, attachments = content.attachments)
+                .copy(body = content.body, attachments = content.attachments, bodyDownloaded = true)
         } catch (failure: MailFailure) {
             throw failure
         } catch (failure: Exception) {

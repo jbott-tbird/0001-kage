@@ -114,4 +114,31 @@ class RoomMailRepositoryTest {
         assertTrue(repo.mailbox.first().preferences.offline)
         assertEquals("skye-inbox", repo.mailbox.first().preferences.selectedFolder)
     }
+
+    @Test
+    fun automaticAttachmentPolicyAppliesToNewMailboxesAndWaitsWhileOffline() = runBlocking {
+        repo.initialize()
+        repo.updatePreferences(Preferences(automaticAttachments = true))
+        repo.addAccount(Account("automatic", "Automatic", "automatic@example.net"))
+        val downloaded =
+            repo.mailbox
+                .first()
+                .messages
+                .filter { it.accountId == "automatic" }
+                .flatMap { it.attachments }
+        assertTrue(downloaded.isNotEmpty())
+        assertTrue(downloaded.all { it.cached })
+        repo.updatePreferences(Preferences(automaticAttachments = true, offline = true))
+        repo.addAccount(Account("offline", "Offline", "offline@example.net"))
+        assertTrue(
+            repo.mailbox
+                .first()
+                .messages
+                .filter { it.accountId == "offline" }
+                .flatMap { it.attachments }
+                .all { !it.cached }
+        )
+        repo.updatePreferences(Preferences(automaticAttachments = true, offline = false))
+        assertTrue(repo.mailbox.first().messages.flatMap { it.attachments }.all { it.cached })
+    }
 }

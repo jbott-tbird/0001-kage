@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -11,6 +12,9 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -37,6 +41,34 @@ fun InboxScreen(
     var searching by rememberSaveable { mutableStateOf(false) }
     var filters by remember { mutableStateOf(false) }
     var options by remember { mutableStateOf(false) }
+    val listState = rememberLazyListState()
+    var resetScroll by remember { mutableStateOf(false) }
+    var oldestFirst by rememberSaveable { mutableStateOf(false) }
+    var selecting by rememberSaveable { mutableStateOf(false) }
+    var selectedIds by rememberSaveable { mutableStateOf(listOf<String>()) }
+    LaunchedEffect(oldestFirst) {
+        if (resetScroll) {
+            listState.scrollToItem(0)
+            resetScroll = false
+        }
+    }
+    val displayed = if (oldestFirst) messages.reversed() else messages
+    val visibleIds = messages.map { it.id }.toSet()
+    val selectedVisible = selectedIds.filter { it in visibleIds }
+    fun markRead(ids: List<String>) {
+        vm.action {
+            ids.forEach { vm.repository.markRead(it, true) }
+            vm.notice.value = "${ids.size} messages marked read"
+            selectedIds = emptyList()
+            selecting = false
+        }
+    }
+    LaunchedEffect(mail.preferences.selectedFolder) {
+        selectedIds = emptyList()
+        selecting = false
+        if (mail.preferences.selectedFolder == "unified")
+            vm.query.value = vm.query.value.copy(scope = SearchScope.AllAccounts)
+    }
     val folder = mail.folders.find { it.id == mail.preferences.selectedFolder }
     val account = mail.accounts.find { it.id == folder?.accountId }
     ModalNavigationDrawer(
@@ -155,11 +187,31 @@ fun InboxScreen(
                             }
                             DropdownMenu(options, { options = false }) {
                                 DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            if (selecting) "Cancel selection" else "Select messages"
+                                        )
+                                    },
+                                    onClick = {
+                                        selecting = !selecting
+                                        selectedIds = emptyList()
+                                        options = false
+                                    },
+                                )
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(if (oldestFirst) "Newest first" else "Oldest first")
+                                    },
+                                    onClick = {
+                                        resetScroll = true
+                                        oldestFirst = !oldestFirst
+                                        options = false
+                                    },
+                                )
+                                DropdownMenuItem(
                                     text = { Text("Mark all read") },
                                     onClick = {
-                                        vm.action {
-                                            messages.forEach { vm.repository.markRead(it.id, true) }
-                                        }
+                                        markRead(messages.map { it.id })
                                         options = false
                                     },
                                 )
@@ -210,6 +262,7 @@ fun InboxScreen(
                             query.scope == SearchScope.Account,
                             { vm.query.value = query.copy(scope = SearchScope.Account) },
                             label = { Text("This account") },
+                            enabled = mail.preferences.selectedFolder != "unified",
                         )
                         FilterChip(
                             query.scope == SearchScope.AllAccounts,
@@ -235,6 +288,40 @@ fun InboxScreen(
                                 Text("Clear filters")
                             }
                     }
+                if (selecting)
+                    Row(
+                        Modifier.fillMaxWidth().padding(horizontal = T.sm),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Checkbox(
+                            checked =
+                                messages.isNotEmpty() && selectedVisible.size == messages.size,
+                            onCheckedChange = {
+                                selectedIds = if (it) messages.map { m -> m.id } else emptyList()
+                            },
+                            modifier =
+                                Modifier.semantics { contentDescription = "Select all messages" },
+                        )
+                        Text(
+                            "${selectedVisible.size} selected",
+                            Modifier.weight(1f),
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                        TextButton(
+                            onClick = { markRead(selectedVisible) },
+                            enabled = selectedVisible.isNotEmpty(),
+                        ) {
+                            Text("Mark read")
+                        }
+                        TextButton(
+                            onClick = {
+                                selecting = false
+                                selectedIds = emptyList()
+                            }
+                        ) {
+                            Text("Done")
+                        }
+                    }
                 if (messages.isEmpty())
                     Column(
                         Modifier.fillMaxSize().padding(T.xl),
@@ -252,12 +339,46 @@ fun InboxScreen(
                 else
                     LazyColumn(
                         Modifier.fillMaxSize(),
+                        state = listState,
                         contentPadding = PaddingValues(bottom = T.bodyMinHeight / 3),
                     ) {
-                        items(messages, key = { it.id }) { message ->
-                            MessageRow(message) {
-                                vm.read(message.id)
-                                openMessage(message)
+                        items(displayed, key = { it.id }) { message ->
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                if (selecting)
+                                    Checkbox(
+                                        checked = message.id in selectedVisible,
+                                        onCheckedChange = { checked ->
+                                            selectedIds =
+                                                if (checked) (selectedIds + message.id).distinct()
+                                                else selectedIds - message.id
+                                        },
+                                        modifier =
+                                            Modifier.semantics {
+                                                contentDescription =
+                                                    "Select ${message.subject.ifBlank { "(No subject)" }}"
+                                            },
+                                    )
+                                val location =
+                                    if (
+                                        query.text.isNotBlank() &&
+                                            query.scope == SearchScope.AllAccounts
+                                    )
+                                        "${mail.accounts.find { it.id == message.accountId }?.address.orEmpty()} · ${mail.folders.find { it.id == message.folderId }?.name.orEmpty()}"
+                                    else null
+                                MessageRow(
+                                    message,
+                                    location,
+                                    if (selecting) message.id in selectedVisible else null,
+                                ) {
+                                    if (selecting)
+                                        selectedIds =
+                                            if (message.id in selectedIds) selectedIds - message.id
+                                            else selectedIds + message.id
+                                    else {
+                                        vm.read(message.id)
+                                        openMessage(message)
+                                    }
+                                }
                             }
                         }
                         item {
@@ -274,9 +395,15 @@ fun InboxScreen(
 }
 
 @Composable
-private fun MessageRow(message: Message, open: () -> Unit) {
+private fun MessageRow(
+    message: Message,
+    location: String?,
+    isSelected: Boolean?,
+    open: () -> Unit,
+) {
     Row(
         Modifier.fillMaxWidth()
+            .semantics { if (isSelected != null) selected = isSelected }
             .clickable(onClick = open)
             .padding(horizontal = T.lg, vertical = T.md),
         horizontalArrangement = Arrangement.spacedBy(T.sm),
@@ -323,6 +450,12 @@ private fun MessageRow(message: Message, open: () -> Unit) {
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            if (location != null)
+                Text(
+                    location,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
                 )
         }
     }

@@ -83,8 +83,11 @@ mail fixtures exercise display behavior, not complete app localization.
 
 - Debug APK builds successfully.
 - Five domain unit tests cover folder/account/unified search and all four filters.
-- Six emulator tests cover Room seeding, account isolation/removal, drafts,
-  attachments, preferences, prefilled setup, native drawer/filters, and reopening drafts.
+- Nine emulator tests cover Room seeding, account isolation/removal, drafts,
+  attachments, preferences, prefilled setup, native drawer/filters, reopening drafts, selection/sorting,
+  search-result provenance, and automatic attachment downloads.
 - Android lint passes with zero errors. Remaining warnings concern available
   dependency updates and Android Studio's generated launcher asset variants.
 - The web app also passes all eleven tests and its production build from `web/`.
+
+[Web parity audit](docs/port-audit.md) tracks the remaining behavior differences.

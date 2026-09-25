@@ -36,7 +36,10 @@ class RoomMailRepository(
         }
 
     override suspend fun initialize() =
-        withContext(Dispatchers.IO) { db.withTransaction { if (dao.initialized() == 0) seed() } }
+        withContext(Dispatchers.IO) {
+            db.withTransaction { if (dao.initialized() == 0) seed() }
+            cacheAutomaticAttachments()
+        }
 
     private suspend fun seed() {
         demo.accounts.forEach { insertAccount(it) }
@@ -69,7 +72,14 @@ class RoomMailRepository(
                     )
                 )
             }
+            cacheAutomaticAttachments()
         }
+
+    private suspend fun cacheAutomaticAttachments() {
+        val preferences = dao.getPreferences() ?: return
+        if (preferences.automaticAttachments && !preferences.offline)
+            dao.uncached().forEach { cacheAttachment(it.id) }
+    }
 
     override suspend fun removeAccount(id: String) =
         db.withTransaction {
@@ -83,8 +93,7 @@ class RoomMailRepository(
 
     override suspend fun updatePreferences(preferences: Preferences) {
         dao.savePreferences(preferences.entity())
-        if (preferences.automaticAttachments && !preferences.offline)
-            dao.uncached().forEach { cacheAttachment(it.id) }
+        cacheAutomaticAttachments()
     }
 
     override suspend fun markRead(id: String, read: Boolean) = dao.markRead(id, read)

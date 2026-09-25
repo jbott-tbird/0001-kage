@@ -66,7 +66,11 @@ class MailJourneyTest {
         compose.onNodeWithText("Clear filters").assertExists().performClick()
         compose.onNodeWithContentDescription("Open account drawer").performClick()
         compose.onNodeWithText("Mailboxes").assertExists()
-        compose.onNodeWithText("Drafts").performClick()
+        compose.onNodeWithContentDescription("Collapse Projects").performScrollTo().performClick()
+        compose.onNodeWithText("Design", substring = false).assertDoesNotExist()
+        compose.onNodeWithContentDescription("Expand Projects").performClick()
+        compose.onNodeWithText("Design", substring = false).assertExists()
+        compose.onNodeWithText("Drafts").performScrollTo().performClick()
         compose.onNodeWithContentDescription("Compose a message").performClick()
         compose.onNodeWithText("To").performTextInput("friend@example.net")
         compose.onNodeWithText("Subject").performTextInput("Native draft test")
@@ -79,5 +83,44 @@ class MailJourneyTest {
         }
         compose.onNodeWithText("Native draft test").performClick()
         compose.onNodeWithText("Persist this draft through Room.").assertExists()
+    }
+
+    @Test
+    fun selectionMarksOnlyChosenMessagesAndSortCanBeReversed() {
+        compose.onNodeWithText("Explore the demo inbox").performClick()
+        val before = vm.mailbox.value.messages.filter { it.folderId == "personal-inbox" }
+        val newest = before.maxBy { it.receivedAt }
+        val oldest = before.minBy { it.receivedAt }
+        compose.onNodeWithContentDescription("Inbox options").performClick()
+        compose.onNodeWithText("Oldest first").performClick()
+        compose.onNodeWithText(oldest.subject).assertIsDisplayed()
+        compose.onNodeWithContentDescription("Inbox options").performClick()
+        compose.onNodeWithText("Newest first").performClick()
+        compose.onNodeWithText(newest.subject).assertIsDisplayed()
+        compose.onNodeWithContentDescription("Inbox options").performClick()
+        compose.onNodeWithText("Select messages").performClick()
+        compose.onNodeWithContentDescription("Select ${newest.subject}").performClick()
+        compose.onNodeWithText("1 selected").assertIsDisplayed()
+        compose.onNodeWithText("Mark read").performClick()
+        compose.waitUntil(10000) { vm.mailbox.value.messages.first { it.id == newest.id }.isRead }
+        val after = vm.mailbox.value.messages.associateBy { it.id }
+        before
+            .filter { it.id != newest.id }
+            .forEach { original ->
+                Assert.assertEquals(original.isRead, after.getValue(original.id).isRead)
+            }
+        Assert.assertEquals(newest.isNew, after.getValue(newest.id).isNew)
+    }
+
+    @Test
+    fun allAccountSearchShowsAccountAndFolderForResults() {
+        compose.onNodeWithText("Explore the demo inbox").performClick()
+        compose.onNodeWithContentDescription("Search messages").performClick()
+        compose.onNodeWithText("Search mail").performTextInput("Lighthouse booking confirmed")
+        compose.onNodeWithText("All accounts").performClick()
+        compose.onNodeWithText("3 results").assertIsDisplayed()
+        compose.onNodeWithText("rhea@example.com · Inbox").assertIsDisplayed()
+        compose.onNodeWithText("rhea@example.org · Inbox").assertIsDisplayed()
+        compose.onNodeWithText("rhea@community.example.net · Inbox").assertIsDisplayed()
     }
 }

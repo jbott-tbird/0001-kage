@@ -8,6 +8,7 @@ import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import org.foxred.kage.domain.model.*
 import org.foxred.kage.ui.components.*
@@ -33,6 +34,12 @@ fun AccountDrawer(
                     selected = mail.preferences.selectedFolder == "unified",
                     onClick = { select("unified") },
                     icon = { Icon(Icons.Outlined.AllInbox, null) },
+                    badge = {
+                        val inboxes =
+                            mail.folders.filter { it.role == "inbox" }.map { it.id }.toSet()
+                        val unread = mail.messages.count { it.folderId in inboxes && !it.isRead }
+                        if (unread > 0) Text(unread.toString())
+                    },
                 )
             mail.accounts.forEach { account ->
                 var expanded by
@@ -54,22 +61,26 @@ fun AccountDrawer(
                     onClick = { expanded = !expanded },
                     icon = { Avatar(account.name) },
                     badge = {
-                        Icon(
-                            if (expanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
-                            null,
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(T.sm),
+                        ) {
+                            val unread =
+                                mail.messages.count { it.accountId == account.id && !it.isRead }
+                            if (!expanded && unread > 0) Text(unread.toString())
+                            Icon(
+                                if (expanded) Icons.Outlined.ExpandLess
+                                else Icons.Outlined.ExpandMore,
+                                null,
+                            )
+                        }
                     },
                 )
                 if (expanded) {
                     val folders = mail.folders.filter { it.accountId == account.id }
                     folders
                         .filter { it.parentId == null }
-                        .forEach { folder ->
-                            DrawerFolder(folder, mail, select)
-                            folders
-                                .filter { it.parentId == folder.id }
-                                .forEach { DrawerFolder(it, mail, select, nested = true) }
-                        }
+                        .forEach { folder -> DrawerFolder(folder, mail, select) }
                 }
                 HorizontalDivider(Modifier.padding(T.md))
             }
@@ -87,19 +98,36 @@ fun AccountDrawer(
 }
 
 @Composable
-private fun DrawerFolder(
-    folder: Folder,
-    mail: Mailbox,
-    select: (String) -> Unit,
-    nested: Boolean = false,
-) {
-    val unread = mail.messages.count { it.folderId == folder.id && !it.isRead }
-    NavigationDrawerItem(
-        modifier = Modifier.padding(start = if (nested) T.xl else T.sm, end = T.sm),
-        label = { Text(folder.name) },
-        selected = mail.preferences.selectedFolder == folder.id,
-        onClick = { select(folder.id) },
-        icon = { Icon(folderIcon(folder.role), null) },
-        badge = { if (unread > 0) Text(unread.toString()) },
-    )
+private fun DrawerFolder(folder: Folder, mail: Mailbox, select: (String) -> Unit, depth: Int = 0) {
+    val children = mail.folders.filter { it.parentId == folder.id }
+    var expanded by
+        rememberSaveable(folder.id) {
+            mutableStateOf(
+                folder.name == "Projects" ||
+                    children.any { it.id == mail.preferences.selectedFolder }
+            )
+        }
+    val countedFolders = children.map { it.id }.toSet() + folder.id
+    val unread = mail.messages.count { it.folderId in countedFolders && !it.isRead }
+    Row(
+        Modifier.padding(start = T.sm + T.lg * depth, end = T.sm),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        NavigationDrawerItem(
+            modifier = Modifier.weight(1f),
+            label = { Text(folder.name) },
+            selected = mail.preferences.selectedFolder == folder.id,
+            onClick = { select(folder.id) },
+            icon = { Icon(folderIcon(folder.role), null) },
+            badge = { if (unread > 0) Text(unread.toString()) },
+        )
+        if (children.isNotEmpty())
+            MailIconButton(
+                "${if (expanded) "Collapse" else "Expand"} ${folder.name}",
+                if (expanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
+            ) {
+                expanded = !expanded
+            }
+    }
+    if (expanded) children.forEach { DrawerFolder(it, mail, select, depth + 1) }
 }

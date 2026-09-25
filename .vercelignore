@@ -1,0 +1,4 @@
+designs/
+z_ignore/
+dist/
+.env*

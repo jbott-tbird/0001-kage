@@ -68,3 +68,18 @@ subsequent visits preserve message changes and deletions.
 and message-view variations in `designs`: long names and subjects, Japanese,
 Arabic, Hebrew, emoji, missing subjects and bodies, mailing lists, and deliberately
 broken legacy encoding. These are display fixtures, not a MIME decoder.
+
+## Production deployment
+
+The prototype is hosted at your deployment URL on Vercel, project `tfa` in
+scope `YOUR_VERCEL_SCOPE`. `vercel.json` builds with Vite and serves `dist/`.
+
+```sh
+vercel link --yes --project tfa --scope YOUR_VERCEL_SCOPE
+npm test
+npm run build
+vercel deploy --prod --yes --scope YOUR_VERCEL_SCOPE
+```
+
+Local Vercel metadata and environment files are ignored by Git. Design reference
+images are excluded from deployment; app assets in `public/` are included.

@@ -29,6 +29,12 @@ interface RemoteMailDao {
     @Query("SELECT * FROM outbox WHERE accountId = :accountId ORDER BY createdAt, id")
     suspend fun outbox(accountId: String): List<OutboxEntity>
 
+    @Query("SELECT * FROM outbox WHERE id = :id")
+    suspend fun outboxEntry(id: String): OutboxEntity?
+
+    @Query("SELECT * FROM outbox WHERE accountId = :accountId AND messageId = :messageId LIMIT 1")
+    suspend fun outboxByMessageId(accountId: String, messageId: String): OutboxEntity?
+
     @Query("UPDATE outbox SET draftId = NULL WHERE draftId = :messageId")
     suspend fun detachOutbox(messageId: String)
 

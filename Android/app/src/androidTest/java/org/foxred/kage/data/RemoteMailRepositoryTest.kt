@@ -18,14 +18,21 @@ import kotlinx.coroutines.withTimeout
 import org.foxred.kage.core.account.*
 import org.foxred.kage.core.demo.DemoMailStore
 import org.foxred.kage.core.mime.AngusMimeCodec
+import org.foxred.kage.core.imap.AngusImapClient
+import org.foxred.kage.core.testkit.ImapTranscript
+import org.foxred.kage.core.testkit.LoopbackServer
+import org.foxred.kage.core.testkit.testTlsContext
 import org.foxred.kage.data.local.*
 import org.foxred.kage.data.repository.RemoteMailRepository
+import org.foxred.kage.data.repository.DurableOutbox
 import org.foxred.kage.data.repository.RemoteMailRepository.OperationState
 import org.foxred.kage.data.security.AndroidCredentialStore
 import org.foxred.kage.data.sync.AccountSessions
 import org.junit.*
 import org.junit.Assert.*
 import org.junit.runner.RunWith
+import androidx.test.platform.app.InstrumentationRegistry
+import javax.net.ssl.SSLContext
 
 /** Repository policy against real Room and in-memory servers; nothing leaves the device. */
 @RunWith(AndroidJUnit4::class)
@@ -101,7 +108,7 @@ class RemoteMailRepositoryTest {
         store: (String) -> MailStore = { ScriptedStore(server(it)) },
     ): RemoteMailRepository {
         val sessions = AccountSessions(RemoteMailRepository.incomingServer(db), credentials, store)
-        return RemoteMailRepository(db, sessions, credentials, now = { Instant.ofEpochMilli(clock++) })
+        return RemoteMailRepository(db, sessions, credentials, DurableOutbox(db, context, codec), now = { Instant.ofEpochMilli(clock++) })
     }
 
     private fun account(id: String) =
@@ -444,6 +451,11 @@ class RemoteMailRepositoryTest {
         repo.syncMessages(inbox("b"), Instant.EPOCH)
         assertNotEquals(rows(db, inbox("a")).single().id, rows(db, inbox("b")).single().id)
         assertEquals("a", rows(db, inbox("a")).single().accountId)
+        val queued = DurableOutbox(db, context, codec).enqueue(
+            "a", OutgoingEmail("<cleanup@example.test>", EmailAddress("a@example.test"),
+                listOf(EmailAddress("b@example.test")), subject = "Cleanup", body = EmailBody("body", null)),
+        )
+        assertTrue(java.io.File(queued.rawMessagePath).exists())
 
         val blocked = async(Dispatchers.Default) {
             runCatching { repo.syncMessages(CoreRoomMapper.folderId("a", "Archive"), Instant.EPOCH) }
@@ -455,6 +467,8 @@ class RemoteMailRepositoryTest {
         assertNull(db.remoteMailDao().account("a"))
         assertTrue(rows(db, inbox("a")).isEmpty())
         assertNull(credentials.authorization("a", ServerProtocol.IMAP))
+        assertTrue(db.remoteMailDao().outbox("a").isEmpty())
+        assertFalse(java.io.File(queued.rawMessagePath).exists())
         assertEquals(1, rows(db, inbox("b")).size)
         assertNotNull(credentials.authorization("b", ServerProtocol.IMAP))
     }
@@ -504,5 +518,37 @@ class RemoteMailRepositoryTest {
         assertEquals(FailureKind.AUTHENTICATION, failure.kind)
         assertEquals(0, connects)
         assertEquals(before, db.remoteMailDao().folders("a"))
+    }
+
+    @Test
+    fun realAngusSessionPersistsControlledServerFolderAndCursor() = runBlocking {
+        val original = SSLContext.getDefault()
+        val tls = testTlsContext(
+            InstrumentationRegistry.getInstrumentation().context.assets.open("localhost.p12")
+        )
+        SSLContext.setDefault(tls)
+        try {
+            val transcript = ImapTranscript()
+            LoopbackServer(tls, transcript::serve).use { server ->
+                val db = open()
+                val sessions = AccountSessions(RemoteMailRepository.incomingServer(db), credentials) { AngusImapClient() }
+                val repo = RemoteMailRepository(db, sessions, credentials, DurableOutbox(db, context, codec))
+                val configured = account("wire").copy(
+                    incomingServer = Server("localhost", server.port, ServerProtocol.IMAP, username = "user")
+                )
+                repo.addAccount(configured, Authorization("password"), Authorization("password"))
+                repo.refreshFolders("wire")
+                assertEquals(listOf("INBOX"), db.remoteMailDao().folders("wire").map { it.remotePath })
+                assertEquals(0, repo.syncMessages(inbox("wire"), Instant.EPOCH))
+                assertEquals(77L, db.remoteMailDao().folder(inbox("wire"))!!.uidValidity)
+                assertNull(db.remoteMailDao().cursor(inbox("wire"))!!.beforeUid)
+                sessions.closeAll()
+                server.awaitCompletion()
+                assertTrue(transcript.commands.contains("LIST"))
+                assertTrue(transcript.commands.contains("EXAMINE") || transcript.commands.contains("SELECT"))
+            }
+        } finally {
+            SSLContext.setDefault(original)
+        }
     }
 }

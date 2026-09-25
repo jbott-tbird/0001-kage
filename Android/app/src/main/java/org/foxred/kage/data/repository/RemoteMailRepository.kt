@@ -28,6 +28,7 @@ class RemoteMailRepository(
     private val db: MailDatabase,
     private val sessions: AccountSessions,
     private val credentials: CredentialStore,
+    private val outbox: DurableOutbox,
     private val now: () -> Instant = Instant::now,
     private val newId: () -> String = { UUID.randomUUID().toString() },
 ) {
@@ -76,7 +77,9 @@ class RemoteMailRepository(
         withContext(Dispatchers.IO) {
             sessions.close(accountId)
             credentials.removeAccount(accountId)
+            val outgoing = outbox.entries(accountId)
             db.withTransaction { dao.removeAccount(accountId) }
+            outbox.removeFiles(outgoing)
         }
 
     suspend fun refreshFolders(accountId: String) {
@@ -461,7 +464,7 @@ class RemoteMailRepository(
     }
 
     private fun headerMessageId(row: MessageEntity): String? =
-        JSONObject(row.envelopeJson).let { if (it.isNull("messageId")) null else it.optString("messageId", null) }
+        JSONObject(row.envelopeJson).let { if (it.isNull("messageId")) null else it.getString("messageId") }
 
     companion object {
         private val RETRYABLE =

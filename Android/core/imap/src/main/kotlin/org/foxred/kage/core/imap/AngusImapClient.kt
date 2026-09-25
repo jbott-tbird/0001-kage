@@ -7,6 +7,8 @@ import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 import java.time.Instant
 import java.util.Properties
+import org.eclipse.angus.mail.iap.BadCommandException
+import org.eclipse.angus.mail.iap.CommandFailedException
 import org.eclipse.angus.mail.imap.IMAPFolder
 import org.eclipse.angus.mail.imap.IMAPStore
 import org.foxred.kage.core.account.*
@@ -121,7 +123,12 @@ class AngusImapClient(
     @Synchronized
     override fun subscribe(mailbox: String, subscribed: Boolean) {
         mailboxAction(mailbox) {
-            it.isSubscribed = subscribed
+            // IMAPFolder.setSubscribed deliberately ignores server NO responses. Use the
+            // command boundary so rejected changes cannot be persisted as successful locally.
+            (it as IMAPFolder).doCommand { protocol ->
+                if (subscribed) protocol.subscribe(mailbox) else protocol.unsubscribe(mailbox)
+                null
+            }
             true
         }
     }
@@ -290,6 +297,9 @@ class AngusImapClient(
             e is MailFailure -> e
             e is AuthenticationFailedException ->
                 MailFailure(FailureKind.AUTHENTICATION, "IMAP authentication failed", e)
+            generateSequence<Throwable>(e) { it.cause }
+                .any { it is CommandFailedException || it is BadCommandException } ->
+                MailFailure(FailureKind.PROTOCOL, "IMAP server rejected the operation", e)
             else -> MailFailure(FailureKind.CONNECTION, "IMAP operation failed", e)
         }
 }

@@ -2585,5 +2585,487 @@
         "IosMimeFixtureTest"
       ]
     }
-  }
+  },
+  "publicOperationMappings": [
+    {
+      "iosPath": "Core/Sources/Account/AccountManager.swift",
+      "iosDeclaration": "public func account(for id: UUID) -> Account? {",
+      "androidTarget": null,
+      "task": "T06",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+    },
+    {
+      "iosPath": "Core/Sources/Account/AccountManager.swift",
+      "iosDeclaration": "public func set(_ account: Account, at index: Int? = nil) {",
+      "androidTarget": null,
+      "task": "T06",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+    },
+    {
+      "iosPath": "Core/Sources/Account/AccountManager.swift",
+      "iosDeclaration": "public func hasLoggedInAccount() -> Bool {",
+      "androidTarget": null,
+      "task": "T06",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+    },
+    {
+      "iosPath": "Core/Sources/Account/AccountManager.swift",
+      "iosDeclaration": "public func delete(_ account: Account) {",
+      "androidTarget": null,
+      "task": "T06",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+    },
+    {
+      "iosPath": "Core/Sources/Account/AccountManager.swift",
+      "iosDeclaration": "public func deleteAccounts() {",
+      "androidTarget": null,
+      "task": "T06",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+    },
+    {
+      "iosPath": "Core/Sources/Account/AccountManager.swift",
+      "iosDeclaration": "public func checkAndRenewExpirations() async {",
+      "androidTarget": null,
+      "task": "T06",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+    },
+    {
+      "iosPath": "Core/Sources/Account/EmailManager.swift",
+      "iosDeclaration": "public func refreshEmail() async {",
+      "androidTarget": null,
+      "task": "T11",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+    },
+    {
+      "iosPath": "Core/Sources/Account/FolderManager.swift",
+      "iosDeclaration": "public func folderForID(_ id: String) -> Folder? {",
+      "androidTarget": null,
+      "task": "T09",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+    },
+    {
+      "iosPath": "Core/Sources/Account/FolderManager.swift",
+      "iosDeclaration": "public func folderForName(_ name: String) -> Folder? {",
+      "androidTarget": null,
+      "task": "T09",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+    },
+    {
+      "iosPath": "Core/Sources/Account/FolderManager.swift",
+      "iosDeclaration": "public func folderForPath(_ path: String) -> Folder? {",
+      "androidTarget": null,
+      "task": "T09",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+    },
+    {
+      "iosPath": "Core/Sources/Account/FolderManager.swift",
+      "iosDeclaration": "public func refreshFolders(mailboxes: [Mailbox]) async {",
+      "androidTarget": null,
+      "task": "T09",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+    },
+    {
+      "iosPath": "Core/Sources/Account/MailboxManager.swift",
+      "iosDeclaration": "public func mailbox(_ name: String) -> Mailbox? {",
+      "androidTarget": null,
+      "task": "T31",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+    },
+    {
+      "iosPath": "Core/Sources/Account/MailboxManager.swift",
+      "iosDeclaration": "public func mailbox(for id: String) -> Mailbox? {",
+      "androidTarget": null,
+      "task": "T31",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+    },
+    {
+      "iosPath": "Core/Sources/Account/MailboxManager.swift",
+      "iosDeclaration": "public func emails(in mailbox: Mailbox) async -> [Email] {",
+      "androidTarget": null,
+      "task": "T31",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+    },
+    {
+      "iosPath": "Core/Sources/Account/MailboxManager.swift",
+      "iosDeclaration": "public func createMailbox(_ name: String) async {",
+      "androidTarget": null,
+      "task": "T31",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+    },
+    {
+      "iosPath": "Core/Sources/Account/MailboxManager.swift",
+      "iosDeclaration": "public func rename(_ mailbox: Mailbox, to name: String) async {",
+      "androidTarget": null,
+      "task": "T31",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+    },
+    {
+      "iosPath": "Core/Sources/Account/MailboxManager.swift",
+      "iosDeclaration": "public func delete(_ mailbox: Mailbox) async {",
+      "androidTarget": null,
+      "task": "T31",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+    },
+    {
+      "iosPath": "Core/Sources/Account/MailboxManager.swift",
+      "iosDeclaration": "public func subscribe(_ mailbox: Mailbox) async {",
+      "androidTarget": null,
+      "task": "T31",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+    },
+    {
+      "iosPath": "Core/Sources/Account/MailboxManager.swift",
+      "iosDeclaration": "public func unsubscribe(_ mailbox: Mailbox) async {",
+      "androidTarget": null,
+      "task": "T31",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+    },
+    {
+      "iosPath": "Core/Sources/Account/MailboxManager.swift",
+      "iosDeclaration": "public func refreshMailboxes() async {",
+      "androidTarget": null,
+      "task": "T31",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public func isSupported(_ capability: Capability) throws {",
+      "androidTarget": "MailStore.supports",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "Boolean capability check; operation methods reject unsupported requirements"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public func connect() async throws {",
+      "androidTarget": "MailStore.connect",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "Connect and authenticate together; no unauthenticated session exposed"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public func disconnect() throws {",
+      "androidTarget": "MailStore.close",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "Close cancels sockets; no guarantee of graceful LOGOUT after interruption"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public func login() async throws {",
+      "androidTarget": "MailStore.connect",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "Authentication is part of connection; credentials remain separate from account model"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public func login(username: String, password: String) async throws {",
+      "androidTarget": "MailStore.connect",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "Authentication is part of connection; credentials remain separate from account model"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public func logout() async throws {",
+      "androidTarget": "MailStore.close",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "Close owns session lifetime rather than exposing an authenticated-but-open session"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public func namespace() async throws -> [Namespace] {",
+      "androidTarget": "MailStore.namespaces",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "Personal and shared namespaces"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "@discardableResult public func idle() async throws -> AsyncStream<IdleEvent> {",
+      "androidTarget": "MailStore.awaitChange",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "One change wake-up then caller refreshes; no public event stream yet"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public func done() async throws {",
+      "androidTarget": "MailStore.cancel",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "Interrupt closes connection; caller reconnects rather than reusing cancelled session"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public func noop() async throws -> [IdleEvent] {",
+      "androidTarget": "MailStore.poll",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "Return mailbox status; expunge details reconciled by repository later"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public func list(wildcard: Character = .wildcard) async throws -> [(Mailbox, Mailbox.Status?)] {",
+      "androidTarget": "MailStore.mailboxes",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "Full wildcard list; filtered wildcard API not exposed"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "@discardableResult public func select(mailbox name: MailboxName) async throws -> Mailbox.Status {",
+      "androidTarget": "AngusImapClient.folder",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "Selection scoped to each operation and serialized"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public func examine(mailbox name: MailboxName) async throws -> Mailbox.Status {",
+      "androidTarget": "AngusImapClient.folder",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "Read operations use EXAMINE and close without expunging"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public func status(mailbox name: MailboxName) async throws -> Mailbox.Status {",
+      "androidTarget": "MailStore.status",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "Returns UIDVALIDITY/UIDNEXT/counts"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public func expunge() async throws {",
+      "androidTarget": null,
+      "task": "T14",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "difference": "Unrestricted expunge deliberately excluded to protect other clients deleted messages"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public func unselect() async throws {",
+      "androidTarget": "AngusImapClient.folder",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "Folder cleanup is automatic"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public func create(mailbox name: MailboxName) async throws {",
+      "androidTarget": "MailStore.createMailbox",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "Create message-holding mailbox"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public func rename(mailbox name: MailboxName, to targetName: MailboxName) async throws {",
+      "androidTarget": "MailStore.renameMailbox",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "Server action only; local remapping belongs to repository"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public func delete(mailbox name: MailboxName) async throws {",
+      "androidTarget": "MailStore.deleteMailbox",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "Non-recursive deletion"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public func subscribe(mailbox name: MailboxName) async throws {",
+      "androidTarget": "MailStore.subscribe",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "True subscribes; server rejection now propagated"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public func unsubscribe(mailbox name: MailboxName) async throws {",
+      "androidTarget": "MailStore.subscribe",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "False unsubscribes; server rejection now propagated"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public func close() async throws {",
+      "androidTarget": "AngusImapClient.folder",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "iOS CLOSE selected mailbox replaced by automatic non-expunging close"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public func fetch(_ set: SequenceSet = .all, attributes: [FetchAttribute] = .header) async throws -> MessageSet {",
+      "androidTarget": "MailStore.messagePage / message / downloadAttachment",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "UID identity and bounded windows replace volatile sequence-number APIs"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public func fetch(_ number: SequenceNumber, attributes: [FetchAttribute] = .complete) async throws -> Message {",
+      "androidTarget": "MailStore.messagePage / message / downloadAttachment",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "UID identity and bounded windows replace volatile sequence-number APIs"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public func fetch(uid set: UIDSet, attributes: [FetchAttribute] = .header) async throws -> MessageSet {",
+      "androidTarget": "MailStore.messagePage / message / downloadAttachment",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "UID identity and bounded windows replace volatile sequence-number APIs"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public func fetch(uid: UID, attributes: [FetchAttribute] = .complete) async throws -> Message {",
+      "androidTarget": "MailStore.messagePage / message / downloadAttachment",
+      "task": "T28",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "UID identity and bounded windows replace volatile sequence-number APIs"
+    },
+    {
+      "iosPath": "Core/Sources/SMTP/SMTPClient.swift",
+      "iosDeclaration": "public func send(_ email: [Email]) async throws {",
+      "androidTarget": "MailSubmission.send",
+      "task": "T18",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "One envelope per send; batch caller owns partial completion and must not retry ambiguous delivery"
+    },
+    {
+      "iosPath": "Core/Sources/SMTP/SMTPClient.swift",
+      "iosDeclaration": "public func send(_ email: Email) async throws {",
+      "androidTarget": "MailSubmission.send",
+      "task": "T18",
+      "status": "pending_port",
+      "implemented": true,
+      "uiWired": false,
+      "difference": "One envelope per send; batch caller owns partial completion and must not retry ambiguous delivery"
+    }
+  ]
 }

@@ -87,6 +87,7 @@ class SmtpTranscript(
 class ImapTranscript(
     private val idleEnabled: Boolean = true,
     private val fragmented: Boolean = false,
+    private val rejectSubscription: Boolean = false,
 ) {
     val idling = CountDownLatch(1)
     val change = CountDownLatch(1)
@@ -126,6 +127,10 @@ class ImapTranscript(
                             .endsWith("\u0000password")
                     )
                     reply("$tag OK authenticated")
+                }
+                command.startsWith("SUBSCRIBE ") || command.startsWith("UNSUBSCRIBE ") -> {
+                    check(rejectSubscription)
+                    reply("$tag NO Permission denied")
                 }
                 command.startsWith("LSUB ") -> {
                     reply("* LSUB () \"/\" \"INBOX\"")

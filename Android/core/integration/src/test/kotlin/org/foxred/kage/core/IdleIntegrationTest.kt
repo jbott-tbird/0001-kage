@@ -14,6 +14,28 @@ class IdleIntegrationTest {
         testTlsContext(File(System.getProperty("greenmail.tls.keystore.file")).inputStream())
 
     @Test
+    fun commandRejectionIsProtocolFailureAndSessionRemainsUsable() {
+        val transcript = ImapTranscript(rejectSubscription = true)
+        LoopbackServer(context(), transcript::serve).use { server ->
+            AngusImapClient().use { client ->
+                client.connect(
+                    Server("localhost", server.port, ServerProtocol.IMAP, username = "user"),
+                    Authorization("password"),
+                )
+                for (subscribed in listOf(true, false)) {
+                    val failure =
+                        assertThrows(MailFailure::class.java) {
+                            client.subscribe("INBOX", subscribed)
+                        }
+                    assertEquals(FailureKind.PROTOCOL, failure.kind)
+                }
+                assertEquals(77L, client.poll("INBOX").uidValidity)
+            }
+            server.awaitCompletion()
+        }
+    }
+
+    @Test
     fun fragmentedResponsesAndIdleChangeCompleteWithoutLosingSession() {
         val transcript = ImapTranscript(fragmented = true)
         val pool = Executors.newSingleThreadExecutor()

@@ -6,6 +6,45 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class AngusMimeCodecTest {
+    private fun related(start: String = "; start=\"<root>\"") =
+        ("Content-Type: multipart/related; boundary=x; type=\"text/html\"$start\r\n\r\n" +
+                "--x\r\nContent-Type: text/plain\r\nContent-ID: <resource>\r\n\r\nauxiliary text\r\n" +
+                "--x\r\nContent-Type: text/html\r\nContent-ID: <root>\r\n" +
+                "Content-Disposition: attachment; filename=body.html\r\n\r\n<p>Root</p>\r\n--x--\r\n")
+            .toByteArray()
+
+    @Test
+    fun relatedStartSelectsRootAndKeepsTextResourceOutOfBody() {
+        val raw = related()
+        val message = codec.decode(raw)
+        assertEquals("<p>Root</p>", message.body.html)
+        assertNull(message.body.text)
+        val resource = message.attachments.single()
+        assertEquals("resource", resource.contentId)
+        assertTrue(resource.inline)
+        assertEquals(
+            "auxiliary text",
+            codec.attachment(raw, resource.partId).toString(Charsets.UTF_8),
+        )
+    }
+
+    @Test
+    fun relatedWithoutStartUsesFirstPartAndMissingRootFailsExplicitly() {
+        val message =
+            codec.decode(
+                related("")
+                    .toString(Charsets.UTF_8)
+                    .replace("type=\"text/html\"", "type=\"text/plain\"")
+                    .toByteArray()
+            )
+        assertEquals("auxiliary text", message.body.text)
+        assertNull(message.body.html)
+        assertEquals("root", message.attachments.single().contentId)
+        val failure =
+            assertThrows(MailFailure::class.java) { codec.decode(related("; start=\"<missing>\"")) }
+        assertEquals(FailureKind.INVALID_MESSAGE, failure.kind)
+    }
+
     @Test
     fun decodedEmptyBodyIsDistinctFromHeadersOnly() {
         val message =

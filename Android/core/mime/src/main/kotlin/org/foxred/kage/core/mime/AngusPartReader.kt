@@ -46,13 +46,15 @@ class AngusPartReader(
                 }
             return out.toByteArray().toString(charset)
         }
-        fun visit(part: Part, path: String, depth: Int): EmailBody {
+        fun visit(part: Part, path: String, depth: Int, relatedRoot: Boolean? = null): EmailBody {
             if (++visited > maxParts || depth > maxDepth)
                 throw MailFailure(FailureKind.LIMIT_EXCEEDED, "MIME structure exceeds limit")
             val type = ContentType(part.contentType).baseType.lowercase()
             if (
-                part.disposition.equals(Part.ATTACHMENT, true) ||
-                    part.fileName != null ||
+                relatedRoot == false ||
+                    (relatedRoot != true &&
+                        (part.disposition.equals(Part.ATTACHMENT, true) ||
+                            part.fileName != null)) ||
                     (!part.isMimeType("multipart/*") &&
                         !part.isMimeType("text/plain") &&
                         !part.isMimeType("text/html"))
@@ -64,7 +66,7 @@ class AngusPartReader(
                         type,
                         part.size.toLong(),
                         part.getHeader("Content-ID")?.firstOrNull()?.trim('<', '>'),
-                        part.disposition.equals(Part.INLINE, true),
+                        relatedRoot == false || part.disposition.equals(Part.INLINE, true),
                     )
                 return EmailBody(null, null)
             }
@@ -78,9 +80,35 @@ class AngusPartReader(
                     throw MailFailure(FailureKind.INVALID_MESSAGE, "Multipart message is truncated")
                 if (multipart.count > maxParts - visited)
                     throw MailFailure(FailureKind.LIMIT_EXCEEDED, "Too many MIME parts")
+                // RFC 2387: start selects the root by Content-ID, otherwise the first part.
+                // Related resources never become extra message body text, regardless of
+                // disposition.
+                val related = part.isMimeType("multipart/related")
+                val start =
+                    ContentType(part.contentType).getParameter("start")?.trim()?.trim('<', '>')
+                val rootIndex =
+                    if (related && start != null) {
+                        (0 until multipart.count).firstOrNull {
+                            multipart
+                                .getBodyPart(it)
+                                .getHeader("Content-ID")
+                                ?.firstOrNull()
+                                ?.trim()
+                                ?.trim('<', '>') == start
+                        }
+                            ?: throw MailFailure(
+                                FailureKind.INVALID_MESSAGE,
+                                "Related MIME root is missing",
+                            )
+                    } else 0
                 val children =
                     (0 until multipart.count).map {
-                        visit(multipart.getBodyPart(it), "$path.${it + 1}", depth + 1)
+                        visit(
+                            multipart.getBodyPart(it),
+                            "$path.${it + 1}",
+                            depth + 1,
+                            if (related) it == rootIndex else null,
+                        )
                     }
                 fun combine(values: List<String>): String? =
                     if (part.isMimeType("multipart/alternative")) values.lastOrNull()

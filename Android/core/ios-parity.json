@@ -1814,12 +1814,14 @@
       "evidence": [
         "13 unchanged upstream fixtures pass independent body/attachment expectations",
         "deterministic outgoing MIME round-trip tests pass",
-        "Malformed multipart boundary/completeness and nesting limits produce typed failures"
+        "Malformed multipart boundary/completeness and nesting limits produce typed failures",
+        "Explicit related root/default root, resource download and missing-root tests pass; all 13 upstream fixtures still pass"
       ],
       "differences": [
         "multipart/alternative selects last supported variant per representation",
         "Explicit size/nesting/part-count limits",
-        "Bcc retained only in SMTP envelope on outgoing mail"
+        "Bcc retained only in SMTP envelope on outgoing mail",
+        "multipart/related selects the RFC 2387 root using start/Content-ID or first part, overrides root disposition, and keeps non-root resources out of body text"
       ],
       "remaining": [
         "complete public-symbol and model-field audit",

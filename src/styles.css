@@ -4,6 +4,7 @@
   --color-border: #e2e3e7;
 }
 :root {
+  --phone-width: min(100vw, 412px);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: #202632;
   background: #f7f7f8;
@@ -18,8 +19,13 @@
   box-sizing: border-box;
 }
 body {
-  margin: 0;
+  margin: 0 auto;
+  width: var(--phone-width);
   min-width: 320px;
+  min-height: 100dvh;
+  box-shadow:
+    0 0 0 1px #dfe3e9,
+    0 12px 60px #23344a18;
 }
 button,
 input,
@@ -476,7 +482,7 @@ select {
 .settings-shell {
   background: white;
   min-height: 100dvh;
-  max-width: 860px;
+  max-width: var(--phone-width);
   margin: auto;
   position: relative;
   box-shadow: 0 0 0 1px #e9ebef;
@@ -631,7 +637,7 @@ select {
 .compose-fab {
   position: fixed;
   bottom: 30px;
-  right: max(26px, calc((100vw - 860px) / 2 + 26px));
+  right: calc((100vw - var(--phone-width)) / 2 + 22px);
   border-radius: 99px;
   background: #e7e7eb;
   color: #686b7a;
@@ -774,6 +780,8 @@ select {
 .dialog-overlay {
   position: fixed;
   inset: 0;
+  width: var(--phone-width);
+  margin-inline: auto;
   background: #111a2a66;
   z-index: 40;
   animation: fade-in 0.18s;
@@ -783,7 +791,7 @@ select {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: calc(100% - 32px);
+  width: calc(var(--phone-width) - 32px);
   max-width: 460px;
   max-height: 90dvh;
   overflow: auto;
@@ -831,10 +839,10 @@ select {
   position: fixed;
   top: 0;
   bottom: 0;
-  left: 0;
+  left: calc((100vw - var(--phone-width)) / 2);
   z-index: 50;
   background: #f7f7f8;
-  width: min(410px, calc(100vw - 42px));
+  width: calc(var(--phone-width) - 42px);
   padding: 26px 17px 14px;
   display: flex;
   flex-direction: column;
@@ -1113,7 +1121,7 @@ select {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: min(100%, 860px);
+  width: var(--phone-width);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1467,7 +1475,7 @@ select {
   z-index: 100;
   font-size: 13px;
   box-shadow: 0 6px 22px #1233;
-  max-width: calc(100vw - 32px);
+  max-width: calc(var(--phone-width) - 32px);
   width: max-content;
   animation: fade-in 0.2s;
 }
@@ -1497,52 +1505,8 @@ select {
     transform: translateX(0);
   }
 }
-@media (min-width: 1000px) {
-  .mail-shell,
-  .message-shell,
-  .compose-shell,
-  .settings-shell {
-    min-height: calc(100dvh - 48px);
-    margin: 24px auto;
-    border-radius: 18px;
-    overflow: clip;
-    box-shadow:
-      0 4px 35px #1c304309,
-      0 0 0 1px #e7eaf0;
-  }
-  .mail-header {
-    padding-top: 23px;
-  }
-  .message-bottom {
-    bottom: 24px;
-    border-radius: 0 0 18px 18px;
-  }
-  .compose-fab {
-    bottom: 48px;
-  }
-  .drawer-panel {
-    left: max(0px, calc((100vw - 860px) / 2));
-    top: 24px;
-    bottom: 24px;
-    border-radius: 18px 0 0 18px;
-  }
-  .welcome-center {
-    padding-top: 20px;
-  }
-  .welcome-logo {
-    width: 340px;
-  }
-  .welcome-center p {
-    font-size: 21px;
-  }
-  .setup-sheet {
-    min-height: 760px;
-  }
-  .compose-body {
-    min-height: calc(100dvh - 430px);
-  }
-}
-@media (max-width: 600px) {
+/* Phone layout is used at every browser width for this prototype. */
+@media all {
   .welcome {
     padding: 22px 20px 28px;
   }
@@ -1651,7 +1615,7 @@ select {
   .compose-fab {
     width: 52px;
     height: 52px;
-    right: 22px;
+    right: calc((100vw - var(--phone-width)) / 2 + 22px);
     bottom: 26px;
     padding: 0;
   }

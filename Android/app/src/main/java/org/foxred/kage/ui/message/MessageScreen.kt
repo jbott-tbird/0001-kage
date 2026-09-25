@@ -28,6 +28,8 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -195,11 +197,25 @@ fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (Str
                 .padding(T.lg),
             verticalArrangement = Arrangement.spacedBy(T.lg),
         ) {
+            // Fill the reader width so content-based Start aligns RTL paragraphs to the right.
             Text(
                 message.subject.ifBlank { "(No subject)" },
-                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.fillMaxWidth(),
+                style =
+                    MaterialTheme.typography.headlineSmall.copy(
+                        textDirection = TextDirection.Content,
+                        textAlign = TextAlign.Start,
+                    ),
             )
-            Text(message.sender, style = MaterialTheme.typography.titleLarge)
+            Text(
+                message.sender,
+                modifier = Modifier.fillMaxWidth(),
+                style =
+                    MaterialTheme.typography.titleLarge.copy(
+                        textDirection = TextDirection.Content,
+                        textAlign = TextAlign.Start,
+                    ),
+            )
             Text(
                 message.receivedAt.replace('T', ' ').removeSuffix("Z"),
                 style = MaterialTheme.typography.bodySmall,
@@ -223,7 +239,17 @@ fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (Str
                 TextButton(onClick = { html = !html }) {
                     Text(if (html) "Show plain text" else "Show formatted message")
                 }
-                if (html) SafeHtml(message.html) else Text(message.body)
+                if (html) SafeHtml(message.html)
+                else
+                    Text(
+                        message.body,
+                        modifier = Modifier.fillMaxWidth(),
+                        style =
+                            MaterialTheme.typography.bodyLarge.copy(
+                                textDirection = TextDirection.Content,
+                                textAlign = TextAlign.Start,
+                            ),
+                    )
             } else if (message.body.isBlank())
                 Text(
                     "This message has no text body.",
@@ -232,8 +258,12 @@ fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (Str
             else
                 Text(
                     highlighted,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.bringIntoViewRequester(bodyRequester),
+                    style =
+                        MaterialTheme.typography.bodyLarge.copy(
+                            textDirection = TextDirection.Content,
+                            textAlign = TextAlign.Start,
+                        ),
+                    modifier = Modifier.fillMaxWidth().bringIntoViewRequester(bodyRequester),
                     onTextLayout = { textLayout = it },
                 )
             if (message.attachments.isNotEmpty())
@@ -301,7 +331,11 @@ fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (Str
                                     Text(
                                         related.sender,
                                         Modifier.weight(1f),
-                                        style = MaterialTheme.typography.titleMedium,
+                                        style =
+                                            MaterialTheme.typography.titleMedium.copy(
+                                                textDirection = TextDirection.Content,
+                                                textAlign = TextAlign.Start,
+                                            ),
                                     )
                                     Icon(
                                         if (expanded) Icons.Outlined.ExpandLess
@@ -312,6 +346,12 @@ fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (Str
                                 Text(related.receivedAt, style = MaterialTheme.typography.bodySmall)
                                 Text(
                                     if (expanded) related.body else related.preview,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    style =
+                                        MaterialTheme.typography.bodyLarge.copy(
+                                            textDirection = TextDirection.Content,
+                                            textAlign = TextAlign.Start,
+                                        ),
                                     maxLines = if (expanded) Int.MAX_VALUE else 1,
                                     overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                                 )
@@ -379,7 +419,7 @@ private fun SafeHtml(html: String) {
         update = { view ->
             view.loadDataWithBaseURL(
                 null,
-                "<html><head><meta name='viewport' content='width=device-width, initial-scale=1'><meta http-equiv='Content-Security-Policy' content=\"default-src 'none'; style-src 'unsafe-inline'; img-src data:\"><style>$emailStyle</style></head><body>$html</body></html>",
+                "<html><head><meta name='viewport' content='width=device-width, initial-scale=1'><meta http-equiv='Content-Security-Policy' content=\"default-src 'none'; style-src 'unsafe-inline'; img-src data:\"><style>$emailStyle</style></head><body dir='auto'>$html</body></html>",
                 "text/html",
                 "UTF-8",
                 null,

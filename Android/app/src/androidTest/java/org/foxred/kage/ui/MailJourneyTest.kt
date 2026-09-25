@@ -236,6 +236,49 @@ class MailJourneyTest {
     }
 
     @Test
+    fun readerAlignsArabicAndHebrewParagraphsByContent() {
+        compose.onNodeWithText("Explore the demo inbox").performClick()
+        for (id in listOf("personal-design-4", "personal-design-5")) {
+            val message = vm.mailbox.value.messages.first { it.id == id }
+            compose.onNode(hasScrollToNodeAction()).performScrollToNode(hasText(message.subject))
+            compose.onNodeWithText(message.subject).performClick()
+            fun layout(text: String): androidx.compose.ui.text.TextLayoutResult {
+                val results = mutableListOf<androidx.compose.ui.text.TextLayoutResult>()
+                compose.onNodeWithText(text).performSemanticsAction(
+                    androidx.compose.ui.semantics.SemanticsActions.GetTextLayoutResult
+                ) {
+                    it(results)
+                }
+                return results.single()
+            }
+            for (text in listOf(message.subject, message.sender, message.body)) {
+                val result = layout(text)
+                Assert.assertEquals(
+                    androidx.compose.ui.text.style.ResolvedTextDirection.Rtl,
+                    result.getParagraphDirection(0),
+                )
+                Assert.assertEquals(result.size.width.toFloat(), result.getLineRight(0), 1f)
+            }
+            if (id.endsWith("5")) {
+                val result = layout(message.body)
+                val offset = message.body.indexOf("The next review")
+                Assert.assertEquals(
+                    androidx.compose.ui.text.style.ResolvedTextDirection.Ltr,
+                    result.getParagraphDirection(offset),
+                )
+                Assert.assertEquals(0f, result.getLineLeft(result.getLineForOffset(offset)), 1f)
+            }
+            compose.onNodeWithContentDescription("Find in message").performClick()
+            compose.onNodeWithText("Find in this message").performTextInput(message.body.take(4))
+            Assert.assertEquals(
+                androidx.compose.ui.text.style.ResolvedTextDirection.Rtl,
+                layout(message.body).getParagraphDirection(0),
+            )
+            compose.onNodeWithContentDescription("Back").performClick()
+        }
+    }
+
+    @Test
     fun backFromReaderRetainsListPosition() {
         compose.onNodeWithText("Explore the demo inbox").performClick()
         val subject = "One_email_workflow_across_iOS_and_desktop"

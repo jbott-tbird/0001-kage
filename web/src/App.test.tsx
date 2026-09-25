@@ -50,9 +50,7 @@ describe("mail prototype journeys", () => {
     await user.click(screen.getByRole("menuitemcheckbox", { name: "Flagged" }));
     await user.keyboard("{Escape}");
     expect(screen.getByText("0 results")).toBeInTheDocument();
-    await user.click(
-      screen.getByRole("button", { name: "Pinned" }),
-    );
+    await user.click(screen.getByRole("button", { name: "Pinned" }));
     expect(screen.getByText("2 results")).toBeInTheDocument();
     expect(screen.getByText("Your trip confirmation")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Filter messages" }));
@@ -158,6 +156,43 @@ describe("mail prototype journeys", () => {
     expect(screen.getByText("1 / 2")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Next match" }));
     expect(screen.getByText("2 / 2")).toBeInTheDocument();
+  });
+  it.each(["personal-design-4", "personal-design-5"])(
+    "preserves content direction and search highlighting for %s",
+    async (id) => {
+      const message = initialState().messages.find((m) => m.id === id)!;
+      const user = start(`/message/${id}`);
+      expect(
+        screen.getByRole("heading", { name: message.subject }),
+      ).toHaveAttribute("dir", "auto");
+      expect(
+        screen.getByRole("heading", { name: message.from.name }),
+      ).toHaveAttribute("dir", "auto");
+      const body = document.querySelector(".plain-body")!;
+      expect(body).toHaveAttribute("dir", "auto");
+      expect(body.textContent).toBe(message.bodyText);
+      await user.click(screen.getByRole("button", { name: "Find in message" }));
+      await user.type(
+        screen.getByRole("textbox", { name: "Find in this message" }),
+        message.bodyText.slice(0, 4),
+      );
+      expect(body.querySelector('mark[data-current="true"]')).not.toBeNull();
+      expect(body.textContent).toBe(message.bodyText);
+    },
+  );
+  it("gives HTML mail automatic direction while preserving authored direction", () => {
+    const state = initialState();
+    state.messages[0].bodyHtml = '<p dir="rtl">שלום</p><p dir="ltr">Hello</p>';
+    localStorage.setItem("kage-mail-v1", JSON.stringify(state));
+    start(`/message/${state.messages[0].id}`);
+    const document = new DOMParser().parseFromString(
+      screen.getByTitle("Email body").getAttribute("srcdoc")!,
+      "text/html",
+    );
+    expect(document.body.getAttribute("dir")).toBe("auto");
+    expect(
+      Array.from(document.querySelectorAll("p"), (p) => p.getAttribute("dir")),
+    ).toEqual(["rtl", "ltr"]);
   });
   it("blocks downloading uncached attachments while offline", async () => {
     const state = initialState();

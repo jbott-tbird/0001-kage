@@ -251,13 +251,17 @@ export function MessageView() {
             aria-expanded={expanded.includes(m.id)}
           >
             <span>
-              <strong>{m.from.name}</strong>
-              <small>{m.preview}</small>
+              <strong dir="auto">{m.from.name}</strong>
+              <small dir="auto">{m.preview}</small>
             </span>
             <time>{dateLabel(m.receivedAt)}</time>
             <ChevronDown size={18} />
           </button>
-          {expanded.includes(m.id) && <p>{m.bodyText}</p>}
+          {expanded.includes(m.id) && (
+            <p className="plain-body" dir="auto">
+              {m.bodyText}
+            </p>
+          )}
         </section>
       ))}
       <article className="message-article">
@@ -287,7 +291,7 @@ export function MessageView() {
             <iframe
               title="Email body"
               sandbox=""
-              srcDoc={`<!doctype html><html><head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:"><style>body{margin:12px 0;color:#202734;font:17px/1.7 system-ui}h1{font-size:30px;line-height:1.3;color:#1376dc}h2{font-size:21px;margin-top:30px}blockquote{border-left:3px solid #1376dc;margin:24px 0;padding:10px 20px;background:#eff7ff}a{color:#1376dc}</style></head><body>${message.bodyHtml}</body></html>`}
+              srcDoc={`<!doctype html><html><head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:"><style>body{margin:12px 0;color:#202734;font:17px/1.7 system-ui}h1{font-size:30px;line-height:1.3;color:#1376dc}h2{font-size:21px;margin-top:30px}blockquote{border-inline-start:3px solid #1376dc;margin:24px 0;padding:10px 20px;background:#eff7ff}a{color:#1376dc}</style></head><body dir="auto">${message.bodyHtml}</body></html>`}
             />
           ) : (
             <div className="plain-body" dir="auto">

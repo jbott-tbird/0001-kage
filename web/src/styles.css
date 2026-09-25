@@ -1079,6 +1079,7 @@ select {
   color: #545965;
 }
 .sender-header > div:first-child {
+  flex: 1;
   min-width: 0;
 }
 .recipient-link {
@@ -1110,6 +1111,9 @@ select {
   overflow-wrap: anywhere;
 }
 .plain-body {
+  /* Each paragraph follows its own first strong character, including during find. */
+  unicode-bidi: plaintext;
+  text-align: start;
   white-space: pre-wrap;
 }
 .email-content iframe {
@@ -1795,4 +1799,11 @@ select {
 .message-marker {
   flex-shrink: 0;
   color: #d27b12;
+}
+
+/* Message content chooses its direction independently of the application chrome. */
+.subject-heading h1,
+.sender-header h2,
+.related-message [dir="auto"] {
+  text-align: start;
 }

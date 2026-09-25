@@ -137,6 +137,18 @@ export function Drawer({
                   <div className="account-folders">
                     {state.folders
                       .filter((f) => f.accountId === a.id && !f.parentId)
+                      .sort((a, b) => {
+                        const order = [
+                          "inbox",
+                          "drafts",
+                          "sent",
+                          "archive",
+                          "spam",
+                          "trash",
+                          "custom",
+                        ];
+                        return order.indexOf(a.role) - order.indexOf(b.role);
+                      })
                       .map((f) => row(f))}
                   </div>
                 )}

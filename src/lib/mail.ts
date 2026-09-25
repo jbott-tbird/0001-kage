@@ -1,3 +1,4 @@
+import designSamples from "../data/design-message-samples.json";
 import fixture from "../data/email-app-mock-data.json";
 export type Attachment = {
   id: string;
@@ -47,6 +48,7 @@ export type Message = {
   isDraft?: boolean;
 };
 export type MailState = {
+  demoDataVersion?: number;
   accounts: Account[];
   folders: Folder[];
   messages: Message[];
@@ -56,6 +58,189 @@ export type MailState = {
   offline: boolean;
 };
 export const SNAPSHOT = fixture.clock;
+const communityAccount: Account = {
+  id: "community",
+  name: "Rhea · Community",
+  address: "rhea@community.example.net",
+  protocol: "imap",
+  color: "purple",
+};
+
+// Deterministic IDs let older saved demos receive samples once without duplicates.
+export function populateDemoMailbox(
+  state: MailState,
+  account: Account,
+): MailState {
+  const folders = [...state.folders];
+  for (const [role, name, parent] of [
+    ["inbox", "Inbox", null],
+    ["drafts", "Drafts", null],
+    ["sent", "Sent", null],
+    ["archive", "Archive", null],
+    ["spam", "Spam", null],
+    ["trash", "Trash", null],
+    ["travel", "Travel", null],
+    ["receipts", "Receipts", null],
+    ["trips", "Upcoming trips", "travel"],
+  ]) {
+    if (!folders.some((f) => f.id === `${account.id}-${role}`))
+      folders.push({
+        id: `${account.id}-${role}`,
+        accountId: account.id,
+        name: name!,
+        role: ["travel", "receipts", "trips"].includes(role!)
+          ? "custom"
+          : role!,
+        parentId: parent ? `${account.id}-${parent}` : null,
+      });
+  }
+  const samples = [
+    [
+      "inbox",
+      "Alex Rivera",
+      "Coffee this weekend?",
+      "Hi there,\n\nWould you like to meet at the corner café on Saturday at 10? I would love to catch up.\n\nAlex",
+    ],
+    [
+      "inbox",
+      "Community team",
+      "Your September community digest",
+      "This month: a neighborhood picnic, a book swap, and a new walking group. Reply to join us on Sunday.",
+    ],
+    [
+      "inbox",
+      "Northern Rail",
+      "Your trip confirmation",
+      "Your reservation is confirmed for October 3. Your sample ticket is attached. Please arrive 15 minutes before departure.",
+    ],
+    [
+      "inbox",
+      "Morgan Chen",
+      "Photos from the garden",
+      "Thanks for helping plant the garden yesterday. The sunflowers are looking great! Shall we plan another afternoon next month?",
+    ],
+    [
+      "drafts",
+      account.name,
+      "Ideas for our next meetup",
+      "Hi everyone,\n\nHere are a few ideas for our next meetup:\n• A short walk\n• Lunch in the park\n\nLet me know what you think.",
+    ],
+    [
+      "sent",
+      account.name,
+      "Re: Saturday lunch",
+      "Saturday at noon works for me. See you there!",
+    ],
+    [
+      "archive",
+      "Library team",
+      "Your books have been renewed",
+      "Your books are now due October 12. Thank you for visiting your local library.",
+    ],
+    [
+      "receipts",
+      "Corner Books",
+      "Receipt for your book order",
+      "Thank you for your order. One paperback: $18.00. This is a sample receipt.",
+    ],
+    [
+      "trips",
+      "Mountain Lodge",
+      "Your October stay",
+      "We look forward to welcoming you on October 3. Check-in begins at 3 PM. Your room includes breakfast.",
+    ],
+  ];
+  const messages: Message[] = samples.map(
+    ([folder, name, subject, body], i) => ({
+      id: `${account.id}-sample-${i}`,
+      accountId: account.id,
+      folderId: `${account.id}-${folder}`,
+      from: {
+        name,
+        address:
+          folder === "sent" || folder === "drafts"
+            ? account.address
+            : `${name.split(" ")[0].toLowerCase()}@example.net`,
+      },
+      to: [
+        folder === "sent" || folder === "drafts"
+          ? "alex@example.net"
+          : account.address,
+      ],
+      cc: [],
+      subject,
+      preview: body.replace(/\n/g, " "),
+      bodyText: body,
+      bodyHtml: i === 1 ? `<h1>${subject}</h1><p>${body}</p>` : null,
+      receivedAt: `2026-09-${24 - i}T10:30:00Z`,
+      isRead: i > 1,
+      isNewSinceLastVisit: i === 0,
+      isDraft: folder === "drafts",
+      relatedGroupId: null,
+      attachments:
+        i === 2
+          ? [
+              {
+                id: `${account.id}-sample-ticket`,
+                filename: "ticket.pdf",
+                mimeType: "application/pdf",
+                sizeBytes: 2400,
+                downloadState: "notDownloaded",
+              },
+            ]
+          : [],
+    }),
+  );
+  for (const [i, sample] of designSamples.entries()) {
+    messages.push({
+      ...messages[0],
+      ...sample,
+      id: `${account.id}-design-${i}`,
+      from: { ...sample.from, name: sample.from.name || sample.from.address },
+      to: sample.to || [account.address],
+      cc: sample.cc || [],
+      preview: sample.bodyText.replace(/\n/g, " "),
+      receivedAt:
+        sample.receivedAt ||
+        `2026-09-23T${String(18 - i).padStart(2, "0")}:11:00Z`,
+      isRead: i % 3 === 0,
+      isNewSinceLastVisit: i === 2,
+      attachments:
+        i === 3
+          ? [
+              {
+                id: `${account.id}-design-attachment`,
+                filename: "ticket.pdf",
+                mimeType: "application/pdf",
+                sizeBytes: 2400,
+                downloadState: "notDownloaded",
+              },
+            ]
+          : [],
+    });
+  }
+  return {
+    ...state,
+    folders,
+    messages: [
+      ...state.messages,
+      ...messages.filter(
+        (m) => !state.messages.some((existing) => existing.id === m.id),
+      ),
+    ],
+  };
+}
+
+function upgradeDemoData(state: MailState): MailState {
+  if (state.demoDataVersion === 3) return state;
+  let next = { ...state, demoDataVersion: 3 };
+  if (!next.accounts.some((a) => a.id === communityAccount.id))
+    next = { ...next, accounts: [...next.accounts, communityAccount] };
+  for (const account of next.accounts)
+    next = { ...populateDemoMailbox(next, account), demoDataVersion: 3 };
+  return next;
+}
+
 export function initialState(): MailState {
   const names = [
     "Roc Thunderbird",
@@ -136,7 +321,7 @@ export function initialState(): MailState {
           parentId: null,
           role,
         });
-  return state;
+  return upgradeDemoData(state);
 }
 export function filterMessages(
   state: MailState,
@@ -230,7 +415,7 @@ export function readStored(): MailState {
       Array.isArray(parsed.folders) &&
       parsed.features
     )
-      return parsed;
+      return upgradeDemoData(parsed);
   } catch {
     /* Start safely if storage is unavailable or stale. */
   }

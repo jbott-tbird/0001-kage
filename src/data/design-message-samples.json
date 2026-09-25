@@ -1,0 +1,65 @@
+[
+  {
+    "from": {
+      "name": "Rochelle Thunderbird",
+      "address": "rochelle@example.net"
+    },
+    "subject": "Bird beach hangout plans: sun, snacks, and a very long afternoon by the water",
+    "bodyText": "Thinking we grab a quiet spot by the water, compare nest-building notes, and share some snacks.\n\nBring a blanket and your favorite beach book. Who can make Saturday?\n\nRochelle"
+  },
+  {
+    "from": {
+      "name": "Rhea Starfeather-Windwhisper Skylark Thunderbird",
+      "address": "rhea.skylark@example.net"
+    },
+    "subject": "Fwd: Message list edge-cases you might encounter with very long sender names and subject lines",
+    "bodyText": "Another test message with a sender that forces truncation in a narrow message list.\n\nThe full name and subject should remain available when you open the email.\n\nRhea"
+  },
+  {
+    "from": {
+      "name": "北空鳥観察研究会 森と湖の渡り鳥プロジェクト",
+      "address": "birds@example.net"
+    },
+    "subject": "早朝観察会参加案内 — 冬の渡り鳥を追いかける特別ツアー",
+    "bodyText": "いつも北空鳥観察研究会の活動にご参加いただきありがとうございます。\n\n今週末は湖の周辺で渡り鳥を観察します。午前六時に入口でお会いしましょう。\n\n双眼鏡と暖かい服をご用意ください。"
+  },
+  {
+    "from": { "name": "", "address": "roc@example.net" },
+    "subject": "",
+    "bodyText": "",
+    "cc": ["rhea@example.com", "rochelle@example.net", "skye@example.net"]
+  },
+  {
+    "from": { "name": "روك ثاندربيرد", "address": "roc.ar@example.net" },
+    "subject": "سير عمل بريد إلكتروني واحد عبر الهاتف والكمبيوتر",
+    "bodyText": "مرحباً،\n\nكنت أفكر في الطريقة التي أستخدم بها البريد الإلكتروني. أقرأ الرسائل على هاتفي وأكتب الردود الطويلة على الكمبيوتر.\n\nكيف يمكننا جعل هذه التجربة أبسط؟\n\nروك"
+  },
+  {
+    "from": {
+      "name": "ריאה ת׳נדרבירד — עיצוב מערכת, צוות חוויית משתמש",
+      "address": "rhea.he@example.net"
+    },
+    "subject": "סקירה אחרונה של עיצוב רשימת ההודעות בעברית",
+    "bodyText": "שלום לכולם,\n\nזהו מייל בדיקה שמטרתו לראות איך שדה השולח והנושא נראים בעברית.\n\nThe next review is on Friday at 10:00.\n\nתודה!"
+  },
+  {
+    "from": { "name": "😀 Roc Thunderbird", "address": "roc@example.net" },
+    "subject": "😀 Subject line — topic of interest and maybe it goes to two lines 😀",
+    "bodyText": "Rhea and friends,\n\nI sort my mail on the phone and write longer replies on my computer. It would be great to carry drafts, read states, and archive decisions between them.\n\nWhat would make your daily email routine easier? 🐦\n\nRoc"
+  },
+  {
+    "from": {
+      "name": "Thunderbird Design Updates via lists.example.net",
+      "address": "tb-design@lists.example.net"
+    },
+    "subject": "[tb-design] Weekly UX notes for mobile message lists",
+    "bodyText": "This week’s review covers sender names, missing subjects, attachment indicators, and larger text.\n\nPlease try the sample messages at a narrow width and with increased text size.\n\nSent via Community Updates",
+    "to": ["tb-design@lists.example.net"]
+  },
+  {
+    "from": { "name": "Rhea Th=F6rbird", "address": "archive@example.net" },
+    "subject": "One_email_workflow_across_iOS_and_desktop",
+    "bodyText": "Hi Roc,\n\nThis old message shows up with broken characters:\n\n- Th=F6rbird instead of Thörbird\n- =E2=80=99 instead of an apostrophe\n- Ã¼ber instead of über\n\nThese deliberately broken strings mirror the legacy encoding example in the designs.\n\nRhea",
+    "receivedAt": "2007-06-12T11:11:00Z"
+  }
+]

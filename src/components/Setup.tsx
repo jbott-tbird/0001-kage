@@ -15,7 +15,7 @@ import { Input } from "./ui/input";
 import { Switch } from "./ui/switch";
 import { IconButton } from "./shared";
 import { useMail } from "../store";
-import { initialState } from "../lib/mail";
+import { initialState, populateDemoMailbox } from "../lib/mail";
 export function Welcome() {
   const navigate = useNavigate();
   const { state, setState } = useMail();
@@ -122,39 +122,42 @@ export function Setup() {
     }
     const id = "account-" + crypto.randomUUID();
     setAccountId(id);
-    setState((s) => ({
-      ...s,
-      accounts: [
-        ...s.accounts,
-        {
-          id,
-          name: email.split("@")[0],
-          address: email,
-          protocol: "imap",
-          color: "purple",
-          incoming: host,
-          outgoing: outHost,
-          incomingPort: Number(port),
-          outgoingPort: Number(outPort),
-          security,
-          outgoingSecurity: outSecurity,
-          requireAuth: auth,
-        },
-      ],
-      folders: [
-        ...s.folders,
-        ...["inbox", "drafts", "sent", "archive", "trash", "spam"].map(
-          (role) => ({
-            id: `${id}-${role}`,
-            accountId: id,
-            name: role[0].toUpperCase() + role.slice(1),
-            parentId: null,
-            role,
-          }),
-        ),
-      ],
-      selectedFolder: id + "-inbox",
-    }));
+    setState((s) => {
+      const next = {
+        ...s,
+        accounts: [
+          ...s.accounts,
+          {
+            id,
+            name: email.split("@")[0],
+            address: email,
+            protocol: "imap" as const,
+            color: "purple",
+            incoming: host,
+            outgoing: outHost,
+            incomingPort: Number(port),
+            outgoingPort: Number(outPort),
+            security,
+            outgoingSecurity: outSecurity,
+            requireAuth: auth,
+          },
+        ],
+        folders: [
+          ...s.folders,
+          ...["inbox", "drafts", "sent", "archive", "trash", "spam"].map(
+            (role) => ({
+              id: `${id}-${role}`,
+              accountId: id,
+              name: role[0].toUpperCase() + role.slice(1),
+              parentId: null,
+              role,
+            }),
+          ),
+        ],
+        selectedFolder: id + "-inbox",
+      };
+      return populateDemoMailbox(next, next.accounts[next.accounts.length - 1]);
+    });
     setPassword("");
     next();
   }

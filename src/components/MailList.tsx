@@ -295,7 +295,7 @@ export function MailList() {
                   </time>
                 </span>
                 <span className="message-subject">
-                  <span>{message.subject || "(No subject)"}</span>
+                  <span dir="auto">{message.subject || "(No subject)"}</span>
                   {message.attachments.length > 0 && (
                     <Paperclip size={17} aria-label="Has attachment" />
                   )}

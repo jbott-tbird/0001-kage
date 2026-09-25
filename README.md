@@ -55,3 +55,16 @@ The Thunderbird logo and welcome wallpaper were copied from the existing iOS pro
 Folder and toolbar glyphs currently use Lucide. They are centralized in the shared components for replacement with Zeplin exports. The Zeplin project is `YOUR_DESIGN_PROJECT`; the requested Helium profile is **Thunderbird**. This session had no connected browser extension, and macOS denied native Zeplin inspection because osascript lacked assistive access. No Zeplin assets were downloaded.
 
 Build and interaction tests passed. Browser visual verification remains pending access through the requested Helium profile/extension.
+
+### Populated demo mailboxes
+
+The demo starts with Personal, Work, and Community accounts. Each includes Inbox,
+Drafts, Sent, Archive, Spam, and Trash, plus Travel, Upcoming trips, and Receipts.
+Work also retains its Projects / Design folders. Accounts added through setup are
+populated immediately. Existing saved demos receive the new samples once on reload;
+subsequent visits preserve message changes and deletions.
+
+`src/data/design-message-samples.json` contains examples based on the message-list
+and message-view variations in `designs`: long names and subjects, Japanese,
+Arabic, Hebrew, emoji, missing subjects and bodies, mailing lists, and deliberately
+broken legacy encoding. These are display fixtures, not a MIME decoder.

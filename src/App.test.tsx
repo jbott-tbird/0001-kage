@@ -2,7 +2,12 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { render, screen, within, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import App from "./App";
-import { initialState, filterMessages, moveMessage } from "./lib/mail";
+import {
+  initialState,
+  filterMessages,
+  moveMessage,
+  readStored,
+} from "./lib/mail";
 beforeEach(() => {
   localStorage.clear();
   window.location.hash = "#/";
@@ -25,9 +30,10 @@ describe("mail prototype journeys", () => {
     expect(screen.getByText("You’re all set.")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Finish" }));
     expect(screen.getByText("skye@example.net")).toBeInTheDocument();
+    expect(screen.getByText("Coffee this weekend?")).toBeInTheDocument();
     const saved = localStorage.getItem("kage-mail-v1")!;
     expect(saved).not.toContain("sample-password");
-    expect(JSON.parse(saved).accounts).toHaveLength(3);
+    expect(JSON.parse(saved).accounts).toHaveLength(4);
   });
   it("opens a message, marks it read, and preserves its independent new state", async () => {
     const user = start();
@@ -154,6 +160,42 @@ describe("mail prototype journeys", () => {
   });
 });
 describe("mail model", () => {
+  it("upgrades saved demos once and preserves message edits", () => {
+    const old = initialState();
+    delete old.demoDataVersion;
+    old.accounts = old.accounts.filter((a) => a.id !== "community");
+    old.folders = old.folders.filter((f) => f.accountId !== "community");
+    old.messages = old.messages.filter((m) => m.accountId !== "community");
+    old.messages[0].isRead = true;
+    localStorage.setItem("kage-mail-v1", JSON.stringify(old));
+    const upgraded = readStored();
+    expect(upgraded.accounts).toHaveLength(3);
+    expect(upgraded.messages[0].isRead).toBe(true);
+    for (const account of upgraded.accounts) {
+      const folders = upgraded.folders.filter(
+        (f) => f.accountId === account.id,
+      );
+      expect(folders.map((f) => f.role)).toEqual(
+        expect.arrayContaining([
+          "inbox",
+          "drafts",
+          "sent",
+          "archive",
+          "spam",
+          "trash",
+          "custom",
+        ]),
+      );
+      expect(
+        upgraded.messages.some((m) => m.folderId === `${account.id}-inbox`),
+      ).toBe(true);
+    }
+    upgraded.messages = upgraded.messages.filter(
+      (m) => m.id !== "community-design-0",
+    );
+    localStorage.setItem("kage-mail-v1", JSON.stringify(upgraded));
+    expect(readStored()).toEqual(upgraded);
+  });
   it("keeps archive actions within their original account", () => {
     const state = moveMessage(initialState(), "m04", "archive");
     expect(state.messages.find((m) => m.id === "m04")?.folderId).toBe(

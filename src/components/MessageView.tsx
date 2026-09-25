@@ -195,7 +195,7 @@ export function MessageView() {
           </div>
         </div>
         <div className="subject-heading">
-          <h1>{message.subject || "(No subject)"}</h1>
+          <h1 dir="auto">{message.subject || "(No subject)"}</h1>
           {message.attachments.length > 0 && <Paperclip size={21} />}
         </div>
       </header>
@@ -263,7 +263,7 @@ export function MessageView() {
       <article className="message-article">
         <header className="sender-header">
           <div>
-            <h2>{message.from.name}</h2>
+            <h2 dir="auto">{message.from.name}</h2>
             <button className="recipient-link" onClick={() => setDetails(true)}>
               To: {message.to[0]}
               {message.to.length + message.cc.length > 1

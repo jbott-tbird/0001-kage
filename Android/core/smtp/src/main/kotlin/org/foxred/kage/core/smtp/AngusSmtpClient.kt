@@ -22,7 +22,6 @@ class AngusSmtpClient(
     override fun send(server: Server, authorization: Authorization, email: OutgoingEmail) {
         require(server.protocol == ServerProtocol.SMTP)
         val operation = ConnectionControl()
-        control = operation
         val properties = connectionProperties(server, authorization, timeoutMillis)
         operation.install(properties, "smtp")
         val session = Session.getInstance(properties)
@@ -34,6 +33,7 @@ class AngusSmtpClient(
                 .toTypedArray()
         val transport = session.getTransport("smtp")
         var submitting = false
+        control = operation
         try {
             transport.connect(
                 server.hostname,

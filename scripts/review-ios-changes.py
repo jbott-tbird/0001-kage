@@ -2,11 +2,13 @@
 """Read-only upstream report for explicitly supplied local commits; never fetches or adopts."""
 import argparse
 import json
-import re
+import sys
 import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from swift_api_inventory import declarations
 
 
 def git(repository, *command):
@@ -16,12 +18,6 @@ def git(repository, *command):
 def source(repository, revision, path):
     return git(repository, 'show', f'{revision}:{path}')
 
-
-def declarations(text):
-    # These are review hints, not a Swift parser or a semantic compatibility claim.
-    return sorted(set(line.strip() for line in text.splitlines()
-                      if re.match(r'\s*(?:public|open)\s+', line)
-                      or re.match(r'\s*case\s+\w', line)))
 
 
 def report(repository, start, end, ledger):

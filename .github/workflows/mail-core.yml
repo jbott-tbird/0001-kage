@@ -25,3 +25,5 @@ jobs:
         run: ./gradlew -PmailCoreOnly=true :core:account:test :core:demo:test :core:mime:test :core:transport:test :core:integration:test --no-daemon
       - name: Test upstream review tooling
         run: python3 -m unittest discover -s scripts/tests -v
+      - name: Verify mail source traceability and fixture provenance
+        run: python3 scripts/verify_mail_parity.py

@@ -1,0 +1,547 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Fictional UI fixtures; not a production storage schema or mail service",
+  "clock": "2026-09-24T12:00:00Z",
+  "previousAppVisitAt": "2026-09-23T12:00:00Z",
+  "initialSelection": {
+    "accountId": "personal",
+    "folderId": "personal-inbox"
+  },
+  "policies": {
+    "attachmentDownload": "onDemand",
+    "newIndicator": "Sample values use receivedAt after previousAppVisitAt; clearing behavior and first-sync policy are proposed, not confirmed",
+    "relatedMessages": "Render individually in 1.0; group only in future scenarios"
+  },
+  "accounts": [
+    {
+      "id": "personal",
+      "name": "Personal",
+      "address": "alex@example.com",
+      "protocol": "imap",
+      "sendProtocol": "smtp",
+      "targetVersion": "1.0",
+      "status": "connected"
+    },
+    {
+      "id": "work",
+      "name": "Work",
+      "address": "alex@example.org",
+      "protocol": "imap",
+      "sendProtocol": "smtp",
+      "targetVersion": "1.0",
+      "status": "connected"
+    },
+    {
+      "id": "future",
+      "name": "Future JMAP",
+      "address": "alex@example.net",
+      "protocol": "jmap",
+      "targetVersion": "2.0",
+      "status": "connected"
+    }
+  ],
+  "folders": [
+    {
+      "id": "personal-inbox",
+      "accountId": "personal",
+      "name": "Inbox",
+      "parentId": null,
+      "role": "inbox",
+      "totalCount": 5,
+      "unreadCount": 3
+    },
+    {
+      "id": "personal-drafts",
+      "accountId": "personal",
+      "name": "Drafts",
+      "parentId": null,
+      "role": "drafts",
+      "totalCount": 1,
+      "unreadCount": 0
+    },
+    {
+      "id": "personal-sent",
+      "accountId": "personal",
+      "name": "Sent",
+      "parentId": null,
+      "role": "sent",
+      "totalCount": 0,
+      "unreadCount": 0
+    },
+    {
+      "id": "personal-archive",
+      "accountId": "personal",
+      "name": "Archive",
+      "parentId": null,
+      "role": "archive",
+      "totalCount": 0,
+      "unreadCount": 0
+    },
+    {
+      "id": "personal-spam",
+      "accountId": "personal",
+      "name": "Spam",
+      "parentId": null,
+      "role": "spam",
+      "totalCount": 0,
+      "unreadCount": 0
+    },
+    {
+      "id": "personal-trash",
+      "accountId": "personal",
+      "name": "Trash",
+      "parentId": null,
+      "role": "trash",
+      "totalCount": 0,
+      "unreadCount": 0
+    },
+    {
+      "id": "work-inbox",
+      "accountId": "work",
+      "name": "Inbox",
+      "parentId": null,
+      "role": "inbox",
+      "totalCount": 4,
+      "unreadCount": 1
+    },
+    {
+      "id": "work-projects",
+      "accountId": "work",
+      "name": "Projects",
+      "parentId": null,
+      "role": "custom",
+      "totalCount": 0,
+      "unreadCount": 0
+    },
+    {
+      "id": "work-design",
+      "accountId": "work",
+      "name": "Design",
+      "parentId": "work-projects",
+      "role": "custom",
+      "totalCount": 1,
+      "unreadCount": 1
+    },
+    {
+      "id": "work-sent",
+      "accountId": "work",
+      "name": "Sent",
+      "parentId": null,
+      "role": "sent",
+      "totalCount": 0,
+      "unreadCount": 0
+    },
+    {
+      "id": "future-inbox",
+      "accountId": "future",
+      "name": "Inbox",
+      "parentId": null,
+      "role": "inbox",
+      "totalCount": 1,
+      "unreadCount": 1
+    },
+    {
+      "id": "future-archive",
+      "accountId": "future",
+      "name": "Archive",
+      "parentId": null,
+      "role": "archive",
+      "totalCount": 0,
+      "unreadCount": 0
+    }
+  ],
+  "messages": [
+    {
+      "id": "m01",
+      "accountId": "personal",
+      "folderId": "personal-inbox",
+      "from": {
+        "name": "Jordan Lee",
+        "address": "jordan@example.com"
+      },
+      "to": ["alex@example.com"],
+      "cc": [],
+      "subject": "Weekend plans",
+      "preview": "Let’s meet at the park on Saturday.",
+      "bodyText": "Let’s meet at the park on Saturday.",
+      "bodyHtml": null,
+      "receivedAt": "2026-09-22T11:00:00Z",
+      "isRead": true,
+      "isNewSinceLastVisit": false,
+      "bodyDownloadState": "available",
+      "attachments": [],
+      "relatedGroupId": null,
+      "scenario": "plain text, old and read"
+    },
+    {
+      "id": "m02",
+      "accountId": "personal",
+      "folderId": "personal-inbox",
+      "from": {
+        "name": "Jordan Lee",
+        "address": "jordan@example.com"
+      },
+      "to": ["alex@example.com"],
+      "cc": [],
+      "subject": "Lighthouse itinerary",
+      "preview": "The train leaves at nine. Please confirm.",
+      "bodyText": "The train leaves at nine. Please confirm.",
+      "bodyHtml": null,
+      "receivedAt": "2026-09-22T11:00:00Z",
+      "isRead": false,
+      "isNewSinceLastVisit": false,
+      "bodyDownloadState": "available",
+      "attachments": [],
+      "relatedGroupId": null,
+      "scenario": "old and unread"
+    },
+    {
+      "id": "m03",
+      "accountId": "personal",
+      "folderId": "personal-inbox",
+      "from": {
+        "name": "Jordan Lee",
+        "address": "jordan@example.com"
+      },
+      "to": ["alex@example.com"],
+      "cc": [],
+      "subject": "Lighthouse booking confirmed",
+      "preview": "Your room is ready for the weekend.",
+      "bodyText": "Your room is ready for the weekend.",
+      "bodyHtml": null,
+      "receivedAt": "2026-09-24T11:00:00Z",
+      "isRead": false,
+      "isNewSinceLastVisit": true,
+      "bodyDownloadState": "available",
+      "attachments": [],
+      "relatedGroupId": null,
+      "scenario": "new and unread"
+    },
+    {
+      "id": "m04",
+      "accountId": "work",
+      "folderId": "work-inbox",
+      "from": {
+        "name": "Jordan Lee",
+        "address": "jordan@example.com"
+      },
+      "to": ["alex@example.org"],
+      "cc": ["sam@example.org", "morgan@example.org"],
+      "subject": "Lighthouse review",
+      "preview": "Already read on another device; still new this visit.",
+      "bodyText": "Already read on another device; still new this visit.",
+      "bodyHtml": null,
+      "receivedAt": "2026-09-24T11:00:00Z",
+      "isRead": true,
+      "isNewSinceLastVisit": true,
+      "bodyDownloadState": "available",
+      "attachments": [],
+      "relatedGroupId": null,
+      "scenario": "new but read"
+    },
+    {
+      "id": "m05",
+      "accountId": "future",
+      "folderId": "future-inbox",
+      "from": {
+        "name": "Jordan Lee",
+        "address": "jordan@example.com"
+      },
+      "to": ["alex@example.net"],
+      "cc": [],
+      "subject": "Monthly newsletter",
+      "preview": "A formatted newsletter for the future JMAP account.",
+      "bodyText": "A formatted newsletter for the future JMAP account.\nNewsletter section 1: sample content for scrolling and finding text.\nNewsletter section 2: sample content for scrolling and finding text.\nNewsletter section 3: sample content for scrolling and finding text.\nNewsletter section 4: sample content for scrolling and finding text.\nNewsletter section 5: sample content for scrolling and finding text.\nNewsletter section 6: sample content for scrolling and finding text.\nNewsletter section 7: sample content for scrolling and finding text.\nNewsletter section 8: sample content for scrolling and finding text.\nNewsletter section 9: sample content for scrolling and finding text.\nNewsletter section 10: sample content for scrolling and finding text.\nNewsletter section 11: sample content for scrolling and finding text.\nNewsletter section 12: sample content for scrolling and finding text.\nNewsletter section 13: sample content for scrolling and finding text.\nNewsletter section 14: sample content for scrolling and finding text.\nNewsletter section 15: sample content for scrolling and finding text.\nNewsletter section 16: sample content for scrolling and finding text.\nNewsletter section 17: sample content for scrolling and finding text.\nNewsletter section 18: sample content for scrolling and finding text.\nNewsletter section 19: sample content for scrolling and finding text.\nNewsletter section 20: sample content for scrolling and finding text.\nNewsletter section 21: sample content for scrolling and finding text.\nNewsletter section 22: sample content for scrolling and finding text.\nNewsletter section 23: sample content for scrolling and finding text.\nNewsletter section 24: sample content for scrolling and finding text.\nNewsletter section 25: sample content for scrolling and finding text.\nNewsletter section 26: sample content for scrolling and finding text.\nNewsletter section 27: sample content for scrolling and finding text.\nNewsletter section 28: sample content for scrolling and finding text.\nNewsletter section 29: sample content for scrolling and finding text.\nNewsletter section 30: sample content for scrolling and finding text.",
+      "bodyHtml": "<h1>Monthly news</h1><p>A formatted newsletter with a <a href=\"https://example.net\">link</a>.</p><p>Newsletter section 1: sample content for scrolling and finding text.</p><p>Newsletter section 2: sample content for scrolling and finding text.</p><p>Newsletter section 3: sample content for scrolling and finding text.</p><p>Newsletter section 4: sample content for scrolling and finding text.</p><p>Newsletter section 5: sample content for scrolling and finding text.</p><p>Newsletter section 6: sample content for scrolling and finding text.</p><p>Newsletter section 7: sample content for scrolling and finding text.</p><p>Newsletter section 8: sample content for scrolling and finding text.</p><p>Newsletter section 9: sample content for scrolling and finding text.</p><p>Newsletter section 10: sample content for scrolling and finding text.</p><p>Newsletter section 11: sample content for scrolling and finding text.</p><p>Newsletter section 12: sample content for scrolling and finding text.</p><p>Newsletter section 13: sample content for scrolling and finding text.</p><p>Newsletter section 14: sample content for scrolling and finding text.</p><p>Newsletter section 15: sample content for scrolling and finding text.</p><p>Newsletter section 16: sample content for scrolling and finding text.</p><p>Newsletter section 17: sample content for scrolling and finding text.</p><p>Newsletter section 18: sample content for scrolling and finding text.</p><p>Newsletter section 19: sample content for scrolling and finding text.</p><p>Newsletter section 20: sample content for scrolling and finding text.</p><p>Newsletter section 21: sample content for scrolling and finding text.</p><p>Newsletter section 22: sample content for scrolling and finding text.</p><p>Newsletter section 23: sample content for scrolling and finding text.</p><p>Newsletter section 24: sample content for scrolling and finding text.</p><p>Newsletter section 25: sample content for scrolling and finding text.</p><p>Newsletter section 26: sample content for scrolling and finding text.</p><p>Newsletter section 27: sample content for scrolling and finding text.</p><p>Newsletter section 28: sample content for scrolling and finding text.</p><p>Newsletter section 29: sample content for scrolling and finding text.</p><p>Newsletter section 30: sample content for scrolling and finding text.</p>",
+      "receivedAt": "2026-09-22T11:00:00Z",
+      "isRead": false,
+      "isNewSinceLastVisit": false,
+      "bodyDownloadState": "available",
+      "attachments": [],
+      "relatedGroupId": null,
+      "scenario": "HTML, future account"
+    },
+    {
+      "id": "m06",
+      "accountId": "personal",
+      "folderId": "personal-inbox",
+      "from": {
+        "name": "Jordan Lee",
+        "address": "jordan@example.com"
+      },
+      "to": ["alex@example.com"],
+      "cc": [],
+      "subject": "",
+      "preview": "This message has no subject.",
+      "bodyText": "This message has no subject.",
+      "bodyHtml": null,
+      "receivedAt": "2026-09-22T11:00:00Z",
+      "isRead": true,
+      "isNewSinceLastVisit": false,
+      "bodyDownloadState": "available",
+      "attachments": [],
+      "relatedGroupId": null,
+      "scenario": "missing subject"
+    },
+    {
+      "id": "m07",
+      "accountId": "work",
+      "folderId": "work-design",
+      "from": {
+        "name": "Jordan Lee",
+        "address": "jordan@example.com"
+      },
+      "to": ["alex@example.org"],
+      "cc": [],
+      "subject": "مرحبا — Design review",
+      "preview": "مرحبا، هذه رسالة تجريبية. こんにちは 👋",
+      "bodyText": "مرحبا، هذه رسالة تجريبية. こんにちは 👋",
+      "bodyHtml": null,
+      "receivedAt": "2026-09-22T11:00:00Z",
+      "isRead": false,
+      "isNewSinceLastVisit": false,
+      "bodyDownloadState": "available",
+      "attachments": [],
+      "relatedGroupId": null,
+      "scenario": "Unicode and right-to-left content"
+    },
+    {
+      "id": "m08",
+      "accountId": "personal",
+      "folderId": "personal-inbox",
+      "from": {
+        "name": "Jordan Lee",
+        "address": "jordan@example.com"
+      },
+      "to": ["alex@example.com"],
+      "cc": [],
+      "subject": "Travel tickets",
+      "preview": "Your ticket is attached. Open it to download.",
+      "bodyText": "Your ticket is attached. Open it to download.",
+      "bodyHtml": null,
+      "receivedAt": "2026-09-24T11:00:00Z",
+      "isRead": false,
+      "isNewSinceLastVisit": true,
+      "bodyDownloadState": "available",
+      "attachments": [
+        {
+          "id": "att-8",
+          "filename": "ticket.pdf",
+          "mimeType": "application/pdf",
+          "sizeBytes": 240000,
+          "downloadState": "notDownloaded",
+          "mockPayload": true
+        }
+      ],
+      "relatedGroupId": null,
+      "scenario": "attachment not downloaded"
+    },
+    {
+      "id": "m09",
+      "accountId": "work",
+      "folderId": "work-inbox",
+      "from": {
+        "name": "Jordan Lee",
+        "address": "jordan@example.com"
+      },
+      "to": ["alex@example.org"],
+      "cc": [],
+      "subject": "Updated floor plan",
+      "preview": "The downloaded diagram is available locally.",
+      "bodyText": "The downloaded diagram is available locally.",
+      "bodyHtml": null,
+      "receivedAt": "2026-09-22T11:00:00Z",
+      "isRead": true,
+      "isNewSinceLastVisit": false,
+      "bodyDownloadState": "available",
+      "attachments": [
+        {
+          "id": "att-9",
+          "filename": "floor-plan.png",
+          "mimeType": "image/png",
+          "sizeBytes": 1800000,
+          "downloadState": "available",
+          "mockPayload": true
+        }
+      ],
+      "relatedGroupId": null,
+      "scenario": "downloaded attachment"
+    },
+    {
+      "id": "m10",
+      "accountId": "personal",
+      "folderId": "personal-drafts",
+      "from": {
+        "name": "Alex",
+        "address": "alex@example.com"
+      },
+      "to": ["jordan@example.com"],
+      "cc": [],
+      "subject": "Draft: dinner invitation",
+      "preview": "Please join us next Friday.",
+      "bodyText": "Please join us next Friday.",
+      "bodyHtml": null,
+      "receivedAt": "2026-09-22T11:00:00Z",
+      "isRead": true,
+      "isNewSinceLastVisit": false,
+      "bodyDownloadState": "available",
+      "attachments": [],
+      "relatedGroupId": null,
+      "scenario": "editable draft",
+      "isDraft": true
+    },
+    {
+      "id": "m11",
+      "accountId": "work",
+      "folderId": "work-inbox",
+      "from": {
+        "name": "Jordan Lee",
+        "address": "jordan@example.com"
+      },
+      "to": ["alex@example.org"],
+      "cc": [],
+      "subject": "Launch checklist",
+      "preview": "Please review the launch checklist.",
+      "bodyText": "Please review the launch checklist.",
+      "bodyHtml": null,
+      "receivedAt": "2026-09-22T11:00:00Z",
+      "isRead": true,
+      "isNewSinceLastVisit": false,
+      "bodyDownloadState": "available",
+      "attachments": [],
+      "relatedGroupId": "launch",
+      "scenario": "related message, first"
+    },
+    {
+      "id": "m12",
+      "accountId": "work",
+      "folderId": "work-inbox",
+      "from": {
+        "name": "Jordan Lee",
+        "address": "jordan@example.com"
+      },
+      "to": ["alex@example.org"],
+      "cc": [],
+      "subject": "Re: Launch checklist",
+      "preview": "Reviewed. The launch checklist is ready.",
+      "bodyText": "Reviewed. The launch checklist is ready.",
+      "bodyHtml": null,
+      "receivedAt": "2026-09-24T11:00:00Z",
+      "isRead": false,
+      "isNewSinceLastVisit": true,
+      "bodyDownloadState": "available",
+      "attachments": [],
+      "relatedGroupId": "launch",
+      "scenario": "related message, reply"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "first-launch",
+      "screen": "landing",
+      "accountIds": []
+    },
+    {
+      "id": "setup-confirmed",
+      "screen": "confirmation",
+      "accountId": "personal",
+      "connectionState": "success"
+    },
+    {
+      "id": "bad-password",
+      "screen": "setup",
+      "accountId": "personal",
+      "connectionState": "authenticationFailed"
+    },
+    {
+      "id": "bad-server",
+      "screen": "serverSettings",
+      "accountId": "personal",
+      "connectionState": "unreachable"
+    },
+    {
+      "id": "current-inbox",
+      "screen": "messageList",
+      "folderId": "personal-inbox"
+    },
+    {
+      "id": "restored-folder",
+      "screen": "messageList",
+      "folderId": "work-design"
+    },
+    {
+      "id": "empty-folder",
+      "screen": "messageList",
+      "folderId": "personal-trash"
+    },
+    {
+      "id": "loading",
+      "screen": "messageList",
+      "folderId": "personal-inbox",
+      "syncState": "loading"
+    },
+    {
+      "id": "offline",
+      "screen": "messageList",
+      "folderId": "personal-inbox",
+      "syncState": "offline"
+    },
+    {
+      "id": "sync-error",
+      "screen": "messageList",
+      "folderId": "work-inbox",
+      "syncState": "failed"
+    },
+    {
+      "id": "reauthenticate",
+      "screen": "accountSettings",
+      "accountId": "work",
+      "authState": "expired"
+    },
+    {
+      "id": "search-all",
+      "screen": "search",
+      "scope": "allAccounts",
+      "query": "Lighthouse",
+      "expectedMessageIds": ["m02", "m03", "m04"]
+    },
+    {
+      "id": "search-account",
+      "screen": "search",
+      "scope": "account",
+      "accountId": "work",
+      "query": "Lighthouse",
+      "expectedMessageIds": ["m04"]
+    },
+    {
+      "id": "find-in-message",
+      "screen": "messageView",
+      "messageId": "m05",
+      "query": "Newsletter section"
+    },
+    {
+      "id": "attachment-progress",
+      "screen": "messageView",
+      "messageId": "m08",
+      "attachmentStateOverride": "downloading"
+    },
+    {
+      "id": "attachment-error",
+      "screen": "messageView",
+      "messageId": "m08",
+      "attachmentStateOverride": "failed"
+    },
+    {
+      "id": "send-error",
+      "screen": "compose",
+      "messageId": "m10",
+      "sendState": "failed"
+    },
+    {
+      "id": "future-conversation",
+      "screen": "messageView",
+      "messageIds": ["m11", "m12"],
+      "targetVersion": "after 1.0, before 2.0"
+    }
+  ]
+}

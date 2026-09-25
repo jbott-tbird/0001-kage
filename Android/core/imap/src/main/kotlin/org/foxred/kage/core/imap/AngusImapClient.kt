@@ -289,8 +289,9 @@ class AngusImapClient(
         // Never emulate MOVE with unrestricted EXPUNGE of another client's deleted messages.
         if (!supports("MOVE"))
             throw MailFailure(FailureKind.PROTOCOL, "Server does not support safe MOVE")
+        val destination = connected().getFolder(targetMailbox)
         folder(identity.mailbox, true) { f ->
-            f.moveMessages(arrayOf(identified(f, identity)), connected().getFolder(targetMailbox))
+            f.moveMessages(arrayOf(identified(f, identity)), destination)
         }
     }
 

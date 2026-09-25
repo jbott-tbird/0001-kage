@@ -5,7 +5,7 @@
   "lastFullyAdoptedRevision": null,
   "reviewTrigger": "Explicit request from the maintainer; never automatically fetch or pull",
   "dependencyManifestSha256": "b0b58f4c0d97d5275da9d54771c22f3528bdceda163b79c99cb65767ecbaed8a",
-  "dependencyLock": "No tracked Package.resolved found; upstream manifest uses moving branches. Dependency revision capture remains unresolved.",
+  "dependencyLock": "Captured ignored local workspace Package.resolved; not tracked by upstream Git. Provenance is this local checkout, not proof of a historical CI dependency graph.",
   "modules": [
     {
       "iosModule": "Account",
@@ -1795,17 +1795,21 @@
         "unsupported MOVE rejected before mutation",
         "reconnect after cancellation",
         "Android TLS socket login/list/status",
-        "original raw MIME streaming: byte identity, bounded size, unread preservation"
+        "original raw MIME streaming: byte identity, bounded size, unread preservation",
+        "active IDLE cancellation releases session lock",
+        "LIST/CREATE/RENAME/DELETE/EXAMINE/NOOP/APPEND rejection and continued session use",
+        "STORE read/flag and MOVE rejection",
+        "Unicode mailbox list/append/rename/delete"
       ],
       "untestedOrIncomplete": [
-        "full malformed response and literal matrix acceptance",
-        "COPY/delete fallback intentionally not implemented; parity acceptance pending",
-        "complete public-symbol audit"
+        "server-specific Gmail identifiers and ACL population tracked as pending field adoption",
+        "full repository reconciliation/outbox behavior belongs to M2/M3"
       ],
       "differences": [
         "Each call scopes SELECT/EXAMINE and closes without expunge; no public mutable selected mailbox",
         "UID pagination avoids volatile sequence number identity",
-        "MOVE requires server capability and fails before mutation otherwise; no global EXPUNGE fallback"
+        "MOVE requires server capability and fails before mutation otherwise; no global EXPUNGE fallback",
+        "No COPY/delete move emulation: unsupported MOVE rejects before mutation. This avoids partial-copy ambiguity and unrestricted expunge; native MOVE remains supported and tested. iOS baseline exposes no public MOVE method."
       ]
     },
     {
@@ -2594,61 +2598,73 @@
       "iosPath": "Core/Sources/Account/AccountManager.swift",
       "iosDeclaration": "public func account(for id: UUID) -> Account? {",
       "androidTarget": null,
-      "task": "T06",
+      "task": "T31",
       "status": "pending_port",
       "implemented": false,
       "uiWired": false,
-      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed",
+      "tests": [],
+      "tested": false
     },
     {
       "iosPath": "Core/Sources/Account/AccountManager.swift",
       "iosDeclaration": "public func set(_ account: Account, at index: Int? = nil) {",
       "androidTarget": null,
-      "task": "T06",
+      "task": "T31",
       "status": "pending_port",
       "implemented": false,
       "uiWired": false,
-      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed",
+      "tests": [],
+      "tested": false
     },
     {
       "iosPath": "Core/Sources/Account/AccountManager.swift",
       "iosDeclaration": "public func hasLoggedInAccount() -> Bool {",
       "androidTarget": null,
-      "task": "T06",
+      "task": "T08",
       "status": "pending_port",
       "implemented": false,
       "uiWired": false,
-      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed",
+      "tests": [],
+      "tested": false
     },
     {
       "iosPath": "Core/Sources/Account/AccountManager.swift",
       "iosDeclaration": "public func delete(_ account: Account) {",
       "androidTarget": null,
-      "task": "T06",
+      "task": "T31",
       "status": "pending_port",
       "implemented": false,
       "uiWired": false,
-      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed",
+      "tests": [],
+      "tested": false
     },
     {
       "iosPath": "Core/Sources/Account/AccountManager.swift",
       "iosDeclaration": "public func deleteAccounts() {",
       "androidTarget": null,
-      "task": "T06",
+      "task": "T31",
       "status": "pending_port",
       "implemented": false,
       "uiWired": false,
-      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed",
+      "tests": [],
+      "tested": false
     },
     {
       "iosPath": "Core/Sources/Account/AccountManager.swift",
       "iosDeclaration": "public func checkAndRenewExpirations() async {",
       "androidTarget": null,
-      "task": "T06",
+      "task": "T24",
       "status": "pending_port",
       "implemented": false,
       "uiWired": false,
-      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed",
+      "tests": [],
+      "tested": false
     },
     {
       "iosPath": "Core/Sources/Account/EmailManager.swift",
@@ -2658,7 +2674,9 @@
       "status": "pending_port",
       "implemented": false,
       "uiWired": false,
-      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed",
+      "tests": [],
+      "tested": false
     },
     {
       "iosPath": "Core/Sources/Account/FolderManager.swift",
@@ -2668,7 +2686,9 @@
       "status": "pending_port",
       "implemented": false,
       "uiWired": false,
-      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed",
+      "tests": [],
+      "tested": false
     },
     {
       "iosPath": "Core/Sources/Account/FolderManager.swift",
@@ -2678,7 +2698,9 @@
       "status": "pending_port",
       "implemented": false,
       "uiWired": false,
-      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed",
+      "tests": [],
+      "tested": false
     },
     {
       "iosPath": "Core/Sources/Account/FolderManager.swift",
@@ -2688,7 +2710,9 @@
       "status": "pending_port",
       "implemented": false,
       "uiWired": false,
-      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed",
+      "tests": [],
+      "tested": false
     },
     {
       "iosPath": "Core/Sources/Account/FolderManager.swift",
@@ -2698,7 +2722,9 @@
       "status": "pending_port",
       "implemented": false,
       "uiWired": false,
-      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed",
+      "tests": [],
+      "tested": false
     },
     {
       "iosPath": "Core/Sources/Account/MailboxManager.swift",
@@ -2708,7 +2734,9 @@
       "status": "pending_port",
       "implemented": false,
       "uiWired": false,
-      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed",
+      "tests": [],
+      "tested": false
     },
     {
       "iosPath": "Core/Sources/Account/MailboxManager.swift",
@@ -2718,7 +2746,9 @@
       "status": "pending_port",
       "implemented": false,
       "uiWired": false,
-      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed",
+      "tests": [],
+      "tested": false
     },
     {
       "iosPath": "Core/Sources/Account/MailboxManager.swift",
@@ -2728,7 +2758,9 @@
       "status": "pending_port",
       "implemented": false,
       "uiWired": false,
-      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed",
+      "tests": [],
+      "tested": false
     },
     {
       "iosPath": "Core/Sources/Account/MailboxManager.swift",
@@ -2738,7 +2770,9 @@
       "status": "pending_port",
       "implemented": false,
       "uiWired": false,
-      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed",
+      "tests": [],
+      "tested": false
     },
     {
       "iosPath": "Core/Sources/Account/MailboxManager.swift",
@@ -2748,7 +2782,9 @@
       "status": "pending_port",
       "implemented": false,
       "uiWired": false,
-      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed",
+      "tests": [],
+      "tested": false
     },
     {
       "iosPath": "Core/Sources/Account/MailboxManager.swift",
@@ -2758,7 +2794,9 @@
       "status": "pending_port",
       "implemented": false,
       "uiWired": false,
-      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed",
+      "tests": [],
+      "tested": false
     },
     {
       "iosPath": "Core/Sources/Account/MailboxManager.swift",
@@ -2768,7 +2806,9 @@
       "status": "pending_port",
       "implemented": false,
       "uiWired": false,
-      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed",
+      "tests": [],
+      "tested": false
     },
     {
       "iosPath": "Core/Sources/Account/MailboxManager.swift",
@@ -2778,7 +2818,9 @@
       "status": "pending_port",
       "implemented": false,
       "uiWired": false,
-      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed",
+      "tests": [],
+      "tested": false
     },
     {
       "iosPath": "Core/Sources/Account/MailboxManager.swift",
@@ -2788,7 +2830,9 @@
       "status": "pending_port",
       "implemented": false,
       "uiWired": false,
-      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed"
+      "difference": "Manager responsibility moves to repository/use case and Room Flow; UI remains demo-backed",
+      "tests": [],
+      "tested": false
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -2798,7 +2842,11 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "Boolean capability check; operation methods reject unsupported requirements"
+      "difference": "Boolean capability check; operation methods reject unsupported requirements",
+      "tests": [
+        "IdleIntegrationTest.missingMoveCapabilityNeverChangesMailbox"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -2808,7 +2856,13 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "Connect and authenticate together; no unauthenticated session exposed"
+      "difference": "Connect and authenticate together; no unauthenticated session exposed",
+      "tests": [
+        "MailProtocolIntegrationTest.tlsSubmissionAndUidReadingRoundTrip",
+        "MailProtocolIntegrationTest.wrongPasswordHasTypedAuthenticationFailure",
+        "CancellationTest.cancellingImapInterruptsBlockedGreeting"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -2818,7 +2872,11 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "Close cancels sockets; no guarantee of graceful LOGOUT after interruption"
+      "difference": "Close cancels sockets; no guarantee of graceful LOGOUT after interruption",
+      "tests": [
+        "MailProtocolIntegrationTest.movePreservesUnrelatedMessagesAndCanReconnectAfterCancellation"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -2828,7 +2886,11 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "Authentication is part of connection; credentials remain separate from account model"
+      "difference": "Authentication is part of connection; credentials remain separate from account model",
+      "tests": [
+        "MailProtocolIntegrationTest.wrongPasswordHasTypedAuthenticationFailure"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -2838,7 +2900,11 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "Authentication is part of connection; credentials remain separate from account model"
+      "difference": "Authentication is part of connection; credentials remain separate from account model",
+      "tests": [
+        "MailProtocolIntegrationTest.wrongPasswordHasTypedAuthenticationFailure"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -2848,7 +2914,11 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "Close owns session lifetime rather than exposing an authenticated-but-open session"
+      "difference": "Close owns session lifetime rather than exposing an authenticated-but-open session",
+      "tests": [
+        "IdleIntegrationTest.idleCancellationClosesSocketAndReleasesSessionLock"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -2858,7 +2928,11 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "Personal and shared namespaces"
+      "difference": "Personal and shared namespaces",
+      "tests": [
+        "MailProtocolIntegrationTest.folderLifecycleAndAppendUseTheSameCoreContracts"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -2868,7 +2942,12 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "One change wake-up then caller refreshes; no public event stream yet"
+      "difference": "One change wake-up then caller refreshes; no public event stream yet",
+      "tests": [
+        "IdleIntegrationTest.fragmentedResponsesAndIdleChangeCompleteWithoutLosingSession",
+        "IdleIntegrationTest.idleCancellationClosesSocketAndReleasesSessionLock"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -2878,7 +2957,11 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "Interrupt closes connection; caller reconnects rather than reusing cancelled session"
+      "difference": "Interrupt closes connection; caller reconnects rather than reusing cancelled session",
+      "tests": [
+        "IdleIntegrationTest.idleCancellationClosesSocketAndReleasesSessionLock"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -2888,7 +2971,12 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "Return mailbox status; expunge details reconciled by repository later"
+      "difference": "Return mailbox status; expunge details reconciled by repository later",
+      "tests": [
+        "IdleIntegrationTest.unavailableIdleHasExplicitPollingFallback",
+        "IdleIntegrationTest.rejectedMailboxCommandsRemainTypedAndLeaveConnectionUsable"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -2898,7 +2986,12 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "Full wildcard list; filtered wildcard API not exposed"
+      "difference": "Full wildcard list; filtered wildcard API not exposed",
+      "tests": [
+        "MailProtocolIntegrationTest.unicodeMailboxNamesRoundTripThroughListAppendAndRename",
+        "IdleIntegrationTest.rejectedMailboxCommandsRemainTypedAndLeaveConnectionUsable"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -2908,7 +3001,12 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "Selection scoped to each operation and serialized"
+      "difference": "Selection scoped to each operation and serialized",
+      "tests": [
+        "MailProtocolIntegrationTest.folderLifecycleAndAppendUseTheSameCoreContracts",
+        "IdleIntegrationTest.rejectedMailboxCommandsRemainTypedAndLeaveConnectionUsable"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -2918,7 +3016,12 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "Read operations use EXAMINE and close without expunging"
+      "difference": "Read operations use EXAMINE and close without expunging",
+      "tests": [
+        "MailProtocolIntegrationTest.folderLifecycleAndAppendUseTheSameCoreContracts",
+        "IdleIntegrationTest.rejectedMailboxCommandsRemainTypedAndLeaveConnectionUsable"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -2928,7 +3031,12 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "Returns UIDVALIDITY/UIDNEXT/counts"
+      "difference": "Returns UIDVALIDITY/UIDNEXT/counts",
+      "tests": [
+        "MailProtocolIntegrationTest.folderLifecycleAndAppendUseTheSameCoreContracts",
+        "IdleIntegrationTest.rejectedMailboxCommandsRemainTypedAndLeaveConnectionUsable"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -2938,7 +3046,9 @@
       "status": "pending_port",
       "implemented": false,
       "uiWired": false,
-      "difference": "Unrestricted expunge deliberately excluded to protect other clients deleted messages"
+      "difference": "Unrestricted expunge deliberately excluded to protect other clients deleted messages",
+      "tests": [],
+      "tested": false
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -2948,7 +3058,12 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "Folder cleanup is automatic"
+      "difference": "Folder cleanup is automatic",
+      "tests": [
+        "MailProtocolIntegrationTest.folderLifecycleAndAppendUseTheSameCoreContracts",
+        "IdleIntegrationTest.rejectedMailboxCommandsRemainTypedAndLeaveConnectionUsable"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -2958,7 +3073,12 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "Create message-holding mailbox"
+      "difference": "Create message-holding mailbox",
+      "tests": [
+        "MailProtocolIntegrationTest.folderLifecycleAndAppendUseTheSameCoreContracts",
+        "IdleIntegrationTest.rejectedMailboxCommandsRemainTypedAndLeaveConnectionUsable"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -2968,7 +3088,12 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "Server action only; local remapping belongs to repository"
+      "difference": "Server action only; local remapping belongs to repository",
+      "tests": [
+        "MailProtocolIntegrationTest.folderLifecycleAndAppendUseTheSameCoreContracts",
+        "IdleIntegrationTest.rejectedMailboxCommandsRemainTypedAndLeaveConnectionUsable"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -2978,7 +3103,12 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "Non-recursive deletion"
+      "difference": "Non-recursive deletion",
+      "tests": [
+        "MailProtocolIntegrationTest.folderLifecycleAndAppendUseTheSameCoreContracts",
+        "IdleIntegrationTest.rejectedMailboxCommandsRemainTypedAndLeaveConnectionUsable"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -2988,7 +3118,12 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "True subscribes; server rejection now propagated"
+      "difference": "True subscribes; server rejection now propagated",
+      "tests": [
+        "MailProtocolIntegrationTest.folderLifecycleAndAppendUseTheSameCoreContracts",
+        "IdleIntegrationTest.commandRejectionIsProtocolFailureAndSessionRemainsUsable"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -2998,7 +3133,12 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "False unsubscribes; server rejection now propagated"
+      "difference": "False unsubscribes; server rejection now propagated",
+      "tests": [
+        "MailProtocolIntegrationTest.folderLifecycleAndAppendUseTheSameCoreContracts",
+        "IdleIntegrationTest.commandRejectionIsProtocolFailureAndSessionRemainsUsable"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -3008,7 +3148,12 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "iOS CLOSE selected mailbox replaced by automatic non-expunging close"
+      "difference": "iOS CLOSE selected mailbox replaced by automatic non-expunging close",
+      "tests": [
+        "MailProtocolIntegrationTest.folderLifecycleAndAppendUseTheSameCoreContracts",
+        "IdleIntegrationTest.rejectedMailboxCommandsRemainTypedAndLeaveConnectionUsable"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -3018,7 +3163,13 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "UID identity and bounded windows replace volatile sequence-number APIs"
+      "difference": "UID identity and bounded windows replace volatile sequence-number APIs",
+      "tests": [
+        "MailProtocolIntegrationTest.uidPagesContinueWithoutDuplicatesAndIgnoreLaterArrivals",
+        "MailProtocolIntegrationTest.messageBodyDoesNotConsumeLargeAttachmentsAndDownloadIsBounded",
+        "MailProtocolIntegrationTest.rawMessageStreamPreservesMimeAndDoesNotMarkRead"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -3028,7 +3179,13 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "UID identity and bounded windows replace volatile sequence-number APIs"
+      "difference": "UID identity and bounded windows replace volatile sequence-number APIs",
+      "tests": [
+        "MailProtocolIntegrationTest.uidPagesContinueWithoutDuplicatesAndIgnoreLaterArrivals",
+        "MailProtocolIntegrationTest.messageBodyDoesNotConsumeLargeAttachmentsAndDownloadIsBounded",
+        "MailProtocolIntegrationTest.rawMessageStreamPreservesMimeAndDoesNotMarkRead"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -3038,7 +3195,13 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "UID identity and bounded windows replace volatile sequence-number APIs"
+      "difference": "UID identity and bounded windows replace volatile sequence-number APIs",
+      "tests": [
+        "MailProtocolIntegrationTest.uidPagesContinueWithoutDuplicatesAndIgnoreLaterArrivals",
+        "MailProtocolIntegrationTest.messageBodyDoesNotConsumeLargeAttachmentsAndDownloadIsBounded",
+        "MailProtocolIntegrationTest.rawMessageStreamPreservesMimeAndDoesNotMarkRead"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
@@ -3048,7 +3211,13 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "UID identity and bounded windows replace volatile sequence-number APIs"
+      "difference": "UID identity and bounded windows replace volatile sequence-number APIs",
+      "tests": [
+        "MailProtocolIntegrationTest.uidPagesContinueWithoutDuplicatesAndIgnoreLaterArrivals",
+        "MailProtocolIntegrationTest.messageBodyDoesNotConsumeLargeAttachmentsAndDownloadIsBounded",
+        "MailProtocolIntegrationTest.rawMessageStreamPreservesMimeAndDoesNotMarkRead"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/SMTP/SMTPClient.swift",
@@ -3058,7 +3227,14 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "One envelope per send; batch caller owns partial completion and must not retry ambiguous delivery"
+      "difference": "One envelope per send; batch caller owns partial completion and must not retry ambiguous delivery",
+      "tests": [
+        "MailProtocolIntegrationTest.tlsSubmissionAndUidReadingRoundTrip",
+        "StartTlsSubmissionTest",
+        "CancellationTest",
+        "MailSocketRuntimeTest"
+      ],
+      "tested": true
     },
     {
       "iosPath": "Core/Sources/SMTP/SMTPClient.swift",
@@ -3068,7 +3244,116 @@
       "status": "pending_port",
       "implemented": true,
       "uiWired": false,
-      "difference": "One envelope per send; batch caller owns partial completion and must not retry ambiguous delivery"
+      "difference": "One envelope per send; batch caller owns partial completion and must not retry ambiguous delivery",
+      "tests": [
+        "MailProtocolIntegrationTest.tlsSubmissionAndUidReadingRoundTrip",
+        "StartTlsSubmissionTest",
+        "CancellationTest",
+        "MailSocketRuntimeTest"
+      ],
+      "tested": true
+    },
+    {
+      "iosPath": "Core/Sources/Account/AccountManager.swift",
+      "iosDeclaration": "public init() {",
+      "declarationIndex": 10,
+      "kind": "constructor",
+      "androidTarget": null,
+      "task": "T31",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "tested": false,
+      "tests": [],
+      "difference": "Manager lifecycle becomes repository/use-case lifecycle during database and UI integration"
+    },
+    {
+      "iosPath": "Core/Sources/Account/EmailManager.swift",
+      "iosDeclaration": "public init(_ email: Email?, account: Account) {",
+      "declarationIndex": 4,
+      "kind": "constructor",
+      "androidTarget": null,
+      "task": "T31",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "tested": false,
+      "tests": [],
+      "difference": "Manager lifecycle becomes repository/use-case lifecycle during database and UI integration"
+    },
+    {
+      "iosPath": "Core/Sources/Account/FolderManager.swift",
+      "iosDeclaration": "public init(account: Account) {",
+      "declarationIndex": 3,
+      "kind": "constructor",
+      "androidTarget": null,
+      "task": "T31",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "tested": false,
+      "tests": [],
+      "difference": "Manager lifecycle becomes repository/use-case lifecycle during database and UI integration"
+    },
+    {
+      "iosPath": "Core/Sources/Account/MailboxManager.swift",
+      "iosDeclaration": "public init(account: Account) {",
+      "declarationIndex": 5,
+      "kind": "constructor",
+      "androidTarget": null,
+      "task": "T31",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "tested": false,
+      "tests": [],
+      "difference": "Manager lifecycle becomes repository/use-case lifecycle during database and UI integration"
+    },
+    {
+      "iosPath": "Core/Sources/Account/UnifiedMailboxManager.swift",
+      "iosDeclaration": "public init() {}",
+      "declarationIndex": 2,
+      "kind": "constructor",
+      "androidTarget": null,
+      "task": "T31",
+      "status": "pending_port",
+      "implemented": false,
+      "uiWired": false,
+      "tested": false,
+      "tests": [],
+      "difference": "Manager lifecycle becomes repository/use-case lifecycle during database and UI integration"
+    },
+    {
+      "iosPath": "Core/Sources/IMAP/IMAPClient.swift",
+      "iosDeclaration": "public init(",
+      "declarationIndex": 31,
+      "kind": "constructor",
+      "androidTarget": "AngusImapClient constructor + connect(Server, Authorization)",
+      "task": "T05",
+      "status": "intentionally_different",
+      "implemented": true,
+      "uiWired": false,
+      "tested": true,
+      "tests": [
+        "MailProtocolIntegrationTest.tlsSubmissionAndUidReadingRoundTrip"
+      ],
+      "difference": "Server settings and runtime authorization are passed through the narrow core boundary"
+    },
+    {
+      "iosPath": "Core/Sources/SMTP/SMTPClient.swift",
+      "iosDeclaration": "public init(",
+      "declarationIndex": 2,
+      "kind": "constructor",
+      "androidTarget": "AngusSmtpClient constructor + send(Server, Authorization, OutgoingEmail)",
+      "task": "T05",
+      "status": "intentionally_different",
+      "implemented": true,
+      "uiWired": false,
+      "tested": true,
+      "tests": [
+        "MailProtocolIntegrationTest.tlsSubmissionAndUidReadingRoundTrip"
+      ],
+      "difference": "Server settings and runtime authorization are passed through the narrow core boundary"
     }
   ],
   "engineDecision": {
@@ -3097,5 +3382,174 @@
       "Demo submission serializes to an explicit local sink; it cannot route real email"
     ],
     "uiWired": false
+  },
+  "resolvedDependencies": {
+    "path": "Thunderbird.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+    "sha256": "c598c2fbbba8bd0791216c89d4b2b190c78855b27e9ec8d9d7df2d3adcdc3ec4",
+    "tracked": false,
+    "sourceRevisionAtCapture": "5322c9dda2bbec1eb68ce59828346d95b34a3f8b",
+    "pins": [
+      {
+        "identity": "swift-algorithms",
+        "state": {
+          "revision": "87e50f483c54e6efd60e885f7f5aa946cee68023",
+          "version": "1.2.1"
+        }
+      },
+      {
+        "identity": "swift-argument-parser",
+        "state": {
+          "branch": "main",
+          "revision": "04695ec5448962bcd5e4616ed184b8a2168751e7"
+        }
+      },
+      {
+        "identity": "swift-asn1",
+        "state": {
+          "revision": "810496cf121e525d660cd0ea89a758740476b85f",
+          "version": "1.5.1"
+        }
+      },
+      {
+        "identity": "swift-async-algorithms",
+        "state": {
+          "revision": "2971dd5d9f6e0515664b01044826bcea16e59fac",
+          "version": "1.1.2"
+        }
+      },
+      {
+        "identity": "swift-async-dns-resolver",
+        "state": {
+          "branch": "main",
+          "revision": "f7b569b2583b13ad9946ec4613c4d6f226c82f9d"
+        }
+      },
+      {
+        "identity": "swift-atomics",
+        "state": {
+          "revision": "b601256eab081c0f92f059e12818ac1d4f178ff7",
+          "version": "1.3.0"
+        }
+      },
+      {
+        "identity": "swift-certificates",
+        "state": {
+          "revision": "24ccdeeeed4dfaae7955fcac9dbf5489ed4f1a25",
+          "version": "1.18.0"
+        }
+      },
+      {
+        "identity": "swift-collections",
+        "state": {
+          "revision": "7b847a3b7008b2dc2f47ca3110d8c782fb2e5c7e",
+          "version": "1.3.0"
+        }
+      },
+      {
+        "identity": "swift-crypto",
+        "state": {
+          "revision": "6f70fa9eab24c1fd982af18c281c4525d05e3095",
+          "version": "4.2.0"
+        }
+      },
+      {
+        "identity": "swift-http-structured-headers",
+        "state": {
+          "revision": "76d7627bd88b47bf5a0f8497dd244885960dde0b",
+          "version": "1.6.0"
+        }
+      },
+      {
+        "identity": "swift-http-types",
+        "state": {
+          "revision": "45eb0224913ea070ec4fba17291b9e7ecf4749ca",
+          "version": "1.5.1"
+        }
+      },
+      {
+        "identity": "swift-log",
+        "state": {
+          "revision": "bbd81b6725ae874c69e9b8c8804d462356b55523",
+          "version": "1.10.1"
+        }
+      },
+      {
+        "identity": "swift-nio",
+        "state": {
+          "branch": "main",
+          "revision": "e932d3c4d8f77433c8f7093b5ebcbf91463948a0"
+        }
+      },
+      {
+        "identity": "swift-nio-extras",
+        "state": {
+          "branch": "main",
+          "revision": "3df009d563dc9f21a5c85b33d8c2e34d2e4f8c3b"
+        }
+      },
+      {
+        "identity": "swift-nio-http2",
+        "state": {
+          "revision": "b6571f3db40799df5a7fc0e92c399aa71c883edd",
+          "version": "1.40.0"
+        }
+      },
+      {
+        "identity": "swift-nio-imap",
+        "state": {
+          "branch": "main",
+          "revision": "0a471f59b2632d04a5f4274e3b94db0d2fc7c839"
+        }
+      },
+      {
+        "identity": "swift-nio-ssl",
+        "state": {
+          "branch": "main",
+          "revision": "8c179eebffe2d463ae2fe6464a3a5d9d53d9ed7b"
+        }
+      },
+      {
+        "identity": "swift-nio-transport-services",
+        "state": {
+          "branch": "main",
+          "revision": "60c3e187154421171721c1a38e800b390680fb5d"
+        }
+      },
+      {
+        "identity": "swift-numerics",
+        "state": {
+          "revision": "0c0290ff6b24942dadb83a929ffaaa1481df04a2",
+          "version": "1.1.1"
+        }
+      },
+      {
+        "identity": "swift-rich-html-editor",
+        "state": {
+          "branch": "main",
+          "revision": "1cfafb30e498a22cec906fb37abc16777bf52257"
+        }
+      },
+      {
+        "identity": "swift-se0270-range-set",
+        "state": {
+          "revision": "7d6d7531d40e95f4e1e26f6565265be6df228911",
+          "version": "1.0.1"
+        }
+      },
+      {
+        "identity": "swift-service-lifecycle",
+        "state": {
+          "revision": "1de37290c0ab3c5a96028e0f02911b672fd42348",
+          "version": "2.9.1"
+        }
+      },
+      {
+        "identity": "swift-system",
+        "state": {
+          "revision": "7c6ad0fc39d0763e0b699210e4124afd5041c5df",
+          "version": "1.6.4"
+        }
+      }
+    ]
   }
 }

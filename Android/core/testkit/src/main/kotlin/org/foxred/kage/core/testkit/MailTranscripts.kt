@@ -84,10 +84,16 @@ class SmtpTranscript(
 }
 
 /** Small strict IMAP transcript for greeting/authentication, folder state and IDLE. */
-class ImapTranscript(
+class ImapTranscript
+@JvmOverloads
+constructor(
     private val idleEnabled: Boolean = true,
     private val fragmented: Boolean = false,
     private val rejectSubscription: Boolean = false,
+    private val rejectedCommands: Set<String> = emptySet(),
+    private val idleUntilDisconnect: Boolean = false,
+    private val singleMessage: Boolean = false,
+    private val additionalCapabilities: String = "",
 ) {
     val idling = CountDownLatch(1)
     val change = CountDownLatch(1)
@@ -108,13 +114,18 @@ class ImapTranscript(
                 output.flush()
             }
         }
-        val capabilities = "IMAP4rev1 AUTH=PLAIN" + if (idleEnabled) " IDLE" else ""
+        val capabilities =
+            "IMAP4rev1 AUTH=PLAIN $additionalCapabilities" + if (idleEnabled) " IDLE" else ""
         reply("* OK [CAPABILITY $capabilities] localhost ready")
         while (true) {
             val line = reader.readLine() ?: break
             val tag = line.substringBefore(' ')
             val command = line.substringAfter(' ')
             commands += command.substringBefore(' ') // Do not record credentials.
+            if (command.substringBefore(' ') in rejectedCommands) {
+                reply("$tag NO Rejected by fixture")
+                continue
+            }
             when {
                 command == "CAPABILITY" -> {
                     reply("* CAPABILITY $capabilities")
@@ -142,11 +153,18 @@ class ImapTranscript(
                 }
                 command.startsWith("EXAMINE ") || command.startsWith("SELECT ") -> {
                     reply("* FLAGS (\\Seen \\Flagged \\Deleted)")
-                    reply("* 0 EXISTS")
+                    reply("* ${if (singleMessage) 1 else 0} EXISTS")
                     reply("* 0 RECENT")
                     reply("* OK [UIDVALIDITY 77] generation")
-                    reply("* OK [UIDNEXT 1] next")
-                    reply("$tag OK [READ-ONLY] selected")
+                    reply("* OK [UIDNEXT ${if (singleMessage) 2 else 1}] next")
+                    reply(
+                        "$tag OK [${if (command.startsWith("SELECT ")) "READ-WRITE" else "READ-ONLY"}] selected"
+                    )
+                }
+                command.startsWith("UID FETCH ") -> {
+                    check(singleMessage)
+                    reply("* 1 FETCH (UID 1 FLAGS ())")
+                    reply("$tag OK fetched")
                 }
                 command.startsWith("SEARCH ") -> {
                     reply("* SEARCH")
@@ -156,6 +174,10 @@ class ImapTranscript(
                     check(idleEnabled)
                     reply("+ idling")
                     idling.countDown()
+                    if (idleUntilDisconnect) {
+                        check(reader.readLine() == null) { "Expected cancellation to close socket" }
+                        return
+                    }
                     check(change.await(10, TimeUnit.SECONDS)) { "Test did not signal a change" }
                     reply("* 1 EXISTS")
                     check(reader.readLine() == "DONE")

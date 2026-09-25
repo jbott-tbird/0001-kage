@@ -54,6 +54,22 @@ class MailProtocolIntegrationTest {
         )
 
     @Test
+    fun unicodeMailboxNamesRoundTripThroughListAppendAndRename() {
+        AngusImapClient().use { client ->
+            client.connect(incoming(), Authorization("password"))
+            client.createMailbox("项目")
+            client.createMailbox("项目/草稿")
+            client.append("项目/草稿", org.foxred.kage.core.mime.AngusMimeCodec().encode(email()))
+            assertTrue(client.mailboxes().any { it.name == "项目/草稿" })
+            assertEquals(email().subject, client.messages("项目/草稿", Instant.EPOCH).single().subject)
+            client.renameMailbox("项目/草稿", "项目/已发送")
+            assertEquals(1, client.status("项目/已发送").messageCount)
+            client.deleteMailbox("项目/已发送")
+            client.deleteMailbox("项目")
+        }
+    }
+
+    @Test
     fun rawMessageStreamPreservesMimeAndDoesNotMarkRead() {
         val raw = org.foxred.kage.core.mime.AngusMimeCodec().encode(email())
         lateinit var identity: MessageIdentity

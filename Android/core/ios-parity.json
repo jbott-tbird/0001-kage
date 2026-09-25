@@ -3079,5 +3079,23 @@
     "candidateEvidence": "ThunderbirdRuntimeTest: 2 passing API30 tests; production runtime suite: 3 passing API30 tests",
     "rationale": "Smaller dependency and setup surface; tested adapter failure matrix; preserve iOS interfaces independent of engine",
     "scope": "Engine choice accepted; full M1 parity acceptance remains open"
+  },
+  "adapterContracts": {
+    "store": "core.account.MailStore",
+    "realStore": "core.imap.AngusImapClient",
+    "demoStore": "core.demo.DemoMailStore",
+    "submission": "core.account.MailSubmission",
+    "realSubmission": "core.smtp.AngusSmtpClient",
+    "demoSubmission": "core.demo.DemoMailSubmission",
+    "tests": [
+      "DemoMailStoreTest",
+      "MailCoreRuntimeTest.demoAdaptersUseCoreContractsOnAndroid"
+    ],
+    "differences": [
+      "Demo state is per-instance and in-memory; credentials are unused and never retained",
+      "Demo advertises no IDLE; caller polls",
+      "Demo submission serializes to an explicit local sink; it cannot route real email"
+    ],
+    "uiWired": false
   }
 }

@@ -32,3 +32,4 @@ include(":core:testkit")
 
 // Explicit local input keeps the comparison out of shipping builds and CI.
 if (providers.gradleProperty("thunderbirdSpikeJars").isPresent) include(":spikes:thunderbird")
+include(":core:demo")

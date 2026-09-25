@@ -43,6 +43,7 @@ ksp { arg("room.schemaLocation", "$projectDir/schemas") }
 
 dependencies {
     androidTestImplementation(project(":core:testkit"))
+    androidTestImplementation(project(":core:demo"))
     implementation(project(":core:imap"))
     implementation(project(":core:smtp"))
     implementation(project(":core:mime"))

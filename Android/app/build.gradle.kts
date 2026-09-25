@@ -32,6 +32,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
     sourceSets.getByName("androidTest").assets.srcDir("$projectDir/schemas")
+    packaging { resources.merges += setOf("META-INF/LICENSE.md", "META-INF/NOTICE.md") }
     buildFeatures {
         compose = true
     }
@@ -40,6 +41,9 @@ android {
 ksp { arg("room.schemaLocation", "$projectDir/schemas") }
 
 dependencies {
+    implementation(project(":core:imap"))
+    implementation(project(":core:smtp"))
+    implementation(project(":core:mime"))
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)

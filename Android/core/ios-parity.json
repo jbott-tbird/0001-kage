@@ -1,0 +1,1720 @@
+{
+  "schemaVersion": 1,
+  "iosRepository": "../thunderbird-ios",
+  "lastReviewedRevision": "5322c9dda2bbec1eb68ce59828346d95b34a3f8b",
+  "lastFullyAdoptedRevision": null,
+  "reviewTrigger": "Explicit request from the maintainer; never automatically fetch or pull",
+  "dependencyManifestSha256": "b0b58f4c0d97d5275da9d54771c22f3528bdceda163b79c99cb65767ecbaed8a",
+  "dependencyLock": "No tracked Package.resolved found; upstream manifest uses moving branches. Dependency revision capture remains unresolved.",
+  "modules": [
+    {
+      "iosModule": "Account",
+      "androidModule": ":core:account",
+      "status": "pending_port",
+      "reason": "Initial adapters only; full behavior/field/test parity not accepted",
+      "sources": [
+        {
+          "path": "Core/Sources/Account/Account.swift",
+          "sha256": "f8ee834d5808785bba4671dc486576f2f84ae52bd0d7f3be29a33c6e1b95ea8a",
+          "publicDeclarations": [
+            "public struct Account: Codable, Equatable, Hashable, Identifiable {",
+            "public enum EmailProtocol: String, CaseIterable, CustomStringConvertible, Identifiable {",
+            "public var description: String { rawValue }",
+            "public var id: String { rawValue }",
+            "public var name: String",
+            "public var deletePolicy: DeletePolicy",
+            "public var identities: [EmailAddress]",
+            "public var servers: [Server]",
+            "public var avatarColor: String",
+            "public var authConfig: OAuth2.Configuration?",
+            "public var incomingServer: Server? { server(.jmap) ?? server(.imap) ?? nil }",
+            "public var outgoingServer: Server? { server(.jmap) ?? server(.smtp) ?? nil }",
+            "public var emailAddress: EmailAddress? { identities.first }",
+            "public var authorization: Authorization {",
+            "public func deleteAuthorization() {",
+            "public var emailProtocol: EmailProtocol {",
+            "public func server(_ serverProtocol: ServerProtocol) -> Server? {",
+            "public init(_ emailAddress: String, provider: EmailProvider? = nil) {",
+            "public init(_ emailAddress: EmailAddress, provider: EmailProvider? = nil) {",
+            "public init(",
+            "public let id: UUID",
+            "public static func autoconfig(_ emailAddress: String, isJMAPAvailable: Bool = false) async throws -> Self {"
+          ]
+        },
+        {
+          "path": "Core/Sources/Account/AccountError.swift",
+          "sha256": "8c983f9fff99efaef8c283b9243e941a5142704fe3771dcc53feed19612932d4",
+          "publicDeclarations": [
+            "public enum AccountError: CustomStringConvertible, Error, Equatable {",
+            "public init?(_ error: Error) {",
+            "public var description: String {",
+            "public static func == (lhs: Self, rhs: Self) -> Bool {"
+          ]
+        },
+        {
+          "path": "Core/Sources/Account/AccountManager.swift",
+          "sha256": "ac3bc48fdeba1d1557e01b29bb0ecfd3fa50ab389f62f64dec1e45716accda85",
+          "publicDeclarations": [
+            "public final class AccountManager {",
+            "public private(set) var allAccounts: [Account] = []",
+            "public var error: AccountError?",
+            "public var isJMAPAvailable: Bool = false",
+            "public func account(for id: UUID) -> Account? {",
+            "public func set(_ account: Account, at index: Int? = nil) {",
+            "public func hasLoggedInAccount() -> Bool {",
+            "public func delete(_ account: Account) {",
+            "public func deleteAccounts() {",
+            "public func checkAndRenewExpirations() async {",
+            "public init() {"
+          ]
+        },
+        {
+          "path": "Core/Sources/Account/AuthenticationType.swift",
+          "sha256": "4cbfd09cca8fb617a1ea047475dabfca53275a9936d87f732ef3ee898859460a",
+          "publicDeclarations": [
+            "public enum AuthenticationType: String, Codable, CaseIterable, CustomStringConvertible, Identifiable, Sendable {",
+            "public var description: String { rawValue }",
+            "public var id: String { rawValue }"
+          ]
+        },
+        {
+          "path": "Core/Sources/Account/Authorization.swift",
+          "sha256": "054287491486da828907d6d8fa1128b35f0225a4e18075dbaa1beb59096cb547",
+          "publicDeclarations": [
+            "public enum Authorization: CustomStringConvertible, Equatable {",
+            "public var user: String {",
+            "public var value: String {",
+            "public var password: String {",
+            "public var isExpired: Bool {",
+            "public var refreshToken: String? {",
+            "public var description: String { value }"
+          ]
+        },
+        {
+          "path": "Core/Sources/Account/DeletePolicy.swift",
+          "sha256": "63a6e2502a42d8d41e384656c390643f3b04268532ba60b4cbeaa5655a685cbb",
+          "publicDeclarations": [
+            "public enum DeletePolicy: Codable, CustomStringConvertible, Equatable, Hashable, RawRepresentable {",
+            "public var description: String { rawValue }",
+            "public var rawValue: String {",
+            "public init?(rawValue: String) {"
+          ]
+        },
+        {
+          "path": "Core/Sources/Account/Email.swift",
+          "sha256": "2688d037c05e8be37fede3ead15708172fe52b34bd949c49167dd847d911c2f8",
+          "publicDeclarations": [
+            "public struct Email: CustomStringConvertible, Identifiable, Sendable {",
+            "public var from: [EmailAddressProtocol]",
+            "public var sender: [EmailAddressProtocol]",
+            "public var replyTo: [EmailAddressProtocol]",
+            "public var to: [EmailAddressProtocol]",
+            "public var bcc: [EmailAddressProtocol]",
+            "public var cc: [EmailAddressProtocol]",
+            "public let received: Date?  // IMAP internal message date",
+            "public let sent: Date?  // IMAP envelope date",
+            "public let messageID: [String]",
+            "public let threadID: [String]",
+            "public let inReplyTo: [String]",
+            "public var subject: String?",
+            "public var body: EmailBody?",
+            "public let blobID: String?",
+            "public let uid: UID?",
+            "public init(",
+            "public var description: String { messageID.first ?? id }",
+            "public let id: String  // IMAP message ID",
+            "public func addressesStringArray(_ a: [EmailAddressProtocol]) -> [String] {",
+            "public func commaSeparatedAddresses(_ a: [EmailAddressProtocol]) -> String {",
+            "public var toStringArray: [String] { addressesStringArray(to) }",
+            "public var replyToStringArray: [String] { addressesStringArray(replyTo) }",
+            "public var ccStringArray: [String] { addressesStringArray(cc) }",
+            "public var bccStringArray: [String] { addressesStringArray(bcc) }",
+            "public func asReply(all: Bool) -> Email {"
+          ]
+        },
+        {
+          "path": "Core/Sources/Account/EmailAttachment.swift",
+          "sha256": "b9587daf91aee5bc066b0117cbb16477d518483e0ce95772154289633894f6ef",
+          "publicDeclarations": [
+            "public struct EmailAttachment: Sendable {",
+            "public typealias ContentDisposition = MIME.ContentDisposition",
+            "public typealias ContentID = MIME.ContentID",
+            "public let contentDisposition: ContentDisposition",
+            "public let contentID: ContentID?",
+            "public let contentType: ContentType",
+            "public let data: Data",
+            "public init("
+          ]
+        },
+        {
+          "path": "Core/Sources/Account/EmailBody.swift",
+          "sha256": "f2a351b8d63461d9da0ec2a176bddc37d7123f5c2d61291d2d0e1512574d81d4",
+          "publicDeclarations": [
+            "public struct EmailBody: CustomStringConvertible, Sendable {",
+            "public enum HTMLFormat: String, CustomStringConvertible {",
+            "public var description: String { rawValue }",
+            "public let attachments: [EmailAttachment]",
+            "public let text: String?",
+            "public func html(_ format: HTMLFormat = .inlineAttachments) -> String? {",
+            "public var preview: String? {",
+            "public init(html: String? = nil, text: String? = nil, attachments: [EmailAttachment] = [], preview: String? = nil) {",
+            "public var description: String { \"\" }"
+          ]
+        },
+        {
+          "path": "Core/Sources/Account/EmailManager.swift",
+          "sha256": "1108f4e47dee7a4173ebe52706df22899a530f872fc55547ee3204e22f8390d4",
+          "publicDeclarations": [
+            "public final class EmailManager {",
+            "public let account: Account",
+            "public private(set) var email: Email?",
+            "public var error: AccountError?",
+            "public init(_ email: Email?, account: Account) {",
+            "public func refreshEmail() async {"
+          ]
+        },
+        {
+          "path": "Core/Sources/Account/FileManager.swift",
+          "sha256": "c5cbdcc0fda407f4b513ee66beb0cb929a2cb6fb8b428873ecedb87f7e1a1298",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/Account/Folder.swift",
+          "sha256": "86ab1223bcf275b4d365482cb49f50263ca9efce33eddd62cbbef07c25d3ce5c",
+          "publicDeclarations": [
+            "public struct Folder: CustomStringConvertible, Hashable, Identifiable {",
+            "public let name: String?",
+            "public let path: String?",
+            "public let unreadEmails: Int?",
+            "public let totalEmails: Int?",
+            "public let id: String",
+            "public let mailbox: Mailbox",
+            "public var subfolders: [Folder] = []",
+            "public init(",
+            "public var description: String {",
+            "public extension Folder {"
+          ]
+        },
+        {
+          "path": "Core/Sources/Account/FolderManager.swift",
+          "sha256": "09a8343e0f998f1f459c042b2d064db737c5ead123a3492d3163b2125bf75844",
+          "publicDeclarations": [
+            "public final class FolderManager {",
+            "public let account: Account",
+            "public var folders: [Folder] = []",
+            "public init(account: Account) {",
+            "public func folderForID(_ id: String) -> Folder? {",
+            "public func folderForName(_ name: String) -> Folder? {",
+            "public func folderForPath(_ path: String) -> Folder? {",
+            "public func refreshFolders(mailboxes: [Mailbox]) async {"
+          ]
+        },
+        {
+          "path": "Core/Sources/Account/Mailbox.swift",
+          "sha256": "ade2bf22702ce84c252ac5e0df281909c46022cc3e1480575d8a0761bc0f7ba2",
+          "publicDeclarations": [
+            "public struct Mailbox: CustomStringConvertible, Hashable, Identifiable {",
+            "public typealias Role = JMAP.Mailbox.Role",
+            "public typealias Rights = JMAP.Mailbox.Rights",
+            "public let role: Role?",
+            "public let rights: Rights",
+            "public var name: String",
+            "public var isSubscribed: Bool",
+            "public let unreadEmails: Int?",
+            "public let totalEmails: Int?",
+            "public init(",
+            "public var description: String { name }",
+            "public let id: String"
+          ]
+        },
+        {
+          "path": "Core/Sources/Account/MailboxManager.swift",
+          "sha256": "91c0d0f0d5e99288eba091556b2a952271d417db6c561f6c07e4d69526b30674",
+          "publicDeclarations": [
+            "public final class MailboxManager {",
+            "public let account: Account",
+            "public private(set) var mailboxes: [Mailbox] = []",
+            "public var error: AccountError?",
+            "public let folderManager: FolderManager",
+            "public init(account: Account) {",
+            "public func mailbox(_ name: String) -> Mailbox? {",
+            "public func mailbox(for id: String) -> Mailbox? {",
+            "public func emails(in mailbox: Mailbox) async -> [Email] {",
+            "public func createMailbox(_ name: String) async {",
+            "public func rename(_ mailbox: Mailbox, to name: String) async {",
+            "public func delete(_ mailbox: Mailbox) async {",
+            "public func subscribe(_ mailbox: Mailbox) async {",
+            "public func unsubscribe(_ mailbox: Mailbox) async {",
+            "public func refreshMailboxes() async {"
+          ]
+        },
+        {
+          "path": "Core/Sources/Account/Server.swift",
+          "sha256": "1d617c0b733e4b16a0e2ed60d69d2f28ecc8889d97fe1980a00fc10dd3f31d42",
+          "publicDeclarations": [
+            "public enum ServerProtocol: String, Codable, CaseIterable, CustomStringConvertible, Identifiable, Sendable {",
+            "public var description: String { rawValue }",
+            "public var id: String { rawValue }",
+            "public struct Server: Codable, Equatable, Hashable, Identifiable, Sendable {",
+            "public typealias ConnectionSecurity = IMAP.ConnectionSecurity",
+            "public var serverProtocol: ServerProtocol",
+            "public var connectionSecurity: ConnectionSecurity",
+            "public var authenticationType: AuthenticationType",
+            "public var username: String",
+            "public var hostname: String",
+            "public var port: Int",
+            "public init(",
+            "public let id: UUID",
+            "public var defaultPort: Int {",
+            "public static var oAuth2NotSupported: Self { .capabilityNotSupported(\"OAuth2 not supported\") }",
+            "public static var serverProtocolMismatch: Self { .capabilityNotSupported(\"Server protocol mismatch\") }",
+            "public init(_ server: Server, authorization: Authorization) throws {",
+            "public static var oAuth2NotSupported: Self { .underlying(URLError(.resourceUnavailable)) }",
+            "public static var serverProtocolMismatch: Self { .underlying(URLError(.unsupportedURL)) }",
+            "public static var sessionNotFound: Self { .underlying(URLError(.fileDoesNotExist)) }",
+            "public init(_ server: Server, authorization: Authorization) throws {",
+            "public static var oAuth2NotSupported: Self { .response(\"OAuth2 not supported\") }",
+            "public static var serverProtocolMismatch: Self { .response(\"Server protocol mismatch\") }",
+            "public init(_ server: Server, authorization: Authorization) throws {"
+          ]
+        },
+        {
+          "path": "Core/Sources/Account/String.swift",
+          "sha256": "1999e260ad6bb85c9df7a784f65f8cba1b6cddf796c1a1fda88c0e5f0c8dfd45",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/Account/TestResult.swift",
+          "sha256": "1c109906de414dfc413bb175c6af9da58abd6d91ac4a808c2f54d2064bef387d",
+          "publicDeclarations": [
+            "public enum TestResult: CustomStringConvertible, Identifiable, Sendable {",
+            "public var isFailure: Bool { error != nil }",
+            "public var error: Error? {",
+            "public var description: String {",
+            "public var id: String {",
+            "public func test(sleep duration: Duration = .milliseconds(100)) -> AsyncStream<TestResult> {"
+          ]
+        },
+        {
+          "path": "Core/Sources/Account/Token.swift",
+          "sha256": "b37203c7139bee24a453a170aefb139fe9b780705f766e70a92ba594d4a99659",
+          "publicDeclarations": [
+            "public enum Token: CustomStringConvertible, Equatable {",
+            "public init(value: String, expiration: Date) {",
+            "public init(value: String) {",
+            "public var description: String { value }"
+          ]
+        },
+        {
+          "path": "Core/Sources/Account/URLCredentialStorage.swift",
+          "sha256": "3b07b37245e225d37d256b920d4892dc334834e315378ad747600da71839435a",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/Account/URLProtectionSpace.swift",
+          "sha256": "ab71c3954faa85ca73663aa136445584adaceb535c50de4c8042726e86c62666",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/Account/UnifiedMailboxManager.swift",
+          "sha256": "9ec829e4de20690dde8eb1f0b14783b6c168f2114d38d8772191b6a452d4b03a",
+          "publicDeclarations": [
+            "public final class UnifiedMailboxManager {",
+            "public var mailboxManagers: [MailboxManager] = []",
+            "public init() {}"
+          ]
+        }
+      ]
+    },
+    {
+      "iosModule": "EmailAddress",
+      "androidModule": ":core:account",
+      "status": "pending_port",
+      "reason": "Initial adapters only; full behavior/field/test parity not accepted",
+      "sources": [
+        {
+          "path": "Core/Sources/EmailAddress/EmailAddress.swift",
+          "sha256": "72dd0173ee8633b8bffd5a08f13add33d231bca210f788ee7a9d175b4579dfb7",
+          "publicDeclarations": [
+            "public protocol EmailAddressProtocol: Sendable {",
+            "public struct EmailAddress: CustomStringConvertible, EmailAddressProtocol, ExpressibleByStringLiteral, Hashable, Identifiable, Sendable {",
+            "public let value: String",
+            "public let label: String?",
+            "public var host: String? {",
+            "public var local: String? {",
+            "public var isEmailAddress: Bool { !(host ?? \"\").isEmpty && !(local ?? \"\").isEmpty }",
+            "public init(_ value: String, label: String? = nil) {",
+            "public var description: String { !(label ?? \"\").isEmpty ? \"\\(label!) <\\(value)>\" : value }",
+            "public var addresses: [Self] { [self] }",
+            "public init(stringLiteral value: StringLiteralType) {",
+            "public var id: String { value }",
+            "public struct Group: EmailAddressProtocol, Equatable, Sendable {",
+            "public let label: String?",
+            "public let email: [EmailAddressProtocol]",
+            "public init(_ email: [EmailAddressProtocol], label: String? = nil) {",
+            "public var addresses: [EmailAddress] { email.flatMap { $0.addresses } }",
+            "public static func == (lhs: Self, rhs: Self) -> Bool {"
+          ]
+        },
+        {
+          "path": "Core/Sources/EmailAddress/String.swift",
+          "sha256": "91d6ec45460ff875726c5f978b089fe230c860d6930d89b43a0a1e11a1538187",
+          "publicDeclarations": [
+            "public var isEmailAddress: Bool { EmailAddress(self).isEmailAddress }"
+          ]
+        }
+      ]
+    },
+    {
+      "iosModule": "MIME",
+      "androidModule": ":core:mime",
+      "status": "pending_port",
+      "reason": "Initial adapters only; full behavior/field/test parity not accepted",
+      "sources": [
+        {
+          "path": "Core/Sources/MIME/Body.swift",
+          "sha256": "612d1b5441f33507a0d2db1d8b7a6deef8d25440e8fbcbcd8d4f845776aa3409",
+          "publicDeclarations": [
+            "public struct Body: CustomStringConvertible, RawRepresentable, Sendable {",
+            "public let part: Part",
+            "public var headers: [Header] {",
+            "public var contentTransferEncoding: ContentTransferEncoding? { part.contentTransferEncoding }",
+            "public var contentType: ContentType { part.contentType }",
+            "public init(part: Part) throws {",
+            "public init(_ description: String) throws {",
+            "public init(_ description: Data) throws {",
+            "public var description: String { String(data: rawValue, encoding: .ascii)! }",
+            "public var rawValue: Data {",
+            "public init?(rawValue: Data) {",
+            "public static var empty: Self { try! Self(part: try! Part(data: \"\".data(using: .ascii)!, contentType: .text(.plain, .ascii))) }",
+            "public var isEmpty: Bool { (String(data: part.data, encoding: .ascii) ?? \"\").isEmpty }"
+          ]
+        },
+        {
+          "path": "Core/Sources/MIME/Boundary.swift",
+          "sha256": "e7631f34b56097038a7d6d9afefe55e9cc39e1018cd16f264315f022e6733115",
+          "publicDeclarations": [
+            "public struct Boundary: CustomStringConvertible, Equatable, RawRepresentable, Sendable {",
+            "public static var bounds: ClosedRange<Int> { 1...70 }",
+            "public init(_ description: String = \"\") throws {",
+            "public var description: String { rawValue }",
+            "public let rawValue: String",
+            "public init?(rawValue: String) {"
+          ]
+        },
+        {
+          "path": "Core/Sources/MIME/Character.swift",
+          "sha256": "c67260b2639b88a4a5260de88190244972b0598c24febdd6585c593509fc94ab",
+          "publicDeclarations": [
+            "public init?(entity: String) {"
+          ]
+        },
+        {
+          "path": "Core/Sources/MIME/CharacterSet.swift",
+          "sha256": "8eff998bc64f915b4806395d7fa83906ac9af82ed2d0b1ef6ef15ce4b9475d22",
+          "publicDeclarations": [
+            "public struct CharacterSet: CustomStringConvertible, Equatable, RawRepresentable, Sendable {",
+            "public static var ascii: Self { try! Self(\"US-ASCII\") }  // Default character encoding",
+            "public init(_ description: String = \"US-ASCII\") throws {",
+            "public var description: String { rawValue }",
+            "public let rawValue: String",
+            "public init?(rawValue: String) {",
+            "public static var iso8859: Self { try! Self(\"ISO-8859-1\") }",
+            "public static var utf8: Self { try! Self(\"UTF-8\") }"
+          ]
+        },
+        {
+          "path": "Core/Sources/MIME/ContentDisposition.swift",
+          "sha256": "700e3f20058e3c19bf0d508166c6bf305a1571d95e1d7dc5f4bb08b2b47f2b95",
+          "publicDeclarations": [
+            "public enum ContentDisposition: CustomStringConvertible, Equatable, RawRepresentable, Sendable {",
+            "public struct File: CustomStringConvertible, RawRepresentable, Sendable {",
+            "public let filename: String?",
+            "public let creationDate: Date?",
+            "public let modificationDate: Date?",
+            "public let readDate: Date?",
+            "public let size: Int?  // Bytes (`Data.count`)",
+            "public init(_ description: String) {",
+            "public init(",
+            "public var description: String { rawValue }",
+            "public var rawValue: String {",
+            "public init?(rawValue: String) {",
+            "public static var attachment: Self { .attachment(File()) }",
+            "public static var inline: Self { .inline(File()) }",
+            "public var file: File? {",
+            "public init(_ description: String) throws {",
+            "public var description: String { rawValue }",
+            "public var rawValue: String {",
+            "public init?(rawValue: String) {"
+          ]
+        },
+        {
+          "path": "Core/Sources/MIME/ContentID.swift",
+          "sha256": "abdb47537081a769457bfca2910af521ddbcc2940c747061d669aac4e24f91c7",
+          "publicDeclarations": [
+            "public typealias MessageID = ContentID",
+            "public struct ContentID: CustomStringConvertible, ExpressibleByStringLiteral, Hashable, Identifiable, Sendable {",
+            "public init(_ host: String = \"\", date: Date = Date(), uuid: UUID = UUID()) {",
+            "public init(_ description: String) {",
+            "public let description: String",
+            "public init(stringLiteral value: StringLiteralType) {",
+            "public var id: String { description }"
+          ]
+        },
+        {
+          "path": "Core/Sources/MIME/ContentTransferEncoding.swift",
+          "sha256": "8308196ac325386af6cff1d454a4efe3e4fc8957ad22d02a67a1d59690d951c0",
+          "publicDeclarations": [
+            "public enum ContentTransferEncoding: String, CaseIterable, CustomStringConvertible, RawRepresentable, Sendable {",
+            "public static var `default`: Self { .ascii }",
+            "public var description: String { rawValue }",
+            "public init?(rawValue: String) {"
+          ]
+        },
+        {
+          "path": "Core/Sources/MIME/ContentType.swift",
+          "sha256": "0f394e3c104598c962f728983e7667c68381bb003fb829f77e0c16485d8cfc92",
+          "publicDeclarations": [
+            "public enum ContentType: CustomStringConvertible, Equatable, RawRepresentable, Sendable {",
+            "public var subtype: String {",
+            "public var isMultipart: Bool {",
+            "public var boundary: Boundary? {",
+            "public var charset: CharacterSet? {",
+            "public init(_ description: String) throws {",
+            "public var description: String { rawValue }",
+            "public var rawValue: String {",
+            "public init?(rawValue: String) {",
+            "public static var alternative: Self { \"alternative\" }",
+            "public static var mixed: Self { \"mixed\" }",
+            "public static var related: Self { \"related\" }",
+            "public static var plain: Self { \"plain\" }",
+            "public static var html: Self { \"html\" }"
+          ]
+        },
+        {
+          "path": "Core/Sources/MIME/Header.swift",
+          "sha256": "f2eda55afd23cfc84b432be9a057c85ad02138b28cec3c24a182fd97f7dda5c9",
+          "publicDeclarations": [
+            "public struct Header: CustomStringConvertible, Equatable, RawRepresentable, Sendable {",
+            "public static let mimeVersion: Self = try! Self(.mimeVersion, \"1.0\")",
+            "public enum Name: String, CustomStringConvertible, Sendable {",
+            "public var description: String { rawValue }",
+            "public let name: Name",
+            "public let value: String",
+            "public init(_ name: Name, _ value: String) throws {",
+            "public var rawValue: String { \"\\(name): \\(value)\" }",
+            "public init?(rawValue: String) {",
+            "public var description: String { rawValue }"
+          ]
+        },
+        {
+          "path": "Core/Sources/MIME/MIMEError.swift",
+          "sha256": "657b4a7c855fa57904e2fb49af7b699924d6e51ab8709b74d90e2f2ba8d4f4f5",
+          "publicDeclarations": [
+            "public enum MIMEError: Error, CustomStringConvertible, Equatable {",
+            "public var description: String {"
+          ]
+        },
+        {
+          "path": "Core/Sources/MIME/Part.swift",
+          "sha256": "74214d63327e9a6f34d85e981f19ea5ded035dca23b9dfcdb62008ba69f1a076",
+          "publicDeclarations": [
+            "public struct Part: CustomStringConvertible, RawRepresentable, Sendable {",
+            "public let contentDisposition: ContentDisposition?",
+            "public let contentTransferEncoding: ContentTransferEncoding?",
+            "public let contentID: ContentID?",
+            "public let contentType: ContentType",
+            "public let data: Data",
+            "public var headers: [Header] {",
+            "public var parts: [Self] {",
+            "public init(parts: [Self], contentType: ContentType = .multipart(.mixed)) throws {",
+            "public init(_ description: String) throws {",
+            "public init(_ description: Data) throws {",
+            "public init(",
+            "public var description: String { String(data: rawValue, encoding: .ascii)! }",
+            "public var rawValue: Data {",
+            "public init?(rawValue: Data) {"
+          ]
+        },
+        {
+          "path": "Core/Sources/MIME/RFC822DateFormatter.swift",
+          "sha256": "437ba0b7d6986cd2718191897702a7c5e14bf391dda636ee103ed5d442c6e4dd",
+          "publicDeclarations": [
+            "public struct RFC822DateFormatter {",
+            "public var dateFormat: String { formatter.dateFormat }",
+            "public func string(from date: Date, _ timeZone: TimeZone = .gmt) -> String {",
+            "public func date(from string: String) throws -> Date {",
+            "public init() {",
+            "public func rfc822Format(_ timeZone: TimeZone = .gmt) -> String {",
+            "public init(rfc822Format string: String) throws {"
+          ]
+        },
+        {
+          "path": "Core/Sources/MIME/String.swift",
+          "sha256": "65db6588d9942570a048b1ac314e6f0dcdfc4e675092da8a3780ee50553c22e7",
+          "publicDeclarations": [
+            "public static var crlf: Self { \"\\r\\n\" }",
+            "public static var separator: Self { \"-\" }",
+            "public var ascii: Self? {",
+            "public enum Case: CaseIterable {",
+            "public func capitalized(_ `case`: Case) -> Self {",
+            "public func htmlEntitiesDecoded() -> Self {",
+            "public var parameters: [Self: Self] {",
+            "public func headerDecoded() throws -> Self {",
+            "public func headerEncoded() throws -> Self {",
+            "public init(quotedPrintable data: Data, encoding: Encoding = .utf8) throws {",
+            "public init(quotedPrintable string: Self, encoding: Encoding = .utf8) throws {",
+            "public init(base64 data: Data, encoding: Encoding = .utf8) throws {",
+            "public init(base64 string: Self, encoding: Encoding = .utf8) throws {",
+            "public var crlf: String { .crlf }"
+          ]
+        },
+        {
+          "path": "Core/Sources/MIME/URL.swift",
+          "sha256": "63a82ad0c0eb477f611195ad69858f11f26dbc82598c7c17b7e0ce4b60be6c22",
+          "publicDeclarations": [
+            "public init(messageID: MessageID, contentID: ContentID? = nil) throws {",
+            "public init(contentID: ContentID) throws {",
+            "public init(contentDisposition: ContentDisposition) throws {"
+          ]
+        },
+        {
+          "path": "Core/Sources/MIME/UUID.swift",
+          "sha256": "0cfcf0cf69b5c287ba748ca010a31dab96b13724c2918a779ccef019425e73f5",
+          "publicDeclarations": [
+            "public func dataBoundary(_ segments: Int = 5, separator: String = .separator, prefix: String? = nil, suffix: String? = nil) -> Boundary {",
+            "public func uuidString(_ segments: Int, separator: String = .separator) -> String {"
+          ]
+        }
+      ]
+    },
+    {
+      "iosModule": "IMAP",
+      "androidModule": ":core:imap",
+      "status": "pending_port",
+      "reason": "Initial adapters only; full behavior/field/test parity not accepted",
+      "sources": [
+        {
+          "path": "Core/Sources/IMAP/Capability.swift",
+          "sha256": "76a44be198d0d98a826193cd2e2db034ac8be7f5b5ee2edc2cd9378b58503edb",
+          "publicDeclarations": [
+            "public struct Capability: CustomStringConvertible, Equatable, Hashable, RawRepresentable, Sendable {",
+            "public static var condStore: Self { Capability(.condStore) }",
+            "public static var idle: Self { Capability(.idle) }",
+            "public static var gmailExtensions: Self { Capability(.gmailExtensions) }",
+            "public static var mailboxSpecificAppendLimit: Self { Capability(.mailboxSpecificAppendLimit) }",
+            "public static var objectID: Self { Capability(.objectID) }",
+            "public static var preview: Self { Capability(.preview) }",
+            "public static var uidPlus: Self { Capability(.uidPlus) }",
+            "public enum Status: String, CustomStringConvertible, Sendable {",
+            "public var description: String { rawValue }",
+            "public static func status(_ status: Status) -> Self {",
+            "public var label: String { components[0] }",
+            "public var value: String? {",
+            "public var description: String { rawValue }",
+            "public let rawValue: String",
+            "public init?(rawValue: String) {"
+          ]
+        },
+        {
+          "path": "Core/Sources/IMAP/CapabilityCommand.swift",
+          "sha256": "5cea3a3927dd226a645d2250bfe69ddbcc507c65ad081d43ed9c5947d3bc48bd",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/IMAP/ConnectionSecurity.swift",
+          "sha256": "a694ef0104d94e0eed88c71820b6074582dfeea906ec07667ece55e1d7936cf5",
+          "publicDeclarations": [
+            "public enum ConnectionSecurity: String, Codable, CaseIterable, CustomStringConvertible, Identifiable, Sendable {",
+            "public static var ssl: Self { .tls }",
+            "public var description: String { rawValue }",
+            "public var id: String { rawValue }"
+          ]
+        },
+        {
+          "path": "Core/Sources/IMAP/CopyCommand.swift",
+          "sha256": "8952bef26af1dd6246e8fe37e0972b33ebb8eb667677b5b2e25e87dfc414807b",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/IMAP/CreateCommand.swift",
+          "sha256": "1653cb86dd4b96190573a12c575fa06ccacb581498a4a0a9c4b77e1cea6bce37",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/IMAP/DeleteCommand.swift",
+          "sha256": "5553b01657fad815edc733f72b38e72eafd99882e7d2fe6f8b966a7a11119955",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/IMAP/EmailAddress.swift",
+          "sha256": "a7009c5474a94c4e5e8388ad5b4740e11bfd791ea8f3cd1791c436ec8c2fa691",
+          "publicDeclarations": [
+            "public var description: String {",
+            "public var description: String {"
+          ]
+        },
+        {
+          "path": "Core/Sources/IMAP/Envelope.swift",
+          "sha256": "1413b1983a47d2596208f9be21f9b847ab27b1c0a9e56492579a5c89f53e6057",
+          "publicDeclarations": [
+            "public struct Envelope: Sendable {",
+            "public let subject: String?",
+            "public let date: InternetMessageDate?",
+            "public let from: [EmailAddressProtocol]",
+            "public let sender: [EmailAddressProtocol]",
+            "public let reply: [EmailAddressProtocol]",
+            "public let to: [EmailAddressProtocol]",
+            "public let cc: [EmailAddressProtocol]",
+            "public let bcc: [EmailAddressProtocol]",
+            "public let inReplyTo: String?",
+            "public let messageID: String?",
+            "public init("
+          ]
+        },
+        {
+          "path": "Core/Sources/IMAP/ExamineCommand.swift",
+          "sha256": "4f6ca7396ef4361c6a8126ae015d7ec42317472660b57e65cccb90b3e8f133bf",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/IMAP/FetchAttribute.swift",
+          "sha256": "987240a07a427f1f8e969b933e44113b7dfd57a9ce075e7db1eb8de1611f8571",
+          "publicDeclarations": [
+            "public typealias FetchAttribute = NIOIMAPCore.FetchAttribute",
+            "public static let complete: Self =",
+            "public static let header: Self =",
+            "public static let standard: Self = ["
+          ]
+        },
+        {
+          "path": "Core/Sources/IMAP/FetchCommand.swift",
+          "sha256": "3f4b8fbb2fea8d6a8607189568380ef1c924d4b9a0406369ae839681c819f553",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/IMAP/Flag.swift",
+          "sha256": "0299e797e58b1ad2d84cfcba364123c752cc52e151e5d3dc8b754b6ef9403073",
+          "publicDeclarations": [
+            "public typealias Flag = NIOIMAPCore.Flag",
+            "public var description: String { String(self) }"
+          ]
+        },
+        {
+          "path": "Core/Sources/IMAP/GmailLabel.swift",
+          "sha256": "2f300143d5251cf43349b1733728705ce2f5dcd471cd0bda897528863260eb3c",
+          "publicDeclarations": [
+            "public typealias GmailLabel = NIOIMAPCore.GmailLabel",
+            "public var description: String { makeDisplayString() }"
+          ]
+        },
+        {
+          "path": "Core/Sources/IMAP/IMAPClient.swift",
+          "sha256": "5107229fb654a45324cf2f5a7e04baac5d625d48f567becb7d751b40208d6375",
+          "publicDeclarations": [
+            "public class IMAPClient {",
+            "public let server: Server",
+            "public private(set) var capabilities: Set<Capability> = []",
+            "public var isConnected: Bool { channel != nil && channel!.isActive }",
+            "public var isIdling: Bool { idleHandler != nil }",
+            "public func isSupported(_ capability: Capability) throws {",
+            "public func connect() async throws {",
+            "public func disconnect() throws {",
+            "public func login() async throws {",
+            "public func login(username: String, password: String) async throws {",
+            "public func logout() async throws {",
+            "public func namespace() async throws -> [Namespace] {",
+            "@discardableResult public func idle() async throws -> AsyncStream<IdleEvent> {",
+            "public func done() async throws {",
+            "public func noop() async throws -> [IdleEvent] {",
+            "public func list(wildcard: Character = .wildcard) async throws -> [(Mailbox, Mailbox.Status?)] {",
+            "@discardableResult public func select(mailbox name: MailboxName) async throws -> Mailbox.Status {",
+            "public func examine(mailbox name: MailboxName) async throws -> Mailbox.Status {",
+            "public func status(mailbox name: MailboxName) async throws -> Mailbox.Status {",
+            "public func expunge() async throws {",
+            "public func unselect() async throws {",
+            "public func create(mailbox name: MailboxName) async throws {",
+            "public func rename(mailbox name: MailboxName, to targetName: MailboxName) async throws {",
+            "public func delete(mailbox name: MailboxName) async throws {",
+            "public func subscribe(mailbox name: MailboxName) async throws {",
+            "public func unsubscribe(mailbox name: MailboxName) async throws {",
+            "public func close() async throws {",
+            "public func fetch(_ set: SequenceSet = .all, attributes: [FetchAttribute] = .header) async throws -> MessageSet {",
+            "public func fetch(_ number: SequenceNumber, attributes: [FetchAttribute] = .complete) async throws -> Message {",
+            "public func fetch(uid set: UIDSet, attributes: [FetchAttribute] = .header) async throws -> MessageSet {",
+            "public func fetch(uid: UID, attributes: [FetchAttribute] = .complete) async throws -> Message {",
+            "public init(",
+            "public static let delimiter: Self = \".\"",
+            "public static let wildcard: Self = \"*\""
+          ]
+        },
+        {
+          "path": "Core/Sources/IMAP/IMAPCommand.swift",
+          "sha256": "66bd9d857242279847b0d974b17e551c0acd6fa42c6d2893067f92277483da10",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/IMAP/IMAPError.swift",
+          "sha256": "b5c600c6c102734dd311655d2f413ec8dc49bae3f17857c30ae45b1d451da448",
+          "publicDeclarations": [
+            "public enum IMAPError: Error, CustomStringConvertible, Equatable {",
+            "public var description: String {",
+            "public static func == (lhs: Self, rhs: Self) -> Bool {"
+          ]
+        },
+        {
+          "path": "Core/Sources/IMAP/IdleEvent.swift",
+          "sha256": "08b736661156a659114b75449d70544b104dcd47b04810cade26888c27be9f5e",
+          "publicDeclarations": [
+            "public enum IdleEvent: Sendable {"
+          ]
+        },
+        {
+          "path": "Core/Sources/IMAP/IdleHandler.swift",
+          "sha256": "188195214d2d75e2f32eb8cce21572f6d5e67d6451c4dff58bb8278205927113",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/IMAP/InternetMessageDate.swift",
+          "sha256": "3ea89c2a4374b14b33d62f0256bd07b9fbe71ef62faf45b9631ceb212d01a4d6",
+          "publicDeclarations": [
+            "public struct InternetMessageDate: CustomStringConvertible, Equatable, Sendable {",
+            "public let date: Date",
+            "public let timeZone: TimeZone",
+            "public init(_ date: Date, timeZone: TimeZone = .current) {",
+            "public var description: String { RFC822DateFormatter().string(from: self) }",
+            "public func string(from internetMessageDate: InternetMessageDate) -> String {",
+            "public func internetMessageDate(from string: String) throws -> InternetMessageDate {"
+          ]
+        },
+        {
+          "path": "Core/Sources/IMAP/ListCommand.swift",
+          "sha256": "c9f7eec44fbc34e3d4dc95a4c737283ef2709ceb629e6cd6b2510ff23c18ab00",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/IMAP/LoggingHandler.swift",
+          "sha256": "1fab7140d2e4b07d61e9a2f889982b1cd3aa2b274f63d41961f0837d62092f69",
+          "publicDeclarations": [
+            "public var description: String { String(decoding: self, as: UTF8.self) }"
+          ]
+        },
+        {
+          "path": "Core/Sources/IMAP/LoginCommand.swift",
+          "sha256": "3963e62475997ddabfd40d6762052ebae3dd4adca791c1de8649685f57366a4c",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/IMAP/Mailbox.swift",
+          "sha256": "96e309a9ee3e121b739074c442c34947a2cf482fb2cba87a5034b7a589712c72",
+          "publicDeclarations": [
+            "public typealias Mailbox = NIOIMAPCore.MailboxInfo",
+            "public typealias Attribute = NIOIMAPCore.MailboxInfo.Attribute",
+            "public typealias Name = NIOIMAPCore.MailboxName",
+            "public typealias Path = NIOIMAPCore.MailboxPath",
+            "public typealias Status = NIOIMAPCore.MailboxStatus",
+            "public init(_ string: String) {",
+            "public var description: String { String(data: Data(bytes), encoding: .utf8) ?? \"\" }",
+            "public init(stringLiteral value: String) {",
+            "public var lastPathComponent: String {",
+            "public var description: String { name.description }"
+          ]
+        },
+        {
+          "path": "Core/Sources/IMAP/Message.swift",
+          "sha256": "97298133ca8d4b8964f12e4826945aef40751e3d59a713388447da49e8da76e1",
+          "publicDeclarations": [
+            "public typealias MessageSet = [SequenceNumber: Message]",
+            "public struct Message: Sendable {",
+            "public fileprivate(set) var body: Body?",
+            "public fileprivate(set) var emailID: String?",
+            "public fileprivate(set) var envelope: Envelope",
+            "public fileprivate(set) var flags: Set<Flag>",
+            "public fileprivate(set) var gmailLabels: Set<GmailLabel>",
+            "public fileprivate(set) var gmailMessageID: UInt64?",
+            "public fileprivate(set) var gmailThreadID: UInt64?",
+            "public fileprivate(set) var internalDate: Date?",
+            "public fileprivate(set) var threadID: String?",
+            "public fileprivate(set) var uid: UID?",
+            "public init(",
+            "public enum Component: CustomStringConvertible, Equatable, Identifiable, Sendable {",
+            "public var description: String {",
+            "public static func == (lhs: Self, rhs: Self) -> Bool {",
+            "public var id: String {",
+            "public var messages: [Message] {"
+          ]
+        },
+        {
+          "path": "Core/Sources/IMAP/MoveCommand.swift",
+          "sha256": "6cd3df5291f20603bd85b3488f8276d5c428caf5ae90297c91951b9bc2a5b0fd",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/IMAP/Namespace.swift",
+          "sha256": "cfbdac04933e08f7614bbd44881b550c76f3ebf8a2ed76b14d0fe23e07415597",
+          "publicDeclarations": [
+            "public struct Namespace: Hashable, Sendable {",
+            "public enum Scope: String, CaseIterable, CustomStringConvertible, Sendable {",
+            "public var description: String { rawValue }",
+            "public let scope: Scope",
+            "public let delimiter: Character?",
+            "public let prefix: String",
+            "public init(_ scope: Scope, delimiter: Character? = .delimiter, prefix: String = \"\") {"
+          ]
+        },
+        {
+          "path": "Core/Sources/IMAP/NamespaceCommand.swift",
+          "sha256": "3873042f5f9ded665c840e6faa8c7c6b7cbfb823780ec1c3a5179aa97807b9c4",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/IMAP/NoopCommand.swift",
+          "sha256": "72eefd140b9c08056a9a1a9d17074975c912477323dce6f23162193ae5718b99",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/IMAP/RenameCommand.swift",
+          "sha256": "7b8e4e495666cc9d8117660d7ee4d887f3c1a0ecd85571dee3f38014ece7c1fd",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/IMAP/SelectCommand.swift",
+          "sha256": "45abe620e7142e1c036c1b864ca69a37b291220929297dd9331789956f66f13f",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/IMAP/SequenceNumber.swift",
+          "sha256": "3ee16e0b1cbcd6e02dd0a8dca0594371dd2466759dfb2de300f0edfa46883fd8",
+          "publicDeclarations": [
+            "public typealias SequenceNumber = NIOIMAPCore.SequenceNumber",
+            "public typealias SequenceSet = NIOIMAPCore.MessageIdentifierSetNonEmpty<SequenceNumber>",
+            "public var description: String { debugDescription }"
+          ]
+        },
+        {
+          "path": "Core/Sources/IMAP/Server.swift",
+          "sha256": "32a245f66c8e86700b2e74d350e097218eaf18f8006b1da939fe2736cbe975ec",
+          "publicDeclarations": [
+            "public struct Server: CustomStringConvertible, Equatable, Sendable {",
+            "public let connectionSecurity: ConnectionSecurity",
+            "public let hostname: String",
+            "public let username: String?",
+            "public let password: String?",
+            "public let port: Int",
+            "public init(",
+            "public var description: String { \"\\(hostname):\\(port)\" }"
+          ]
+        },
+        {
+          "path": "Core/Sources/IMAP/ServerMessageDateFormatter.swift",
+          "sha256": "d95704aca0d2f243f7ca93b5a34b9c1a999ab0731b5fa3e599e1884971ed11ec",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/IMAP/StatusCommand.swift",
+          "sha256": "5182a8f2131c045d622af901e129e87176f11d7111d6228b415cd37cf3af173f",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/IMAP/StoreCommand.swift",
+          "sha256": "a482c237d99459703f50d1c0af386310b2e5c2c79bfe4c08137306ac1e1222b3",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/IMAP/SubscribeCommand.swift",
+          "sha256": "64797819a412df5f993ac7ddc096f1b28d8263a18e60f35bbef3b0999a9d792e",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/IMAP/UID.swift",
+          "sha256": "c92ccffac773500527a8aa69ffbe987daa5e1892ac22731aa299ed21e0b33547",
+          "publicDeclarations": [
+            "public typealias UID = NIOIMAPCore.UID",
+            "public typealias UIDSet = NIOIMAPCore.UIDSetNonEmpty",
+            "public var description: String { debugDescription }"
+          ]
+        },
+        {
+          "path": "Core/Sources/IMAP/UIDCopyCommand.swift",
+          "sha256": "484aaf31184f3d8e4fc67c6d6c4add08671a4d1cc67a00699bf43140a768ed4f",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/IMAP/UIDFetchCommand.swift",
+          "sha256": "3857fad187ca9c9f6f006e6a5bd07dccc77011d03d357a211ea1e81a50a498c8",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/IMAP/UIDMoveCommand.swift",
+          "sha256": "c66cc5b45c7daae330cf3f6f2a6d33b3b38e3af3445e5a34d1627a37b5ae58ef",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/IMAP/UIDStoreCommand.swift",
+          "sha256": "44e9ad28a6c0e2283caf852d62e60211e712e9cb98aa70fa4a472022f9e15318",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/IMAP/UnsubscribeCommand.swift",
+          "sha256": "818d8cf3b5ba231fa19fd41dc5905871ac7294517c33f30cfefb92b66e3bcc69",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/IMAP/VoidCommand.swift",
+          "sha256": "ae62829c36001297781f587e1a9127c74ec8ccf07a5ad19cbdd808bfe90437d2",
+          "publicDeclarations": []
+        }
+      ]
+    },
+    {
+      "iosModule": "SMTP",
+      "androidModule": ":core:smtp",
+      "status": "pending_port",
+      "reason": "Initial adapters only; full behavior/field/test parity not accepted",
+      "sources": [
+        {
+          "path": "Core/Sources/SMTP/ByteHandler.swift",
+          "sha256": "8684ba5252e5e4e6966eb78ff1ca82509f005f72ea0d8c02a20610aaf0b5b8bb",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/SMTP/ConnectionSecurity.swift",
+          "sha256": "a694ef0104d94e0eed88c71820b6074582dfeea906ec07667ece55e1d7936cf5",
+          "publicDeclarations": [
+            "public enum ConnectionSecurity: String, Codable, CaseIterable, CustomStringConvertible, Identifiable, Sendable {",
+            "public static var ssl: Self { .tls }",
+            "public var description: String { rawValue }",
+            "public var id: String { rawValue }"
+          ]
+        },
+        {
+          "path": "Core/Sources/SMTP/Email.swift",
+          "sha256": "c83688aece9ab8d9040bbeb21c2f3485bc265d248805616c79216943f6c4f161",
+          "publicDeclarations": [
+            "public struct Email: Identifiable, Sendable {",
+            "public let sender: EmailAddress",
+            "public let recipients: [EmailAddress]",
+            "public let copied: [EmailAddress]",
+            "public let blindCopied: [EmailAddress]",
+            "public let subject: String",
+            "public let date: Date",
+            "public let body: Body",
+            "public var contentType: MIME.ContentType { body.contentType }",
+            "public var messageID: MessageID {",
+            "public init(",
+            "public let id: UUID"
+          ]
+        },
+        {
+          "path": "Core/Sources/SMTP/LoggingHandler.swift",
+          "sha256": "1fab7140d2e4b07d61e9a2f889982b1cd3aa2b274f63d41961f0837d62092f69",
+          "publicDeclarations": [
+            "public var description: String { String(decoding: self, as: UTF8.self) }"
+          ]
+        },
+        {
+          "path": "Core/Sources/SMTP/MessageHandler.swift",
+          "sha256": "399434df2c73279c74ef626eaa86ff7eaf401df2684beaaf7b167d3fa37f2756",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/SMTP/RequestEncoder.swift",
+          "sha256": "e6ebd745bb604d7b92c3df8144e613b148530be62ce3f9d7f83fdc61e6600a5c",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/SMTP/ResponseHandler.swift",
+          "sha256": "6d4cada8dfbf2751876f85b77d27104c9466b59d7afeae07091634ef35d6095a",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/SMTP/SMTPClient.swift",
+          "sha256": "5e0f65e0059406c3cc7d974510423a094bd9c6dd225997ec5ca99017e52aa133",
+          "publicDeclarations": [
+            "public struct SMTPClient {",
+            "public let server: Server",
+            "public init(",
+            "public func send(_ email: [Email]) async throws {",
+            "public func send(_ email: Email) async throws {"
+          ]
+        },
+        {
+          "path": "Core/Sources/SMTP/SMTPError.swift",
+          "sha256": "8023b807d7c5574ede75201cb03c59aa6ce8fb475573dbf3a1653e2d51bbe0ed",
+          "publicDeclarations": [
+            "public enum SMTPError: Error, CustomStringConvertible, Equatable {",
+            "public var description: String {"
+          ]
+        },
+        {
+          "path": "Core/Sources/SMTP/SendHandler.swift",
+          "sha256": "b54c75aae657e07207455b3434cfe0ff77cf1d2ae1c2cbfeafd6e7157edce4ce",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/SMTP/Server.swift",
+          "sha256": "aa8a636748dc7a95888d5417c541e46e0577d52451c486baa9542afa309206dc",
+          "publicDeclarations": [
+            "public struct Server: CustomStringConvertible, Equatable, Sendable {",
+            "public let connectionSecurity: ConnectionSecurity",
+            "public let hostname: String",
+            "public let username: String",
+            "public let password: String",
+            "public let port: Int",
+            "public init(",
+            "public var description: String { \"\\(hostname):\\(port)\" }"
+          ]
+        }
+      ]
+    },
+    {
+      "iosModule": "Autoconfiguration",
+      "androidModule": "Pending implementation",
+      "status": "pending_port",
+      "reason": "Initial adapters only; full behavior/field/test parity not accepted",
+      "sources": [
+        {
+          "path": "Core/Sources/Autoconfiguration/Bundle.swift",
+          "sha256": "05f2137e4d6a9a4068766eb7b2871fcda74695b3079a48bcb5c05390833db277",
+          "publicDeclarations": [
+            "public var schemes: [String] {"
+          ]
+        },
+        {
+          "path": "Core/Sources/Autoconfiguration/ClientConfig.swift",
+          "sha256": "f240952483429a621db89f1ccf481f4d3507c88fdd847713e7daf853d3761742",
+          "publicDeclarations": [
+            "public struct ClientConfig: Decodable, Equatable {",
+            "public let emailProvider: EmailProvider?",
+            "public let oAuth2: OAuth2?",
+            "public let webMail: WebMail?",
+            "public static func == (lhs: Self, rhs: Self) -> Bool {"
+          ]
+        },
+        {
+          "path": "Core/Sources/Autoconfiguration/DNSResolver.swift",
+          "sha256": "85fe444fe910d4b10eaf69752d28f749179e9c50f1038278b130cdf04cfda67a",
+          "publicDeclarations": [
+            "public typealias DNSResolver = AsyncDNSResolver",
+            "public static func querySRV(_ emailAddress: String, services: [Service] = Service.allCases) async throws -> [SRVRecord] {",
+            "public static func querySRV(_ emailAddress: String, service: Service) async throws -> [SRVRecord] {",
+            "public static func queryMX(_ emailAddress: String) async throws -> [MXRecord] {"
+          ]
+        },
+        {
+          "path": "Core/Sources/Autoconfiguration/DomainParser.swift",
+          "sha256": "6a14927383edccaaeebe2a8df707f50c52ceaf07cc3caa6ceabe95cddb106d19",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/Autoconfiguration/EmailProvider.swift",
+          "sha256": "0d384d94247951e965cca54719c6c57a18052f69a50acd354208007ecf9283f3",
+          "publicDeclarations": [
+            "public struct EmailProvider: Decodable {",
+            "public struct Server: Decodable {",
+            "public enum Authentication: String, CaseIterable, CustomStringConvertible, Decodable {",
+            "public var description: String {",
+            "public enum ServerType: String, CaseIterable, CustomStringConvertible, Decodable {",
+            "public var description: String { rawValue.uppercased() }",
+            "public enum SocketType: String, CaseIterable, CustomStringConvertible, Decodable {",
+            "public var description: String { rawValue }",
+            "public let authentication: [Authentication]",
+            "public let hostname: String",
+            "public let port: Int",
+            "public let serverType: ServerType",
+            "public let socketType: SocketType",
+            "public let username: String",
+            "public let displayName: String",
+            "public let displayShortName: String",
+            "public let documentation: [URL]",
+            "public let domain: String",
+            "public let servers: [Server]"
+          ]
+        },
+        {
+          "path": "Core/Sources/Autoconfiguration/OAuth2.swift",
+          "sha256": "cd0a84ace4ef19a6574363b06c70976b09ba7cb85ca582420ffdc2d20a36ba36",
+          "publicDeclarations": [
+            "public struct OAuth2: Decodable {",
+            "public let authURL: URL",
+            "public let tokenURL: URL",
+            "public let scope: [String]",
+            "public let issuer: String",
+            "public init(from decoder: any Decoder) throws {",
+            "public struct PKCE: Equatable, Sendable {",
+            "public let codeVerifier: String",
+            "public let codeChallenge: String",
+            "public init() {",
+            "public struct Configuration: Codable, Equatable, Hashable, Sendable {",
+            "public let authURI: String",
+            "public let tokenURI: String",
+            "public let redirectURI: String",
+            "public let responseType: String",
+            "public let scope: [String]",
+            "public let hosts: [String]",
+            "public let clientID: String",
+            "public func authURL(hint: String? = nil, pkce: PKCE) -> URL {",
+            "public func tokenURL(_ code: String, pkce: PKCE) -> URL {",
+            "public func refreshTokenURL(_ refreshToken: String) -> URL {",
+            "public func matches(_ host: String) -> Bool {",
+            "public init(authURI: String, tokenURI: String, redirectURI: String, responseType: String, scope: [String], clientID: String, hosts: [String] = []) throws {",
+            "public init(_ oauth2: OAuth2, redirectURI: String, responseType: String, clientID: String) throws {"
+          ]
+        },
+        {
+          "path": "Core/Sources/Autoconfiguration/SRVRecord.swift",
+          "sha256": "2abfed967eec8b6acfaee678af90092c16ac1c7c8bfd88c33273b6246284f9c6",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/Autoconfiguration/SRVResolver.swift",
+          "sha256": "8d6c6922220263232c8f5ef290d0e2e059d095158a3a5cca74510c6e2050ce5d",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/Autoconfiguration/Service.swift",
+          "sha256": "a1d401b37ae9c96730151223dedb61fc20f0ee778ca5ea3facaf7e31ef195444",
+          "publicDeclarations": [
+            "public enum Service: String, CaseIterable, CustomStringConvertible {",
+            "public var description: String {"
+          ]
+        },
+        {
+          "path": "Core/Sources/Autoconfiguration/Source.swift",
+          "sha256": "21cfcf8fa07050f0408b5cdabab6dccc4e5caf273a9d84414141bbfa7d75ef83",
+          "publicDeclarations": [
+            "public enum Source: CaseIterable, CustomStringConvertible {",
+            "public var description: String {"
+          ]
+        },
+        {
+          "path": "Core/Sources/Autoconfiguration/String.swift",
+          "sha256": "3912bbf395d761f5b9b94fc0eaa26d5cb0f0a4e43b0e6e8eb2820586f464f05e",
+          "publicDeclarations": [
+            "public var host: Self {",
+            "public var local: Self {",
+            "public func query(_ service: Service) throws -> Self {"
+          ]
+        },
+        {
+          "path": "Core/Sources/Autoconfiguration/SuffixListParser.swift",
+          "sha256": "9e14d5c42937fa3d3998c06e435a5eb5e1701cd0310ad672dae964019b0eb3e6",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/Autoconfiguration/TokenResponse.swift",
+          "sha256": "13152d27eee2e80e64959c97cbb979b2eb0a581313b4c864953b1a83974775ba",
+          "publicDeclarations": [
+            "public struct TokenResponse: Decodable {",
+            "public let accessToken: String",
+            "public let expiresIn: Int",
+            "public let refreshToken: String",
+            "public init(from decoder: any Decoder) throws {",
+            "public struct RefreshTokenResponse: Decodable {",
+            "public let accessToken: String",
+            "public let expiresIn: Int",
+            "public init(from decoder: any Decoder) throws {"
+          ]
+        },
+        {
+          "path": "Core/Sources/Autoconfiguration/URL.swift",
+          "sha256": "536ea2dba10def561b6f14474dd3fd0025453c05d5dde9bc03ec08643a1a9b5e",
+          "publicDeclarations": [
+            "public static func autoconfig(_ emailAddress: String, source: Source = .ispDB) throws -> Self {"
+          ]
+        },
+        {
+          "path": "Core/Sources/Autoconfiguration/URLRequest.swift",
+          "sha256": "be381ae146e5bc9e8f5730ca7f6512283ee2af5c94ad6d78a6afdec82a094687",
+          "publicDeclarations": [
+            "public static func token(_ configuration: OAuth2.Configuration, code: String, pkce: OAuth2.PKCE) throws -> Self {",
+            "public static func refreshToken(_ configuration: OAuth2.Configuration, refreshToken: String) throws -> Self {"
+          ]
+        },
+        {
+          "path": "Core/Sources/Autoconfiguration/URLSession.swift",
+          "sha256": "23aa442f494d022b868ac5b799e43a4382892a91201ecb8101bfa03b12046de8",
+          "publicDeclarations": [
+            "public func autoconfig(_ emailAddress: String, sources: [Source] = Source.allCases, queryMX: Bool = true) async throws -> (config: ClientConfig, source: Source) {",
+            "public func autoconfig(_ emailAddress: String, source: Source) async throws -> (config: ClientConfig, data: (Data, Data)) {",
+            "public func domain(host: String) async throws -> String {"
+          ]
+        },
+        {
+          "path": "Core/Sources/Autoconfiguration/WebMail.swift",
+          "sha256": "7fa671e4312690bc8135fd8c2d11176133e2e2657790998455b53c07a6e4ceec",
+          "publicDeclarations": [
+            "public struct WebMail: Decodable {",
+            "public let loginPage: URL"
+          ]
+        },
+        {
+          "path": "Core/Sources/Autoconfiguration/XMLToJSONParser.swift",
+          "sha256": "7d6765c2cd272d1920e26a3284d084ee6a35b6a1a3de43afcd9a0709122b4e5f",
+          "publicDeclarations": []
+        }
+      ]
+    },
+    {
+      "iosModule": "JMAP",
+      "androidModule": "Deferred v2.0",
+      "status": "not_applicable",
+      "reason": "JMAP deferred to v2.0",
+      "sources": [
+        {
+          "path": "Core/Sources/JMAP/Account.swift",
+          "sha256": "89d75c56cdd278ede4c80554453bbbf4057db2dd1e4f0596bf7c894c584dc9b3",
+          "publicDeclarations": [
+            "public struct Account: CustomStringConvertible, Decodable, Sendable {",
+            "public let name: String",
+            "public let capabilities: [Capability.Key: Capability]",
+            "public let isReadOnly: Bool",
+            "public let isPersonal: Bool",
+            "public func capability(for key: Capability.Key) -> Capability? {",
+            "public var description: String { name }",
+            "public init(from decoder: any Decoder) throws {"
+          ]
+        },
+        {
+          "path": "Core/Sources/JMAP/Authorization.swift",
+          "sha256": "76c9d99c923d79a943cd13cfa8860191266ae92525ac8abf6af6da0a5314669a",
+          "publicDeclarations": [
+            "public enum Authorization: CustomStringConvertible, Equatable, Sendable {",
+            "public static var empty: Self { .bearer(\"\") }",
+            "public var label: String {",
+            "public var isEmpty: Bool {",
+            "public var description: String { \"\\(label.capitalized) \\(token)\" }",
+            "public static func == (lhs: Self, rhs: Self) -> Bool {"
+          ]
+        },
+        {
+          "path": "Core/Sources/JMAP/Capability.swift",
+          "sha256": "e53abd1b4abe3235b4af11ffa0aa0b32a67df82a9168f9109e63f965f5ff3c27",
+          "publicDeclarations": [
+            "public struct Capability: Decodable, Sendable {",
+            "public enum Key: String, CaseIterable, Codable, CustomStringConvertible, Identifiable, Sendable {",
+            "public var description: String { rawValue.components(separatedBy: \":\").last! }",
+            "public var id: String { rawValue }",
+            "public enum SortOption: String, CaseIterable, Codable, CustomStringConvertible, Identifiable, Sendable {",
+            "public var description: String { rawValue }",
+            "public var id: String { rawValue }",
+            "public let maxSizeUpload: Int?",
+            "public let maxConcurrentUpload: Int?",
+            "public let maxSizeRequest: Int?",
+            "public let maxConcurrentRequests: Int?",
+            "public let maxCallsInRequest: Int?",
+            "public let maxObjectsInGet: Int?",
+            "public let maxObjectsInSet: Int?",
+            "public let collationAlgorithms: [String]?",
+            "public let maxSizeMailboxName: Int?",
+            "public let maxMailboxDepth: Int?",
+            "public let maxMailboxesPerEmail: Int?",
+            "public let maxSizeAttachmentsPerEmail: Int?",
+            "public let mayCreateTopLevelMailbox: Bool?",
+            "public let emailQuerySortOptions: [SortOption]?",
+            "public let maxDelayedSend: Int?"
+          ]
+        },
+        {
+          "path": "Core/Sources/JMAP/Email.swift",
+          "sha256": "b6e9c3f309a3c32280c34cdf1f908187eded6d410b4cc1a3f8ae3f6ad79214c1",
+          "publicDeclarations": [
+            "public struct Email: Decodable, Equatable, Hashable, Identifiable, Sendable {",
+            "public enum Keyword: String, CaseIterable, CustomStringConvertible, Sendable {",
+            "public static let allCases: [Self] = [",
+            "public var description: String { rawValue }",
+            "public struct BodyPart: Decodable, Equatable, Sendable {",
+            "public let partID: String?",
+            "public let blobID: String?",
+            "public let size: Int",
+            "public let headers: [Header]?",
+            "public let name: String?",
+            "public let type: String",
+            "public let charset: String?",
+            "public let disposition: String?",
+            "public let cid: String?",
+            "public let language: [String]?",
+            "public let location: String?",
+            "public let subParts: [Self]?",
+            "public static func == (lhs: Self, rhs: Self) -> Bool {",
+            "public struct Header: Decodable, Sendable {",
+            "public let blobID: String",
+            "public let threadID: String",
+            "public let mailboxIDs: [String: Bool]",
+            "public let keywords: [String: Bool]",
+            "public let size: Int",
+            "public let receivedAt: Date?",
+            "public let sentAt: Date?",
+            "public let messageID: [String]?",
+            "public let inReplyTo: [String]?",
+            "public let references: [String]?",
+            "public let sender: [EmailAddressProtocol]?",
+            "public let from: [EmailAddressProtocol]?",
+            "public let replyTo: [EmailAddressProtocol]?",
+            "public let to: [EmailAddressProtocol]?",
+            "public let cc: [EmailAddressProtocol]?",
+            "public let bcc: [EmailAddressProtocol]?",
+            "public let subject: String?",
+            "public let bodyStructure: BodyPart?",
+            "public let textBody: [BodyPart]",
+            "public let htmlBody: [BodyPart]",
+            "public let attachments: [BodyPart]",
+            "public let hasAttachment: Bool",
+            "public let preview: String?",
+            "public init(",
+            "public init(from decoder: any Decoder) throws {",
+            "public static func == (lhs: Self, rhs: Self) -> Bool {",
+            "public func hash(into hasher: inout Hasher) {",
+            "public let id: String",
+            "public enum Condition: Filter.Condition {",
+            "public var key: String {",
+            "public var value: Any {"
+          ]
+        },
+        {
+          "path": "Core/Sources/JMAP/EmailAddress.swift",
+          "sha256": "39845c16e36d89ddfee65d50484f7cc38345f23393df4cfb998c414ae860e914",
+          "publicDeclarations": [
+            "public var email: String { value }",
+            "public var name: String? { label }",
+            "public func encode(to encoder: any Encoder) throws {",
+            "public init(from decoder: any Decoder) throws {",
+            "public var name: String? { label }",
+            "public func encode(to encoder: any Encoder) throws {",
+            "public init(from decoder: any Decoder) throws {"
+          ]
+        },
+        {
+          "path": "Core/Sources/JMAP/Filter.swift",
+          "sha256": "de6f53956ffdfd9547bce215f90c0ca6aeacba7cf2497684db59dd7d63db679a",
+          "publicDeclarations": [
+            "public struct Filter: CustomStringConvertible {",
+            "public protocol Condition: CustomStringConvertible {",
+            "public enum Operator: String, CaseIterable, CustomStringConvertible {",
+            "public var description: String { rawValue }",
+            "public let conditions: [Condition]",
+            "public let `operator`: Operator",
+            "public init(_ conditions: [Condition], `operator`: Operator = .or) {",
+            "public var description: String {",
+            "public var object: [String: Any] {",
+            "public var description: String { \"\\(key): \\(value)\" }"
+          ]
+        },
+        {
+          "path": "Core/Sources/JMAP/JMAPClient.swift",
+          "sha256": "fefb3d1c856c1bc2fca8f465804baa73f949369de08379f4dd48bb8f8044539b",
+          "publicDeclarations": [
+            "public class JMAPClient {",
+            "public static func session(_ server: Server) async throws -> Self {",
+            "public let server: Server",
+            "public private(set) var session: Session?",
+            "public func thread(for email: Email) async throws -> [Email] {",
+            "public func emails(in mailbox: Mailbox) async throws -> [Email] {",
+            "public func emails(_ ids: [String]) async throws -> [Email] {",
+            "@discardableResult public func create(mailbox: Mailbox) async throws -> MethodSetResponse? {",
+            "@discardableResult public func update(mailbox: Mailbox) async throws -> MethodSetResponse? {",
+            "@discardableResult public func destroy(mailbox: Mailbox) async throws -> MethodSetResponse? {",
+            "public func mailboxes() async throws -> [Mailbox] {",
+            "@discardableResult public func session() async throws -> Session {",
+            "required public init("
+          ]
+        },
+        {
+          "path": "Core/Sources/JMAP/JMAPError.swift",
+          "sha256": "8669c8493d3e5c3186cfe583ec678751f8f2bf9e3e687412673154f18eba0324",
+          "publicDeclarations": [
+            "public enum JMAPError: Error, CustomStringConvertible, Equatable {",
+            "public var description: String {",
+            "public static func == (lhs: Self, rhs: Self) -> Bool {"
+          ]
+        },
+        {
+          "path": "Core/Sources/JMAP/JSONDecoder.swift",
+          "sha256": "49c569215536fb79d3d6f47113dc1a2cdc7fc9b228c78118ac5dcbf747e34ebd",
+          "publicDeclarations": []
+        },
+        {
+          "path": "Core/Sources/JMAP/Locale.swift",
+          "sha256": "c40b88df239091fe334ec486b14e4faf470c8b741eb0d8ae44b217467250176d",
+          "publicDeclarations": [
+            "public static func acceptedLanguages() -> String {"
+          ]
+        },
+        {
+          "path": "Core/Sources/JMAP/Mailbox.swift",
+          "sha256": "28a8f76227ef583d6adc45fd5cdee941e3e38c81c89466a9c6c950055898e451",
+          "publicDeclarations": [
+            "public struct Mailbox: CustomStringConvertible, Decodable, Equatable, Hashable, Identifiable, Sendable {",
+            "public enum Role: String, CaseIterable, CustomStringConvertible, Decodable, Identifiable, Sendable {",
+            "public var description: String { rawValue }",
+            "public var id: String { rawValue }",
+            "public struct Rights: Decodable, Equatable, Hashable, Sendable {",
+            "public let mayReadItems: Bool",
+            "public let mayAddItems: Bool",
+            "public let mayRemoveItems: Bool",
+            "public let maySetSeen: Bool",
+            "public let maySetKeywords: Bool",
+            "public let mayCreateChild: Bool",
+            "public let mayRename: Bool",
+            "public let mayDelete: Bool",
+            "public let maySubmit: Bool",
+            "public init(",
+            "public let name: String",
+            "public let parentID: String?",
+            "public let role: Role?",
+            "public let sortOrder: Int",
+            "public let totalEmails: Int",
+            "public let totalThreads: Int",
+            "public let unreadEmails: Int",
+            "public let unreadThreads: Int",
+            "public let isSubscribed: Bool",
+            "public var rights: Rights { myRights }  // Rename `myRights` to `rights`",
+            "public init(name: String, parentID: String? = nil, isSubscribed: Bool = true, id: String? = nil) {",
+            "public var description: String { name }",
+            "public static func == (lhs: Self, rhs: Self) -> Bool {",
+            "public func hash(into hasher: inout Hasher) {",
+            "public let id: String",
+            "public enum Condition: Filter.Condition {",
+            "public var key: String {",
+            "public var value: Any {"
+          ]
+        },
+        {
+          "path": "Core/Sources/JMAP/Method.swift",
+          "sha256": "428073eb062431edd106283bb4f83404735da1c2dcab87b8f7675a789d1d3a39",
+          "publicDeclarations": [
+            "public protocol Method: Identifiable {",
+            "public var using: [Capability.Key] { [.core, .mail] }"
+          ]
+        },
+        {
+          "path": "Core/Sources/JMAP/MethodAction.swift",
+          "sha256": "494a86d38bf5a9ed7660fa62dc1192f831d1f91dfd09275e0e053609fb505d56",
+          "publicDeclarations": [
+            "public enum MethodAction: CustomStringConvertible {",
+            "public var description: String {"
+          ]
+        },
+        {
+          "path": "Core/Sources/JMAP/MethodError.swift",
+          "sha256": "7af81da559c2f1c12c4573932e7940b8a9267fcd528572dc7bd8ae4d383540e6",
+          "publicDeclarations": [
+            "public enum MethodError: String, CaseIterable, CustomStringConvertible, Decodable, Error, Identifiable {",
+            "public var description: String {",
+            "public init(from decoder: any Decoder) throws {",
+            "public var id: String { rawValue }"
+          ]
+        },
+        {
+          "path": "Core/Sources/JMAP/MethodResponse.swift",
+          "sha256": "dfc5b250c59db99f8c6c8b2f01ccdbdf8febfeb0b8e13821f48bf39918491c91",
+          "publicDeclarations": [
+            "public protocol MethodResponse: Identifiable {",
+            "public struct MethodGetResponse: MethodResponse {",
+            "public let data: Data",
+            "public let notFound: [String]",
+            "public func decode<T>(_ type: T.Type) throws -> T where T: Decodable {",
+            "public let name: String",
+            "public let id: UUID",
+            "public struct MethodQueryResponse: MethodResponse {",
+            "public let ids: [String]",
+            "public let position: Int",
+            "public let total: Int",
+            "public let name: String",
+            "public let id: UUID",
+            "public struct MethodSetResponse: MethodResponse {",
+            "public let created: [String: Any]",
+            "public let updated: [String]",
+            "public let destroyed: [String]",
+            "public let notCreated: [String: SetError]",
+            "public let notUpdated: [String: SetError]",
+            "public let notDestroyed: [String: SetError]",
+            "public let name: String",
+            "public let id: UUID",
+            "public struct MethodEchoResponse: MethodResponse {",
+            "public let name: String",
+            "public let id: UUID"
+          ]
+        },
+        {
+          "path": "Core/Sources/JMAP/RequestError.swift",
+          "sha256": "0f3f731d80c50e401ebb4a40bc7a46d3881703b35497012b47d1829452ba229e",
+          "publicDeclarations": [
+            "public struct RequestError: Error, Decodable, CustomStringConvertible {",
+            "public enum Code: String, CaseIterable, Codable, CustomStringConvertible, Identifiable, Sendable {",
+            "public var description: String {",
+            "public var id: String { rawValue }",
+            "public let code: Code",
+            "public let detail: String",
+            "public init(from decoder: any Decoder) throws {",
+            "public var description: String { \"\\(code)\\(detail.isEmpty ? \"\" : \"; \\(detail)\")\" }"
+          ]
+        },
+        {
+          "path": "Core/Sources/JMAP/Server.swift",
+          "sha256": "1b86b929304e5de7850e68e503a0ec9a4933a6e4186139897d3c60583ddc3523",
+          "publicDeclarations": [
+            "public struct Server: CustomStringConvertible, Equatable, Sendable {",
+            "public let authorization: Authorization?",
+            "public let host: String",
+            "public let port: Int",
+            "public init(",
+            "public var description: String { \"\\(host):\\(port)\" }"
+          ]
+        },
+        {
+          "path": "Core/Sources/JMAP/Session.swift",
+          "sha256": "84cb6e3e7544efb28e98bb57a222aa89a1758937c7555f597d05e4fcd7036318",
+          "publicDeclarations": [
+            "public struct Session: CustomStringConvertible, Decodable, Equatable, Sendable {",
+            "public let username: String",
+            "public let accounts: [String: Account]",
+            "public let primaryAccounts: [Capability.Key: String]",
+            "public let capabilities: [Capability.Key: Capability]",
+            "public let downloadURLTemplate: String",
+            "public let uploadURLTemplate: String",
+            "public let eventSourceURL: URL",
+            "public let apiURL: URL",
+            "public func account(_ id: String?) -> Account? {",
+            "public func primaryAccount(for key: Capability.Key) -> Account? {",
+            "public func capability(for key: Capability.Key) -> Capability? {",
+            "@discardableResult public func downloadURL(account id: String, blob: String, name: String, type: String) throws -> URL {",
+            "@discardableResult public func uploadURL(account id: String) throws -> URL {",
+            "public var description: String { username }",
+            "public init(from decoder: any Decoder) throws {",
+            "public static func == (lhs: Self, rhs: Self) -> Bool {"
+          ]
+        },
+        {
+          "path": "Core/Sources/JMAP/SetError.swift",
+          "sha256": "1e0fa0042fa08ca7e0ffc42a26b653e1b108067fdd940b8f05133917d1c5e4b8",
+          "publicDeclarations": [
+            "public enum SetError: String, CaseIterable, CustomStringConvertible, Error, Identifiable {",
+            "public var description: String {",
+            "public var id: String { rawValue }"
+          ]
+        },
+        {
+          "path": "Core/Sources/JMAP/Thread.swift",
+          "sha256": "7079f76526562b42c1c6e85a0105a0cf2e9bbc29668dcdf04aedecb5e3f55d39",
+          "publicDeclarations": [
+            "public struct Thread: Decodable, Identifiable {",
+            "public let emailIDs: [String]",
+            "public init(from decoder: any Decoder) throws {",
+            "public let id: String"
+          ]
+        },
+        {
+          "path": "Core/Sources/JMAP/URL.swift",
+          "sha256": "8bea9562e9b90092e2c844dd684d2ea2882dabaf24ddac0bf8003661cb9149ae",
+          "publicDeclarations": [
+            "public static func jmapSession(host: String, port: Int? = nil) throws -> Self {"
+          ]
+        },
+        {
+          "path": "Core/Sources/JMAP/URLRequest.swift",
+          "sha256": "8bdfb416cda9cc523a46e150bceeb5f9ab106b1c9c6025054e22cc82db899a10",
+          "publicDeclarations": [
+            "public static func jmapAPI(_ methods: [any Method], url: URL, authorization: Authorization) throws -> Self {",
+            "public static func jmapSession(server: Server) throws -> Self {",
+            "public static func jmapSession(host: String, port: Int? = nil, authorization: Authorization) throws -> Self {"
+          ]
+        },
+        {
+          "path": "Core/Sources/JMAP/URLSession.swift",
+          "sha256": "97bca6b815b875057b00bd44b6878bd1f4bec9f8c7cc3f5dd6e29eb10299ca6f",
+          "publicDeclarations": [
+            "public func jmapAPI(_ methods: [any Method], url: URL, authorization: Authorization) async throws -> [any MethodResponse] {",
+            "public func jmapSession(server: Server) async throws -> Session {",
+            "public func jmapSession(host: String, port: Int? = nil, authorization: Authorization) async throws -> Session {"
+          ]
+        }
+      ]
+    }
+  ],
+  "fixtures": [
+    {
+      "path": "Core/Tests/MIMETests/Resources/mime-body-1759430F.eml",
+      "sha256": "42690159979eb145440ca56dc9230202238863c37841c22f25a528e11c916da0",
+      "adopted": false
+    },
+    {
+      "path": "Core/Tests/MIMETests/Resources/mime-body-2874E3C9.eml",
+      "sha256": "a204a59a487c312c53cafc843ef5f700e87570e83f54069d1c4a5a403e79b966",
+      "adopted": false
+    },
+    {
+      "path": "Core/Tests/MIMETests/Resources/mime-body-2EA571DD.eml",
+      "sha256": "a2c2bf2a5b5b0b4935743cdebc73c0d904badecb6357b2cefb9521334189f747",
+      "adopted": false
+    },
+    {
+      "path": "Core/Tests/MIMETests/Resources/mime-body-60EB5CAE.eml",
+      "sha256": "d5ced0e6500b57efda100474b47d2829856d3fc4d8d29682fb9d4903db1031c1",
+      "adopted": false,
+      "upstreamSha256": "af63ccc25e6e8d267d619347cc516b3d916b2757ba3c04bcd33dde05cb4d29f9",
+      "modifications": "Two contributor email addresses replaced with reserved example.test identities; MIME transfer encoding preserved. Cryptographic signatures are fixture data and are not validated.",
+      "evidence": "IosMimeFixtureTest: sanitized raw hash and independent normalized body/attachment hashes; upstreamSha256 records source provenance"
+    },
+    {
+      "path": "Core/Tests/MIMETests/Resources/mime-body-7A690F43.eml",
+      "sha256": "4a7fd27ec23b41df2df080d71bc5cd868ee57355b8a16599d0c93281fb22ec0c",
+      "adopted": false,
+      "upstreamSha256": "4fd272136804a1afb0aef740c95727036b55f28362d8bed9f1ce65af7ab8190b",
+      "modifications": "Two contributor email addresses replaced with reserved example.test identities; MIME transfer encoding preserved. Cryptographic signatures are fixture data and are not validated.",
+      "evidence": "IosMimeFixtureTest: sanitized raw hash and independent normalized body/attachment hashes; upstreamSha256 records source provenance"
+    },
+    {
+      "path": "Core/Tests/MIMETests/Resources/mime-body-86925F24.eml",
+      "sha256": "5694b9be3a50c322d19754798d06d60dfeafbb882bff62da4b48e9c95badd929",
+      "adopted": false,
+      "upstreamSha256": "c560ef1735b6bb23205e0edea2ee83dc0e3115e72b1797c155a644b51b09319a",
+      "modifications": "Two contributor email addresses replaced with reserved example.test identities; MIME transfer encoding preserved. Cryptographic signatures are fixture data and are not validated.",
+      "evidence": "IosMimeFixtureTest: sanitized raw hash and independent normalized body/attachment hashes; upstreamSha256 records source provenance"
+    },
+    {
+      "path": "Core/Tests/MIMETests/Resources/mime-body-89526045.eml",
+      "sha256": "acf164230d1f62298e2720eb055b0a366ff7e6ecb2ec4f1e54d9c7e5aabfd225",
+      "adopted": false,
+      "upstreamSha256": "7b67c3ba62da96619017002f7b8373519e1a8fd219c8cd2b220f4b11c8c7e47e",
+      "modifications": "Two contributor email addresses replaced with reserved example.test identities; MIME transfer encoding preserved. Cryptographic signatures are fixture data and are not validated.",
+      "evidence": "IosMimeFixtureTest: sanitized raw hash and independent normalized body/attachment hashes; upstreamSha256 records source provenance"
+    },
+    {
+      "path": "Core/Tests/MIMETests/Resources/mime-body-976C6A94.eml",
+      "sha256": "ba1e0cd1e0a39e6c2a63653bb9afd9fb3cfc96e18db2dd5b11ab41c011f8cdd7",
+      "adopted": false
+    },
+    {
+      "path": "Core/Tests/MIMETests/Resources/mime-body-BFA06D93.eml",
+      "sha256": "f930cf6d2d441a28cff591b55127f995a32aef600e0fe6772600b7fc1cf338b0",
+      "adopted": false
+    },
+    {
+      "path": "Core/Tests/MIMETests/Resources/mime-body-CFD4D3A3.eml",
+      "sha256": "2f030930b819816492bfe59d9f57a770c0953c19b9d53835df6da57a2e6e3b3f",
+      "adopted": false
+    },
+    {
+      "path": "Core/Tests/MIMETests/Resources/mime-body-E18BEE81.eml",
+      "sha256": "77f3cc08848a12962bcb0f51fa84fc0c6f208e50d887180a5337a21dba61febc",
+      "adopted": false,
+      "upstreamSha256": "1f7201deadda6dbf4cccd0de14eb4904ee6c2129542ffb04f1591b5a61b0a2c9",
+      "modifications": "Two contributor email addresses replaced with reserved example.test identities; MIME transfer encoding preserved. Cryptographic signatures are fixture data and are not validated.",
+      "evidence": "IosMimeFixtureTest: sanitized raw hash and independent normalized body/attachment hashes; upstreamSha256 records source provenance"
+    },
+    {
+      "path": "Core/Tests/MIMETests/Resources/mime-body-E1FA0690.eml",
+      "sha256": "2119bc575ed1200c548ffa10cf64bca78c864d085bbd82e467b8909d7b646a9b",
+      "adopted": false,
+      "upstreamSha256": "3f703b692db46e9aa61a18b8e3c903a2ad49186e885de59c52c31bec371302f5",
+      "modifications": "Two contributor email addresses replaced with reserved example.test identities; MIME transfer encoding preserved. Cryptographic signatures are fixture data and are not validated.",
+      "evidence": "IosMimeFixtureTest: sanitized raw hash and independent normalized body/attachment hashes; upstreamSha256 records source provenance"
+    },
+    {
+      "path": "Core/Tests/MIMETests/Resources/mime-body-F02140B7.eml",
+      "sha256": "574e62503268ae259de098b197f9d6e928359d0e3de94e686d2ff9864031a8f4",
+      "adopted": false
+    }
+  ]
+}

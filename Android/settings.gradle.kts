@@ -24,3 +24,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "Kage"
 include(":app")
+
+include(":core:account", ":core:mime", ":core:transport", ":core:imap", ":core:smtp")
+include(":core:integration")

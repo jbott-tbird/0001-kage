@@ -10,6 +10,9 @@ kotlin = "2.2.10"
 composeBom = "2026.02.01"
 
 [libraries]
+angus-mail = { module = "org.eclipse.angus:jakarta.mail", version = "2.0.4" }
+angus-activation = { module = "org.eclipse.angus:angus-activation", version = "2.0.2" }
+greenmail = { module = "com.icegreen:greenmail", version = "2.1.14" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

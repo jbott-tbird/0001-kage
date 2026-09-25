@@ -3,6 +3,7 @@ package org.foxred.kage.core.mime
 import jakarta.mail.Multipart
 import jakarta.mail.Part
 import jakarta.mail.internet.ContentType
+import jakarta.mail.internet.MimeMultipart
 import jakarta.mail.internet.MimeUtility
 import java.io.ByteArrayOutputStream
 import java.io.OutputStream
@@ -70,7 +71,11 @@ class AngusPartReader(
             if (part.isMimeType("multipart/*")) {
                 // IMAP's multipart object uses BODYSTRUCTURE; it does not materialize leaf
                 // contents.
+                if (ContentType(part.contentType).getParameter("boundary").isNullOrBlank())
+                    throw MailFailure(FailureKind.INVALID_MESSAGE, "Multipart boundary is missing")
                 val multipart = part.content as Multipart
+                if (multipart is MimeMultipart && !multipart.isComplete)
+                    throw MailFailure(FailureKind.INVALID_MESSAGE, "Multipart message is truncated")
                 if (multipart.count > maxParts - visited)
                     throw MailFailure(FailureKind.LIMIT_EXCEEDED, "Too many MIME parts")
                 val children =

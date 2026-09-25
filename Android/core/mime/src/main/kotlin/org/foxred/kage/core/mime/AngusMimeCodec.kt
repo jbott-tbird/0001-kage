@@ -24,12 +24,21 @@ class AngusMimeCodec(
         return MimeMessage(Session.getInstance(Properties()), raw.inputStream())
     }
 
-    override fun decode(raw: ByteArray): Email {
-        val message = parse(raw)
-        val content = AngusPartReader(maxBytes, maxDepth).read(message)
-        return AngusEnvelopeReader.read(message)
-            .copy(body = content.body, attachments = content.attachments)
-    }
+    override fun decode(raw: ByteArray): Email =
+        try {
+            val message = parse(raw)
+            val content = AngusPartReader(maxBytes, maxDepth).read(message)
+            AngusEnvelopeReader.read(message)
+                .copy(body = content.body, attachments = content.attachments)
+        } catch (failure: MailFailure) {
+            throw failure
+        } catch (failure: Exception) {
+            throw MailFailure(
+                FailureKind.INVALID_MESSAGE,
+                "Message MIME could not be decoded",
+                failure,
+            )
+        }
 
     override fun attachment(raw: ByteArray, partId: String): ByteArray =
         ByteArrayOutputStream()

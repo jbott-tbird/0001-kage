@@ -257,4 +257,31 @@ class MailProtocolIntegrationTest {
             assertEquals(FailureKind.CONNECTION, failure.kind)
         }
     }
+
+    @Test
+    fun movePreservesUnrelatedMessagesAndCanReconnectAfterCancellation() {
+        repeat(2) { i ->
+            AngusSmtpClient()
+                .send(
+                    outgoing(),
+                    Authorization("password"),
+                    email().copy(subject = "Message $i", bcc = emptyList()),
+                )
+        }
+        AngusImapClient().use { client ->
+            client.connect(incoming(), Authorization("password"))
+            assertTrue(client.supports("MOVE"))
+            client.createMailbox("Archive Test")
+            val chosen = client.messages("INBOX", Instant.EPOCH).first()
+            client.move(chosen.identity!!, "Archive Test")
+            assertEquals(1, client.status("INBOX").messageCount)
+            assertEquals(
+                chosen.subject,
+                client.messages("Archive Test", Instant.EPOCH).single().subject,
+            )
+            client.cancel()
+            client.connect(incoming(), Authorization("password"))
+            assertEquals(1, client.status("INBOX").messageCount)
+        }
+    }
 }

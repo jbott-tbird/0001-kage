@@ -27,3 +27,5 @@ if (!providers.gradleProperty("mailCoreOnly").isPresent) include(":app")
 
 include(":core:account", ":core:mime", ":core:transport", ":core:imap", ":core:smtp")
 include(":core:integration")
+
+include(":core:testkit")

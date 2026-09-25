@@ -38,7 +38,12 @@ class AngusImapClient(
         control.install(properties, "imap")
         val candidate = Session.getInstance(properties).getStore("imap") as IMAPStore
         try {
-            candidate.connect(server.hostname, server.port, server.username, authorization.secret)
+            candidate.connect(
+                server.hostname,
+                server.port,
+                server.username.takeUnless { authorization.kind == Authorization.Kind.NONE },
+                authorization.secret.takeUnless { authorization.kind == Authorization.Kind.NONE },
+            )
             store = candidate
         } catch (e: Exception) {
             val error = failure(e)
@@ -62,6 +67,7 @@ class AngusImapClient(
                     f.separator,
                     f.type and Folder.HOLDS_MESSAGES != 0,
                     f.attributes.toSet(),
+                    isSubscribed = f.isSubscribed,
                 )
             }
         } catch (e: Exception) {
@@ -259,11 +265,11 @@ class AngusImapClient(
 
     @Synchronized
     override fun move(identity: MessageIdentity, targetMailbox: String) {
+        // Check before selecting a folder; capability discovery must not open a second session.
+        // Never emulate MOVE with unrestricted EXPUNGE of another client's deleted messages.
+        if (!supports("MOVE"))
+            throw MailFailure(FailureKind.PROTOCOL, "Server does not support safe MOVE")
         folder(identity.mailbox, true) { f ->
-            // Never emulate MOVE with an unrestricted EXPUNGE: other deleted messages may belong to
-            // another client.
-            if (!connected().hasCapability("MOVE"))
-                throw MailFailure(FailureKind.PROTOCOL, "Server does not support safe MOVE")
             f.moveMessages(arrayOf(identified(f, identity)), connected().getFolder(targetMailbox))
         }
     }

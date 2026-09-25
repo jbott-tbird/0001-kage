@@ -188,4 +188,24 @@ class AngusMimeCodecTest {
             codec.attachment(codec.encode(sample()), "0.1")
         }
     }
+
+    @Test
+    fun malformedMultipartAndDeepNestingHaveTypedFailures() {
+        val truncated =
+            "Content-Type: multipart/mixed; boundary=x\r\n\r\n--x\r\nContent-Type: text/plain\r\n\r\ntext"
+                .toByteArray()
+        val malformed = assertThrows(MailFailure::class.java) { codec.decode(truncated) }
+        assertEquals(FailureKind.INVALID_MESSAGE, malformed.kind)
+        val withoutBoundary = "Content-Type: multipart/mixed\r\n\r\nbody".toByteArray()
+        assertEquals(
+            FailureKind.INVALID_MESSAGE,
+            assertThrows(MailFailure::class.java) { codec.decode(withoutBoundary) }.kind,
+        )
+        val nested = codec.encode(sample())
+        assertEquals(
+            FailureKind.LIMIT_EXCEEDED,
+            assertThrows(MailFailure::class.java) { AngusMimeCodec(maxDepth = 1).decode(nested) }
+                .kind,
+        )
+    }
 }

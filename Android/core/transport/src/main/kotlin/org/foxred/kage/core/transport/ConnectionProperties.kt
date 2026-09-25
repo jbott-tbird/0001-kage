@@ -10,6 +10,17 @@ fun connectionProperties(
     timeoutMillis: Int = 15000,
 ): Properties {
     require(timeoutMillis > 0)
+    val authentication =
+        when (auth.kind) {
+            Authorization.Kind.APP_PASSWORD -> AuthenticationType.PASSWORD
+            Authorization.Kind.OAUTH2 -> AuthenticationType.OAUTH2
+            Authorization.Kind.NONE -> AuthenticationType.NONE
+        }
+    require(server.authenticationType == authentication) {
+        "Credentials do not match the server authentication type"
+    }
+    if (auth.isExpired())
+        throw MailFailure(FailureKind.AUTHENTICATION, "Authorization has expired; refresh required")
     val protocol = server.protocol.name.lowercase()
     return Properties().apply {
         setProperty("mail.$protocol.connectiontimeout", "$timeoutMillis")
@@ -26,7 +37,7 @@ fun connectionProperties(
             "mail.$protocol.starttls.required",
             "${server.security == ConnectionSecurity.STARTTLS}",
         )
-        setProperty("mail.$protocol.auth", "true")
+        setProperty("mail.$protocol.auth", "${auth.kind != Authorization.Kind.NONE}")
         setProperty(
             "mail.$protocol.auth.mechanisms",
             if (auth.kind == Authorization.Kind.OAUTH2) "XOAUTH2" else "PLAIN LOGIN",

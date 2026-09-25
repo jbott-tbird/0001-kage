@@ -32,6 +32,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
     sourceSets.getByName("androidTest").assets.srcDir("$projectDir/schemas")
+    sourceSets.getByName("androidTest").assets.srcDir(project(":core:integration").layout.buildDirectory.dir("test-certificates").get().asFile)
     packaging { resources.merges += setOf("META-INF/LICENSE.md", "META-INF/NOTICE.md") }
     buildFeatures {
         compose = true
@@ -41,6 +42,7 @@ android {
 ksp { arg("room.schemaLocation", "$projectDir/schemas") }
 
 dependencies {
+    androidTestImplementation(project(":core:testkit"))
     implementation(project(":core:imap"))
     implementation(project(":core:smtp"))
     implementation(project(":core:mime"))
@@ -70,4 +72,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
+}
+tasks.matching { it.name == "mergeDebugAndroidTestAssets" }.configureEach {
+    dependsOn(":core:integration:createTestCertificate")
 }

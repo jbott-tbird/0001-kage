@@ -35,7 +35,12 @@ class AngusSmtpClient(
         val transport = session.getTransport("smtp")
         var submitting = false
         try {
-            transport.connect(server.hostname, server.port, server.username, authorization.secret)
+            transport.connect(
+                server.hostname,
+                server.port,
+                server.username.takeUnless { authorization.kind == Authorization.Kind.NONE },
+                authorization.secret.takeUnless { authorization.kind == Authorization.Kind.NONE },
+            )
             submitting = true
             transport.sendMessage(message, recipients)
         } catch (e: AuthenticationFailedException) {

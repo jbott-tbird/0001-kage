@@ -1,6 +1,7 @@
 plugins { id("org.jetbrains.kotlin.jvm") }
 kotlin { jvmToolchain(17) }
 dependencies {
+    testImplementation(project(":core:testkit"))
     testImplementation(project(":core:imap"))
     testImplementation(project(":core:smtp"))
     testImplementation(project(":core:mime"))
@@ -12,11 +13,12 @@ dependencies {
     testImplementation(libs.junit)
 }
 val certificate = layout.buildDirectory.file("test-certificates/localhost.p12")
+// Legacy PKCS12 wrapping is needed by API30 test devices; the generated identity is test-only.
 val createTestCertificate = tasks.register<Exec>("createTestCertificate") {
     val certificateFile = certificate.get().asFile
     outputs.file(certificate)
     doFirst { certificateFile.parentFile.mkdirs(); certificateFile.delete() }
-    commandLine("${System.getProperty("java.home")}/bin/keytool", "-genkeypair", "-alias", "localhost",
+    commandLine("${System.getProperty("java.home")}/bin/keytool", "-J-Dkeystore.pkcs12.legacy", "-genkeypair", "-alias", "localhost",
         "-keyalg", "RSA", "-keysize", "2048", "-storetype", "PKCS12", "-keystore", certificate.get().asFile.absolutePath,
         "-storepass", "test-password", "-keypass", "test-password", "-dname", "CN=localhost", "-ext", "SAN=dns:localhost", "-validity", "3650")
 }

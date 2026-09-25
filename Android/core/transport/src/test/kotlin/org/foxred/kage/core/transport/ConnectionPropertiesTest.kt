@@ -22,11 +22,57 @@ class ConnectionPropertiesTest {
     fun oauthUsesBuiltinMechanismWithoutAndroidSasl() {
         val p =
             connectionProperties(
-                Server("imap.gmail.com", 993, ServerProtocol.IMAP, username = "user"),
+                Server(
+                    "imap.gmail.com",
+                    993,
+                    ServerProtocol.IMAP,
+                    username = "user",
+                    authenticationType = AuthenticationType.OAUTH2,
+                ),
                 Authorization("token", Authorization.Kind.OAUTH2),
             )
         assertEquals("XOAUTH2", p.getProperty("mail.imap.auth.mechanisms"))
         assertEquals("true", p.getProperty("mail.imap.ssl.enable"))
         assertEquals("true", p.getProperty("mail.imap.peek"))
+    }
+
+    @Test
+    fun expiredTokensAndMismatchedCredentialsAreRejectedBeforeNetworking() {
+        val server =
+            Server(
+                "imap.gmail.com",
+                993,
+                ServerProtocol.IMAP,
+                username = "user",
+                authenticationType = AuthenticationType.OAUTH2,
+            )
+        val error =
+            assertThrows(MailFailure::class.java) {
+                connectionProperties(
+                    server,
+                    Authorization("expired", Authorization.Kind.OAUTH2, java.time.Instant.EPOCH),
+                )
+            }
+        assertEquals(FailureKind.AUTHENTICATION, error.kind)
+        assertThrows(IllegalArgumentException::class.java) {
+            connectionProperties(server, Authorization("password"))
+        }
+    }
+
+    @Test
+    fun unauthenticatedSubmissionStillRequiresTls() {
+        val properties =
+            connectionProperties(
+                Server(
+                    "localhost",
+                    465,
+                    ServerProtocol.SMTP,
+                    username = "",
+                    authenticationType = AuthenticationType.NONE,
+                ),
+                Authorization.none(),
+            )
+        assertEquals("false", properties.getProperty("mail.smtp.auth"))
+        assertEquals("true", properties.getProperty("mail.smtp.ssl.enable"))
     }
 }

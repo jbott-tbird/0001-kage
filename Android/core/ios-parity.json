@@ -1787,17 +1787,24 @@
         "UIDVALIDITY guard",
         "cancel/timeout",
         "bounded UID pagination",
-        "streamed attachment download"
+        "streamed attachment download",
+        "fragmented responses",
+        "IDLE change notification",
+        "unsupported IDLE with NOOP fallback",
+        "MOVE preserves unrelated messages",
+        "unsupported MOVE rejected before mutation",
+        "reconnect after cancellation",
+        "Android TLS socket login/list/status"
       ],
       "untestedOrIncomplete": [
-        "IDLE positive event/stop",
-        "MOVE capability fallback",
-        "all malformed response/reconnect cases",
-        "Android socket integration"
+        "full malformed response and literal matrix acceptance",
+        "COPY/delete fallback intentionally not implemented; parity acceptance pending",
+        "complete public-symbol audit"
       ],
       "differences": [
         "Each call scopes SELECT/EXAMINE and closes without expunge; no public mutable selected mailbox",
-        "UID pagination avoids volatile sequence number identity"
+        "UID pagination avoids volatile sequence number identity",
+        "MOVE requires server capability and fails before mutation otherwise; no global EXPUNGE fallback"
       ]
     },
     {
@@ -1806,7 +1813,8 @@
       "status": "pending_port",
       "evidence": [
         "13 unchanged upstream fixtures pass independent body/attachment expectations",
-        "deterministic outgoing MIME round-trip tests pass"
+        "deterministic outgoing MIME round-trip tests pass",
+        "Malformed multipart boundary/completeness and nesting limits produce typed failures"
       ],
       "differences": [
         "multipart/alternative selects last supported variant per representation",
@@ -1814,7 +1822,37 @@
         "Bcc retained only in SMTP envelope on outgoing mail"
       ],
       "remaining": [
-        "broader malformed MIME cases and model-field audit"
+        "complete public-symbol and model-field audit",
+        "broader malformed MIME acceptance matrix"
+      ]
+    },
+    {
+      "ios": "Core/Sources/Account",
+      "android": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+      "status": "pending_port",
+      "mappedConcepts": [
+        "Account identities/servers/deletePolicy/avatarColor/authConfig",
+        "Server protocol/security/authenticationType/id",
+        "Authorization expiry/refreshToken with redacted string representation",
+        "Mailbox subscription/role/counts/rights",
+        "Folder hierarchy and aggregate unread count",
+        "EmailBody preview"
+      ],
+      "differences": [
+        "Unknown mailbox rights/counts remain nullable until fetched",
+        "Provider-independent account IDs; database mapping pending",
+        "Attachment bytes remain on demand instead of eager storage",
+        "No insecure cleartext transport",
+        "OAuth configuration modeled; interactive OAuth flow deferred"
+      ],
+      "tests": [
+        "AccountModelTest",
+        "ConnectionPropertiesTest"
+      ],
+      "remaining": [
+        "field-by-field acceptance audit",
+        "server population of rights/counts",
+        "database and UI mapping"
       ]
     }
   ]

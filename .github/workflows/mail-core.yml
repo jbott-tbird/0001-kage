@@ -22,4 +22,4 @@ jobs:
           java-version: '21'
       - name: Test standalone mail libraries without Android SDK or external mail accounts
         working-directory: Android
-        run: ./gradlew -PmailCoreOnly=true :core:mime:test :core:transport:test :core:integration:test --no-daemon
+        run: ./gradlew -PmailCoreOnly=true :core:account:test :core:mime:test :core:transport:test :core:integration:test --no-daemon

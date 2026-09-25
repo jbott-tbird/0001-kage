@@ -5,11 +5,14 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.foxred.kage.domain.model.*
 import org.foxred.kage.domain.repository.MailRepository
 import org.foxred.kage.domain.usecase.FilterMessages
 
 class MailViewModel(val repository: MailRepository) : ViewModel() {
+    private val preferencesMutex = Mutex()
     val mailbox = MutableStateFlow(Mailbox())
     val ready = MutableStateFlow(false)
     val error = MutableStateFlow<String?>(null)
@@ -48,7 +51,9 @@ class MailViewModel(val repository: MailRepository) : ViewModel() {
     }
 
     fun preferences(change: (Preferences) -> Preferences) = action {
-        repository.updatePreferences(change(mailbox.value.preferences))
+        preferencesMutex.withLock {
+            repository.updatePreferences(change(repository.mailbox.first().preferences))
+        }
     }
 
     fun read(id: String) = action { repository.markRead(id, true) }

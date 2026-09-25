@@ -13,6 +13,7 @@ data class AccountEntity(
     val outgoingPort: Int,
     val security: String,
     val outgoingSecurity: String,
+    @ColumnInfo(defaultValue = "1") val requireAuth: Boolean = true,
 )
 
 @Entity(
@@ -68,6 +69,7 @@ data class MessageEntity(
     val pinned: Boolean,
     val draft: Boolean,
     val relatedGroup: String?,
+    @ColumnInfo(defaultValue = "''") val preview: String = "",
 )
 
 @Entity(
@@ -91,6 +93,7 @@ data class AttachmentEntity(
     val sizeBytes: Long,
     val cached: Boolean,
     val asset: String,
+    val localFile: String? = null,
 )
 
 @Entity(tableName = "preferences")

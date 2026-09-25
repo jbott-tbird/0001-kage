@@ -5,7 +5,11 @@ import android.content.Intent
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.*
@@ -13,11 +17,17 @@ import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -34,8 +44,14 @@ fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (Str
     var details by remember { mutableStateOf(false) }
     var finding by rememberSaveable { mutableStateOf(false) }
     var query by rememberSaveable { mutableStateOf("") }
+    var activeMatch by rememberSaveable { mutableIntStateOf(0) }
+    var options by remember { mutableStateOf(false) }
+    var expandedThreads by rememberSaveable { mutableStateOf(listOf<String>()) }
+    val bodyRequester = remember { BringIntoViewRequester() }
+    var textLayout by remember { mutableStateOf<TextLayoutResult?>(null) }
     var html by rememberSaveable { mutableStateOf(true) }
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
     if (message == null) {
         Column(Modifier.safeDrawingPadding().padding(T.xl)) {
             Text("Message not found")
@@ -43,21 +59,117 @@ fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (Str
         }
         return
     }
-    val highlighted = remember(message.body, query) { highlight(message.body, query) }
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Message") },
-                navigationIcon = {
-                    MailIconButton("Back", Icons.AutoMirrored.Outlined.ArrowBack, back)
-                },
-                actions = {
-                    MailIconButton("Find in message", Icons.Outlined.Search) { finding = !finding }
-                    MailIconButton("Archive message", Icons.Outlined.Archive) {
-                        vm.action(success = back) { vm.repository.move(id, "archive") }
-                    }
-                },
+    val matches =
+        remember(message.body, query) {
+            if (query.isBlank()) emptyList()
+            else
+                Regex(Regex.escape(query), RegexOption.IGNORE_CASE)
+                    .findAll(message.body)
+                    .map { it.range }
+                    .toList()
+        }
+    val colors = MaterialTheme.colorScheme
+    val highlighted =
+        remember(message.body, matches, activeMatch, colors) {
+            highlight(
+                message.body,
+                matches,
+                activeMatch,
+                colors.primaryContainer,
+                colors.onPrimaryContainer,
+                colors.primary,
+                colors.onPrimary,
             )
+        }
+    LaunchedEffect(query) { activeMatch = 0 }
+    LaunchedEffect(activeMatch, matches, textLayout) {
+        val range = matches.getOrNull(activeMatch)
+        val layout = textLayout
+        if (range != null && layout != null && range.first < layout.layoutInput.text.length)
+            bodyRequester.bringIntoView(layout.getBoundingBox(range.first))
+    }
+    Scaffold(
+        modifier = Modifier.imePadding(),
+        topBar = {
+            Column {
+                TopAppBar(
+                    title = { Text("Message") },
+                    navigationIcon = {
+                        MailIconButton("Back", Icons.AutoMirrored.Outlined.ArrowBack, back)
+                    },
+                    actions = {
+                        MailIconButton("Find in message", Icons.Outlined.Search) {
+                            finding = !finding
+                            if (!finding) query = ""
+                        }
+                        MailIconButton("Archive message", Icons.Outlined.Archive) {
+                            vm.action(success = back) { vm.repository.move(id, "archive") }
+                        }
+                        Box {
+                            MailIconButton("Message options", Icons.Outlined.MoreHoriz) {
+                                options = true
+                            }
+                            DropdownMenu(options, { options = false }) {
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(if (message.isRead) "Mark unread" else "Mark read")
+                                    },
+                                    onClick = {
+                                        vm.action { vm.repository.markRead(id, !message.isRead) }
+                                        options = false
+                                    },
+                                )
+                            }
+                        }
+                    },
+                )
+                if (finding) {
+                    OutlinedTextField(
+                        query,
+                        { query = it },
+                        label = { Text("Find in this message") },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                        keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = T.lg),
+                        trailingIcon = {
+                            MailIconButton("Close find", Icons.Outlined.Close) {
+                                finding = false
+                                query = ""
+                            }
+                        },
+                    )
+                    Row(
+                        Modifier.fillMaxWidth().padding(horizontal = T.lg),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            if (matches.isEmpty()) "0 matches"
+                            else "${activeMatch + 1} / ${matches.size}",
+                            Modifier.weight(1f),
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                        IconButton(
+                            onClick = {
+                                focusManager.clearFocus()
+                                activeMatch = (activeMatch - 1 + matches.size) % matches.size
+                            },
+                            enabled = matches.isNotEmpty(),
+                        ) {
+                            Icon(Icons.Outlined.KeyboardArrowUp, "Previous match")
+                        }
+                        IconButton(
+                            onClick = {
+                                focusManager.clearFocus()
+                                activeMatch = (activeMatch + 1) % matches.size
+                            },
+                            enabled = matches.isNotEmpty(),
+                        ) {
+                            Icon(Icons.Outlined.KeyboardArrowDown, "Next match")
+                        }
+                    }
+                }
+            }
         },
         bottomBar = {
             BottomAppBar {
@@ -107,25 +219,6 @@ fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (Str
                     leadingIcon = { Icon(Icons.Outlined.PushPin, null) },
                 )
             }
-            if (finding) {
-                OutlinedTextField(
-                    query,
-                    { query = it },
-                    label = { Text("Find in this message") },
-                    modifier = Modifier.fillMaxWidth(),
-                    trailingIcon = {
-                        MailIconButton("Close find", Icons.Outlined.Close) {
-                            finding = false
-                            query = ""
-                        }
-                    },
-                )
-                if (query.isNotBlank())
-                    Text(
-                        "${Regex(Regex.escape(query), RegexOption.IGNORE_CASE).findAll(message.body).count()} matches",
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-            }
             if (message.html != null && query.isBlank()) {
                 TextButton(onClick = { html = !html }) {
                     Text(if (html) "Show plain text" else "Show formatted message")
@@ -136,7 +229,13 @@ fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (Str
                     "This message has no text body.",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-            else Text(highlighted, style = MaterialTheme.typography.bodyLarge)
+            else
+                Text(
+                    highlighted,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.bringIntoViewRequester(bodyRequester),
+                    onTextLayout = { textLayout = it },
+                )
             if (message.attachments.isNotEmpty())
                 Text(
                     "${message.attachments.size} attachments",
@@ -155,13 +254,21 @@ fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (Str
                                 )
                             val intent =
                                 Intent(Intent.ACTION_VIEW)
-                                    .setDataAndType(uri, attachment.mimeType)
+                                    .setDataAndType(
+                                        uri,
+                                        if (
+                                            attachment.localFile == null &&
+                                                attachment.asset.endsWith(".png")
+                                        )
+                                            "image/png"
+                                        else attachment.mimeType,
+                                    )
                                     .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                             try {
                                 context.startActivity(intent)
                             } catch (_: ActivityNotFoundException) {
                                 vm.notice.value =
-                                    "Sample attachment downloaded. No PDF viewer is installed."
+                                    "Attachment downloaded. No compatible viewer is installed."
                             }
                         }
                     }
@@ -181,10 +288,33 @@ fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (Str
                 mail.messages
                     .filter { it.relatedGroup == message.relatedGroup && it.id != id }
                     .forEach { related ->
-                        ElevatedCard {
+                        val expanded = related.id in expandedThreads
+                        ElevatedCard(
+                            onClick = {
+                                expandedThreads =
+                                    if (expanded) expandedThreads - related.id
+                                    else expandedThreads + related.id
+                            }
+                        ) {
                             Column(Modifier.padding(T.lg)) {
-                                Text(related.sender, style = MaterialTheme.typography.titleMedium)
-                                Text(related.body)
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        related.sender,
+                                        Modifier.weight(1f),
+                                        style = MaterialTheme.typography.titleMedium,
+                                    )
+                                    Icon(
+                                        if (expanded) Icons.Outlined.ExpandLess
+                                        else Icons.Outlined.ExpandMore,
+                                        "${if (expanded) "Collapse" else "Expand"} related message",
+                                    )
+                                }
+                                Text(related.receivedAt, style = MaterialTheme.typography.bodySmall)
+                                Text(
+                                    if (expanded) related.body else related.preview,
+                                    maxLines = if (expanded) Int.MAX_VALUE else 1,
+                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                )
                             }
                         }
                     }
@@ -203,24 +333,32 @@ fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (Str
         )
 }
 
-private fun highlight(body: String, query: String): AnnotatedString = buildAnnotatedString {
+private fun highlight(
+    body: String,
+    matches: List<IntRange>,
+    active: Int,
+    background: Color,
+    foreground: Color,
+    activeBackground: Color,
+    activeForeground: Color,
+): AnnotatedString = buildAnnotatedString {
     append(body)
-    if (query.isNotBlank())
-        Regex(Regex.escape(query), RegexOption.IGNORE_CASE).findAll(body).forEach {
-            addStyle(
-                SpanStyle(
-                    background = T.light.primaryContainer,
-                    color = T.light.onPrimaryContainer,
-                ),
-                it.range.first,
-                it.range.last + 1,
-            )
-        }
+    matches.forEachIndexed { index, range ->
+        addStyle(
+            SpanStyle(
+                background = if (index == active) activeBackground else background,
+                color = if (index == active) activeForeground else foreground,
+            ),
+            range.first,
+            range.last + 1,
+        )
+    }
 }
 
 @Suppress("SetJavaScriptEnabled")
 @Composable
 private fun SafeHtml(html: String) {
+    val emailStyle = T.emailCss(MaterialTheme.colorScheme, LocalDensity.current.fontScale)
     AndroidView(
         modifier = Modifier.fillMaxWidth().height(T.messageHtmlHeight),
         factory = { context ->
@@ -241,7 +379,7 @@ private fun SafeHtml(html: String) {
         update = { view ->
             view.loadDataWithBaseURL(
                 null,
-                "<html><head><meta name='viewport' content='width=device-width, initial-scale=1'><meta http-equiv='Content-Security-Policy' content=\"default-src 'none'; style-src 'unsafe-inline'; img-src data:\"><style>body{font:16px/1.6 sans-serif;overflow-wrap:anywhere}img{max-width:100%}</style></head><body>$html</body></html>",
+                "<html><head><meta name='viewport' content='width=device-width, initial-scale=1'><meta http-equiv='Content-Security-Policy' content=\"default-src 'none'; style-src 'unsafe-inline'; img-src data:\"><style>$emailStyle</style></head><body>$html</body></html>",
                 "text/html",
                 "UTF-8",
                 null,

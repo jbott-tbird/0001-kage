@@ -44,7 +44,9 @@ The UI consumes domain models. Room entities stay in the data layer. Database
 reads stream through Flow; writes use suspending DAO calls and transactions.
 Seeding happens only for an uninitialized database. Removing accounts cascades
 to their folders, messages, and attachment rows. The schema is exported under
-`app/schemas/`; future schema changes need explicit Room migrations. There is no
+`app/schemas/`. Version 2 has an explicit migration from version 1 that preserves
+existing mail and adds SMTP authentication, attachment storage, and preview fields.
+Future schema changes also need explicit Room migrations. There is no
 destructive migration fallback.
 
 ## Implemented
@@ -53,10 +55,10 @@ destructive migration fallback.
 - Three seeded accounts, standard folders, custom folders, nested Projects/Design
 - Inbox with independent read/new state and unread/flagged/pinned/attachment filters
 - Native modal drawer, message reading, details, archive/trash, flag/pin actions
-- Plain text and sandboxed HTML rendering (JavaScript, remote loads, and file access disabled)
-- Search selected account, all accounts, or active message text (highlight/count)
+- Plain text and sandboxed HTML rendering with shared typography/colors (JavaScript, remote loads, and file access disabled)
+- Search selected account, all accounts, or active message text (highlight/count/previous/next)
 - Compose, reply/all, forward, account selection, To/Cc/Bcc, draft save/discard
-- Local send to Sent; sample PDF attachments and on-demand download/open
+- Local send to Sent; native file picker, durable file attachments, and on-demand download/open
 - Persistent selection, offline preview, attachment policy, unified/thread previews
 - Account removal and reset with confirmation
 - Emoji, long names/subjects, RTL, Japanese, missing subject/body, legacy encoding examples
@@ -66,9 +68,10 @@ destructive migration fallback.
 This is an offline native prototype. Setup validates input and creates sample
 mailboxes; it does not verify a provider. Passwords remain transient and are never
 written to Room or saved-instance state. "Send" writes to local Sent only.
-Attachment composition adds a bundled sample PDF; device-file upload is not yet
-implemented. The reader supports bundled PDF caching and delegates opening to an
-installed viewer. The find view highlights all matches and displays a count.
+The system file picker imports selected file bytes into private app storage; draft
+metadata survives saved-state restoration. The reader opens imported files or
+bundled demonstration attachments through an installed viewer. The find view
+highlights matches and provides previous/next controls that scroll to the active match.
 
 The next production layer is an IMAP/SMTP transport behind repository interfaces,
 with secure authentication/token storage, MIME parsing/sanitization, background
@@ -83,11 +86,19 @@ mail fixtures exercise display behavior, not complete app localization.
 
 - Debug APK builds successfully.
 - Five domain unit tests cover folder/account/unified search and all four filters.
-- Nine emulator tests cover Room seeding, account isolation/removal, drafts,
+- Seventeen emulator tests cover Room seeding, account isolation/removal, drafts,
   attachments, preferences, prefilled setup, native drawer/filters, reopening drafts, selection/sorting,
-  search-result provenance, and automatic attachment downloads.
+  search-result provenance, automatic attachment downloads, file picking and saved-state
+  restoration, reader controls, unified search, database migration/reopening, and list position.
 - Android lint passes with zero errors. Remaining warnings concern available
   dependency updates and Android Studio's generated launcher asset variants.
 - The web app also passes all eleven tests and its production build from `web/`.
 
 [Web parity audit](docs/port-audit.md) tracks the remaining behavior differences.
+
+## Shared fixtures
+
+Run `npm run export:android-fixtures` from `../web` after changing the web fixture
+adapter. This exports its evaluated initial state (three accounts and 66 messages)
+and new-account template to `app/src/main/assets/demo-mail.json`. Existing users’
+Room data is preserved; Settings → Reset sample data reloads the latest fixtures.

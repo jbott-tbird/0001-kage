@@ -1,8 +1,11 @@
 package org.foxred.kage.data.repository
 
 import android.content.Context
+import android.net.Uri
+import android.provider.OpenableColumns
 import androidx.room.withTransaction
 import java.io.File
+import java.util.UUID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.withContext
@@ -52,6 +55,7 @@ class RoomMailRepository(
         val messages = demo.messages(account)
         dao.saveMessages(messages.map { it.entity() })
         dao.saveAttachments(messages.flatMap { it.attachments }.map { it.entity() })
+        messages.flatMap { it.attachments }.filter { it.cached }.forEach { cacheAttachment(it.id) }
     }
 
     override suspend fun addAccount(account: Account) =
@@ -149,13 +153,58 @@ class RoomMailRepository(
 
     override suspend fun deleteDraft(id: String) = dao.deleteDraft(id)
 
+    override suspend fun importAttachment(messageId: String, sourceUri: String): Attachment =
+        withContext(Dispatchers.IO) {
+            val uri = Uri.parse(sourceUri)
+            val resolver = context.contentResolver
+            val id = UUID.randomUUID().toString()
+            val name =
+                resolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use {
+                    cursor ->
+                    if (cursor.moveToFirst()) cursor.getString(0) else null
+                } ?: "Attachment"
+            val directory = File(context.filesDir, "attachments").apply { mkdirs() }
+            val file = File(directory, id)
+            try {
+                requireNotNull(resolver.openInputStream(uri)) {
+                        "Unable to open the selected file."
+                    }
+                    .use { input -> file.outputStream().use { output -> input.copyTo(output) } }
+                Attachment(
+                    id,
+                    messageId,
+                    name,
+                    resolver.getType(uri) ?: "application/octet-stream",
+                    file.length(),
+                    cached = true,
+                    asset = "",
+                    localFile = id,
+                )
+            } catch (error: Exception) {
+                file.delete()
+                throw error
+            }
+        }
+
     override suspend fun cacheAttachment(id: String): String =
         withContext(Dispatchers.IO) {
             val item = requireNotNull(dao.attachment(id))
             val directory = File(context.filesDir, "attachments").apply { mkdirs() }
-            val file = File(directory, "${item.id.replace(Regex("[^a-zA-Z0-9-]"), "_")}.pdf")
+            val file =
+                if (item.localFile != null) File(directory, item.localFile)
+                else
+                    File(
+                        directory,
+                        "${item.id.replace(Regex("[^a-zA-Z0-9-]"), "_")}.${item.asset.substringAfterLast('.', "bin")}",
+                    )
+            if (item.localFile != null) {
+                check(file.isFile) {
+                    "The local attachment is no longer available. Attach it again from Files."
+                }
+                return@withContext file.absolutePath
+            }
             if (!file.exists()) {
-                check(dao.getPreferences()?.offline != true) {
+                check(item.cached || dao.getPreferences()?.offline != true) {
                     "This attachment is not available offline. Turn off offline preview to download it."
                 }
                 context.assets.open(item.asset).use { input ->

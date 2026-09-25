@@ -83,3 +83,9 @@ vercel deploy --prod --yes --scope YOUR_VERCEL_SCOPE
 
 Local Vercel metadata and environment files are ignored by Git. Design reference
 images are excluded from deployment; app assets in `public/` are included.
+
+## Android fixture export
+
+`npm run export:android-fixtures` writes the evaluated web initial state and
+new-account template to the Android asset. Run it after changing mock data or its
+adapter so both prototypes retain the same account/folder/message examples.

@@ -13,6 +13,7 @@ fun Account.entity() =
         outgoingPort,
         security,
         outgoingSecurity,
+        requireAuth,
     )
 
 fun AccountEntity.domain() =
@@ -26,6 +27,7 @@ fun AccountEntity.domain() =
         outgoingPort,
         security,
         outgoingSecurity,
+        requireAuth,
     )
 
 fun Folder.entity() = FolderEntity(id, accountId, name, role, parentId)
@@ -33,10 +35,10 @@ fun Folder.entity() = FolderEntity(id, accountId, name, role, parentId)
 fun FolderEntity.domain() = Folder(id, accountId, name, role, parentId)
 
 fun Attachment.entity() =
-    AttachmentEntity(id, messageId, filename, mimeType, sizeBytes, cached, asset)
+    AttachmentEntity(id, messageId, filename, mimeType, sizeBytes, cached, asset, localFile)
 
 fun AttachmentEntity.domain() =
-    Attachment(id, messageId, filename, mimeType, sizeBytes, cached, asset)
+    Attachment(id, messageId, filename, mimeType, sizeBytes, cached, asset, localFile)
 
 fun Message.entity() =
     MessageEntity(
@@ -58,6 +60,7 @@ fun Message.entity() =
         pinned,
         draft,
         relatedGroup,
+        preview,
     )
 
 fun MessageEntity.domain(attachments: List<Attachment>) =
@@ -81,6 +84,7 @@ fun MessageEntity.domain(attachments: List<Attachment>) =
         draft,
         relatedGroup,
         attachments,
+        preview.ifBlank { body.replace('\n', ' ') },
     )
 
 fun Preferences.entity() =

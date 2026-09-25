@@ -28,6 +28,8 @@ interface MailRepository {
 
     suspend fun deleteDraft(id: String)
 
+    suspend fun importAttachment(messageId: String, sourceUri: String): Attachment
+
     suspend fun cacheAttachment(id: String): String
 
     suspend fun resetDemo()

@@ -141,4 +141,61 @@ class RoomMailRepositoryTest {
         repo.updatePreferences(Preferences(automaticAttachments = true, offline = false))
         assertTrue(repo.mailbox.first().messages.flatMap { it.attachments }.all { it.cached })
     }
+
+    @Test
+    fun seedMatchesWebAccountFolderAndMessageAssignments() = runBlocking {
+        repo.initialize()
+        val mail = repo.mailbox.first()
+        assertEquals(66, mail.messages.size)
+        assertEquals(
+            "One email workflow across mobile and desktop",
+            mail.messages.first { it.id == "m01" }.subject,
+        )
+        assertEquals("work-inbox", mail.messages.first { it.id == "m04" }.folderId)
+        assertEquals("work-design", mail.messages.first { it.id == "m07" }.folderId)
+        assertEquals("personal-drafts", mail.messages.first { it.id == "m10" }.folderId)
+        assertEquals("work-projects", mail.folders.first { it.id == "work-design" }.parentId)
+        assertEquals("personal-travel", mail.folders.first { it.id == "personal-trips" }.parentId)
+        val offlineAttachments = mail.messages.flatMap { it.attachments }.filter { it.cached }
+        repo.updatePreferences(Preferences(offline = true))
+        offlineAttachments.forEach {
+            assertTrue(java.io.File(repo.cacheAttachment(it.id)).length() > 0)
+        }
+    }
+
+    @Test
+    fun reopeningDatabaseKeepsLastFolderReadStateAndPreferences() = runBlocking {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val name = "persistence-test"
+        context.deleteDatabase(name)
+        var disk = Room.databaseBuilder(context, MailDatabase::class.java, name).build()
+        try {
+            var stored = RoomMailRepository(disk, context, DemoMail(context))
+            stored.initialize()
+            stored.markRead("m01", true)
+            stored.flag("m01", true)
+            stored.updatePreferences(
+                Preferences(
+                    selectedFolder = "work-design",
+                    threads = true,
+                    offline = true,
+                    started = true,
+                )
+            )
+            disk.close()
+            disk = Room.databaseBuilder(context, MailDatabase::class.java, name).build()
+            stored = RoomMailRepository(disk, context, DemoMail(context))
+            stored.initialize()
+            val reopened = stored.mailbox.first()
+            assertEquals("work-design", reopened.preferences.selectedFolder)
+            assertTrue(reopened.preferences.started)
+            assertTrue(reopened.preferences.threads)
+            assertTrue(reopened.preferences.offline)
+            assertTrue(reopened.messages.first { it.id == "m01" }.isRead)
+            assertTrue(reopened.messages.first { it.id == "m01" }.flagged)
+        } finally {
+            disk.close()
+            context.deleteDatabase(name)
+        }
+    }
 }

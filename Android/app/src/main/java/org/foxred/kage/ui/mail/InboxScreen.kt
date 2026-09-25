@@ -367,6 +367,11 @@ fun InboxScreen(
                                     else null
                                 MessageRow(
                                     message,
+                                    if (mail.preferences.threads && message.relatedGroup != null)
+                                        mail.messages.count {
+                                            it.relatedGroup == message.relatedGroup
+                                        }
+                                    else 0,
                                     location,
                                     if (selecting) message.id in selectedVisible else null,
                                 ) {
@@ -397,6 +402,7 @@ fun InboxScreen(
 @Composable
 private fun MessageRow(
     message: Message,
+    threadCount: Int,
     location: String?,
     isSelected: Boolean?,
     open: () -> Unit,
@@ -440,12 +446,13 @@ private fun MessageRow(
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.bodyLarge,
                 )
+                if (threadCount > 1) Badge { Text(threadCount.toString()) }
                 if (message.attachments.isNotEmpty())
                     Icon(Icons.Outlined.AttachFile, "Has attachments", Modifier.size(T.lg))
             }
-            if (message.body.isNotBlank())
+            if (message.preview.isNotBlank())
                 Text(
-                    message.body.replace('\n', ' '),
+                    message.preview,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.bodyMedium,

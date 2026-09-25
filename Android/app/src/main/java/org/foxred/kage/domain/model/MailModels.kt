@@ -11,6 +11,7 @@ data class Account(
     val outgoingPort: Int = 465,
     val security: String = "SSL/TLS",
     val outgoingSecurity: String = "SSL/TLS",
+    val requireAuth: Boolean = true,
 )
 
 data class Folder(
@@ -29,6 +30,7 @@ data class Attachment(
     val sizeBytes: Long,
     val cached: Boolean = false,
     val asset: String = "sample-ticket.pdf",
+    val localFile: String? = null,
 )
 
 data class Message(
@@ -51,6 +53,7 @@ data class Message(
     val draft: Boolean = false,
     val relatedGroup: String? = null,
     val attachments: List<Attachment> = emptyList(),
+    val preview: String = body.replace('\n', ' '),
 )
 
 data class Preferences(

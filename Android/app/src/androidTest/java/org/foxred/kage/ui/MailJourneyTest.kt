@@ -1,12 +1,20 @@
 package org.foxred.kage.ui
 
+import android.app.Activity
+import android.app.Instrumentation.ActivityResult
 import android.content.Context
+import android.content.Intent
 import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.core.content.FileProvider
 import androidx.lifecycle.viewModelScope
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.pressBack
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
+import java.io.File
 import kotlinx.coroutines.cancel
 import org.foxred.kage.data.local.MailDatabase
 import org.foxred.kage.data.repository.RoomMailRepository
@@ -17,6 +25,7 @@ import org.junit.*
 
 class MailJourneyTest {
     @get:Rule val compose = createComposeRule()
+    private val restoration = StateRestorationTester(compose)
     private lateinit var db: MailDatabase
     private lateinit var vm: MailViewModel
 
@@ -25,7 +34,7 @@ class MailJourneyTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         db = Room.inMemoryDatabaseBuilder(context, MailDatabase::class.java).build()
         vm = MailViewModel(RoomMailRepository(db, context, DemoMail(context)))
-        compose.setContent { KageTheme { KageApp(vm) } }
+        restoration.setContent { KageTheme { KageApp(vm) } }
         compose.waitUntil(10000) { vm.ready.value }
     }
 
@@ -42,8 +51,12 @@ class MailJourneyTest {
         compose.onNodeWithText("Next").performScrollTo().performClick()
         compose.onNodeWithText("Planned for v2.0").assertExists()
         compose.onNodeWithText("Next").performScrollTo().performClick()
+        compose.onNode(isToggleable()).performScrollTo().performClick()
         compose.onNodeWithText("Save").performScrollTo().performClick()
         compose.waitUntil(10000) { vm.mailbox.value.accounts.size == 4 }
+        Assert.assertFalse(
+            vm.mailbox.value.accounts.first { it.address == "skye@example.net" }.requireAuth
+        )
         compose.onNodeWithText("Finish").performScrollTo().performClick()
         compose.onAllNodesWithText("skye@example.net").onFirst().assertIsDisplayed()
         compose.onNodeWithContentDescription("Filter messages").assertExists()
@@ -66,10 +79,10 @@ class MailJourneyTest {
         compose.onNodeWithText("Clear filters").assertExists().performClick()
         compose.onNodeWithContentDescription("Open account drawer").performClick()
         compose.onNodeWithText("Mailboxes").assertExists()
-        compose.onNodeWithContentDescription("Collapse Projects").performScrollTo().performClick()
-        compose.onNodeWithText("Design", substring = false).assertDoesNotExist()
-        compose.onNodeWithContentDescription("Expand Projects").performClick()
-        compose.onNodeWithText("Design", substring = false).assertExists()
+        compose.onNodeWithContentDescription("Expand Travel").performScrollTo().performClick()
+        compose.onNodeWithText("Upcoming trips", substring = false).assertExists()
+        compose.onNodeWithContentDescription("Collapse Travel").performClick()
+        compose.onNodeWithText("Upcoming trips", substring = false).assertDoesNotExist()
         compose.onNodeWithText("Drafts").performScrollTo().performClick()
         compose.onNodeWithContentDescription("Compose a message").performClick()
         compose.onNodeWithText("To").performTextInput("friend@example.net")
@@ -116,11 +129,119 @@ class MailJourneyTest {
     fun allAccountSearchShowsAccountAndFolderForResults() {
         compose.onNodeWithText("Explore the demo inbox").performClick()
         compose.onNodeWithContentDescription("Search messages").performClick()
-        compose.onNodeWithText("Search mail").performTextInput("Lighthouse booking confirmed")
+        compose.onNodeWithText("Search mail").performTextInput("Coffee this weekend?")
         compose.onNodeWithText("All accounts").performClick()
         compose.onNodeWithText("3 results").assertIsDisplayed()
         compose.onNodeWithText("rhea@example.com · Inbox").assertIsDisplayed()
         compose.onNodeWithText("rhea@example.org · Inbox").assertIsDisplayed()
         compose.onNodeWithText("rhea@community.example.net · Inbox").assertIsDisplayed()
+    }
+
+    @Test
+    fun selectedFileAndDraftFieldsSurviveSavedStateRestoration() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val directory = File(context.filesDir, "attachments").apply { mkdirs() }
+        val source =
+            File(directory, "picked-note.txt").apply { writeText("A real selected attachment.") }
+        val uri = FileProvider.getUriForFile(context, "${context.packageName}.attachments", source)
+        Intents.init()
+        try {
+            Intents.intending(hasAction(Intent.ACTION_OPEN_DOCUMENT))
+                .respondWith(ActivityResult(Activity.RESULT_OK, Intent().setData(uri)))
+            compose.onNodeWithText("Explore the demo inbox").performClick()
+            compose.onNodeWithContentDescription("Compose a message").performClick()
+            compose.onNodeWithText("To").performTextInput("friend@example.net")
+            compose.onNodeWithText("Subject").performTextInput("Selected file draft")
+            compose.onNodeWithText("Attach files").performScrollTo().performClick()
+            compose.waitUntil(10000) {
+                compose
+                    .onAllNodesWithText("picked-note.txt", substring = true)
+                    .fetchSemanticsNodes()
+                    .isNotEmpty()
+            }
+            restoration.emulateSavedInstanceStateRestore()
+            compose.onNodeWithText("picked-note.txt", substring = true).assertExists()
+            compose.onNodeWithText("Save", substring = false).performClick()
+            compose.waitUntil(10000) {
+                vm.mailbox.value.messages.any { it.subject == "Selected file draft" }
+            }
+            val saved = vm.mailbox.value.messages.first { it.subject == "Selected file draft" }
+            Assert.assertEquals("friend@example.net", saved.to)
+            Assert.assertEquals("picked-note.txt", saved.attachments.single().filename)
+            Assert.assertEquals(
+                "A real selected attachment.",
+                File(directory, saved.attachments.single().localFile!!).readText(),
+            )
+        } finally {
+            Intents.release()
+            source.delete()
+        }
+    }
+
+    @Test
+    fun readerNavigatesMatchesAndCanMarkMessageUnread() {
+        compose.onNodeWithText("Explore the demo inbox").performClick()
+        compose.onNodeWithText("One email workflow across mobile and desktop").performClick()
+        compose.onNodeWithContentDescription("Find in message").performClick()
+        compose.onNodeWithText("Find in this message").performTextInput("desktop")
+        compose.onNodeWithText("1 / 2").assertIsDisplayed()
+        compose.onNodeWithContentDescription("Next match").performClick()
+        compose.onNodeWithText("2 / 2").assertIsDisplayed()
+        compose.onNodeWithContentDescription("Next match").performClick()
+        compose.onNodeWithText("1 / 2").assertIsDisplayed()
+        compose.onNodeWithContentDescription("Previous match").performClick()
+        compose.onNodeWithText("2 / 2").assertIsDisplayed()
+        compose.onNodeWithContentDescription("Close find").performClick()
+        compose.onNodeWithContentDescription("Message options").performClick()
+        compose.onNodeWithText("Mark unread").performClick()
+        compose.waitUntil(10000) { vm.mailbox.value.messages.first { it.id == "m01" }.isRead.not() }
+    }
+
+    @Test
+    fun relatedMessagesExpandAndCollapse() {
+        compose.onNodeWithText("Explore the demo inbox").performClick()
+        vm.preferences { it.copy(threads = true) }
+        vm.selectFolder("work-inbox")
+        compose.waitUntil(10000) {
+            vm.mailbox.value.preferences.selectedFolder == "work-inbox" &&
+                vm.mailbox.value.preferences.threads
+        }
+        compose
+            .onNode(hasScrollToNodeAction())
+            .performScrollToNode(hasText("Launch checklist", substring = false))
+        compose.onNodeWithText("Launch checklist", substring = false).performClick()
+        compose
+            .onNodeWithContentDescription("Expand related message")
+            .performScrollTo()
+            .performClick()
+        compose
+            .onNodeWithContentDescription("Collapse related message")
+            .assertExists()
+            .performClick()
+        compose.onNodeWithContentDescription("Expand related message").assertExists()
+    }
+
+    @Test
+    fun unifiedInboxSearchUsesAllAccounts() {
+        compose.onNodeWithText("Explore the demo inbox").performClick()
+        vm.preferences { it.copy(unified = true) }
+        compose.waitUntil(10000) { vm.mailbox.value.preferences.unified }
+        compose.onNodeWithContentDescription("Open account drawer").performClick()
+        compose.onNodeWithText("All inboxes").performClick()
+        compose.onNodeWithContentDescription("Search messages").performClick()
+        compose.onNodeWithText("This account").assertIsNotEnabled()
+        compose.onNode(hasText("All accounts") and hasClickAction()).assertIsSelected()
+        compose.onNodeWithText("Search mail").performTextInput("Coffee this weekend?")
+        compose.onNodeWithText("3 results").assertIsDisplayed()
+    }
+
+    @Test
+    fun backFromReaderRetainsListPosition() {
+        compose.onNodeWithText("Explore the demo inbox").performClick()
+        val subject = "One_email_workflow_across_iOS_and_desktop"
+        compose.onNode(hasScrollToNodeAction()).performScrollToNode(hasText(subject))
+        compose.onNodeWithText(subject).assertIsDisplayed().performClick()
+        compose.onNodeWithContentDescription("Back").performClick()
+        compose.onNodeWithText(subject).assertIsDisplayed()
     }
 }

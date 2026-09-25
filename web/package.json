@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "test": "vitest run",
     "preview": "vite preview --host 127.0.0.1",
-    "format": "prettier --write src vite.config.ts index.html package.json tsconfig.json components.json"
+    "format": "prettier --write src vite.config.ts index.html package.json tsconfig.json components.json",
+    "export:android-fixtures": "node scripts/export-android-fixtures.cjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.6",

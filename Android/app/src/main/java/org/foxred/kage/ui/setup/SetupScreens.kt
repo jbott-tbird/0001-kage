@@ -70,6 +70,7 @@ fun SetupScreen(vm: MailViewModel, close: () -> Unit, finish: () -> Unit) {
     var incomingPort by rememberSaveable { mutableStateOf("993") }
     var outgoingPort by rememberSaveable { mutableStateOf("465") }
     var security by rememberSaveable { mutableStateOf("SSL/TLS") }
+    var requireAuth by rememberSaveable { mutableStateOf(true) }
     var outgoingSecurity by rememberSaveable { mutableStateOf("SSL/TLS") }
     var saving by remember { mutableStateOf(false) }
     val titles = listOf("Account information", "Account type", "Server settings", "Setup complete")
@@ -170,6 +171,12 @@ fun SetupScreen(vm: MailViewModel, close: () -> Unit, finish: () -> Unit) {
                         outgoingSecurity,
                         { outgoingSecurity = it },
                     )
+                    ListItem(
+                        headlineContent = { Text("Require SMTP authentication") },
+                        trailingContent = {
+                            Switch(requireAuth, onCheckedChange = { requireAuth = it })
+                        },
+                    )
                     Button(
                         onClick = {
                             if (mail.accounts.any { it.address.equals(email.trim(), true) }) {
@@ -190,6 +197,7 @@ fun SetupScreen(vm: MailViewModel, close: () -> Unit, finish: () -> Unit) {
                                                 outgoingPort.toIntOrNull() ?: 0,
                                                 security,
                                                 outgoingSecurity,
+                                                requireAuth,
                                             )
                                         )
                                         password = ""

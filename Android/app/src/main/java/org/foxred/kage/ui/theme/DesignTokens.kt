@@ -3,6 +3,7 @@ package org.foxred.kage.ui.theme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -94,4 +95,12 @@ object DesignTokens {
             large = RoundedCornerShape(xl),
             extraLarge = RoundedCornerShape(xxl),
         )
+
+    /** HTML mail uses the same typography and palette as native controls. */
+    fun emailCss(colors: ColorScheme, fontScale: Float): String {
+        val size = typography.bodyLarge.fontSize.value * fontScale
+        val lineHeight = typography.bodyLarge.lineHeight.value / typography.bodyLarge.fontSize.value
+        fun Color.css() = "#%06X".format(toArgb() and 0xFFFFFF)
+        return "body{font:${size}px/$lineHeight sans-serif;color:${colors.onSurface.css()};background:${colors.surface.css()};overflow-wrap:anywhere}img{max-width:100%}a,h1,h2{color:${colors.primary.css()}}"
+    }
 }

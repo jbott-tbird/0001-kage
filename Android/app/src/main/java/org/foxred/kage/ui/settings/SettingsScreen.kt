@@ -116,7 +116,7 @@ fun SettingsScreen(vm: MailViewModel, back: () -> Unit, setup: () -> Unit, welco
             title = { Text(account.address) },
             text = {
                 Text(
-                    "IMAP: ${account.incoming}:${account.incomingPort}\n${account.security}\n\nSMTP: ${account.outgoing}:${account.outgoingPort}\n${account.outgoingSecurity}\n\nSample account. No credentials are stored."
+                    "IMAP: ${account.incoming}:${account.incomingPort}\n${account.security}\n\nSMTP: ${account.outgoing}:${account.outgoingPort}\n${account.outgoingSecurity}\nAuthentication: ${if (account.requireAuth) "Required" else "Not required"}\n\nSample account. No credentials are stored."
                 )
             },
             confirmButton = { TextButton(onClick = { details = null }) { Text("Done") } },

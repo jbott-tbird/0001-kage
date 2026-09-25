@@ -1,6 +1,8 @@
 package org.foxred.kage.ui.compose
 
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -92,20 +94,45 @@ fun ComposeScreen(vm: MailViewModel, sourceId: String?, mode: String, back: () -
             }
         )
     }
-    var attachments: List<Attachment> by remember {
-        mutableStateOf<List<Attachment>>(
-            if (mode in listOf("draft", "forward"))
-                source?.attachments.orEmpty().map {
-                    it.copy(id = if (mode == "draft") it.id else "$id-${it.id}", messageId = id)
+    var attachments: List<Attachment> by
+        rememberSaveable(stateSaver = AttachmentListSaver) {
+            mutableStateOf<List<Attachment>>(
+                if (mode in listOf("draft", "forward"))
+                    source?.attachments.orEmpty().map {
+                        it.copy(id = if (mode == "draft") it.id else "$id-${it.id}", messageId = id)
+                    }
+                else emptyList()
+            )
+        }
+    var importing by remember { mutableStateOf(false) }
+    val filePicker =
+        rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
+            if (uris.isNotEmpty()) {
+                importing = true
+                vm.action {
+                    try {
+                        for (uri in uris) attachments =
+                            attachments + vm.repository.importAttachment(id, uri.toString())
+                    } finally {
+                        importing = false
+                    }
                 }
-            else emptyList()
-        )
-    }
+            }
+        }
     var accountMenu by remember { mutableStateOf(false) }
     var discard by remember { mutableStateOf(false) }
     var busy by remember { mutableStateOf(false) }
     val close = {
-        if (to.isNotBlank() || body.isNotBlank() || subject.isNotBlank()) discard = true else back()
+        if (
+            to.isNotBlank() ||
+                cc.isNotBlank() ||
+                bcc.isNotBlank() ||
+                body.isNotBlank() ||
+                subject.isNotBlank() ||
+                attachments.isNotEmpty()
+        )
+            discard = true
+        else back()
     }
     BackHandler { close() }
     fun message() =
@@ -142,8 +169,13 @@ fun ComposeScreen(vm: MailViewModel, sourceId: String?, mode: String, back: () -
                 title = { Text("Compose") },
                 navigationIcon = { MailIconButton("Close compose", Icons.Outlined.Close, close) },
                 actions = {
-                    TextButton(onClick = { save(false) }, enabled = !busy) { Text("Save") }
-                    IconButton(onClick = { save(true) }, enabled = !busy && to.isNotBlank()) {
+                    TextButton(onClick = { save(false) }, enabled = !busy && !importing) {
+                        Text("Save")
+                    }
+                    IconButton(
+                        onClick = { save(true) },
+                        enabled = !busy && !importing && to.isNotBlank(),
+                    ) {
                         Icon(Icons.AutoMirrored.Outlined.Send, "Send demo message")
                     }
                 },
@@ -209,25 +241,13 @@ fun ComposeScreen(vm: MailViewModel, sourceId: String?, mode: String, back: () -
                 InputChip(
                     selected = false,
                     onClick = { attachments = attachments.filterNot { it.id == attachment.id } },
-                    label = { Text(attachment.filename) },
-                    trailingIcon = { Icon(Icons.Outlined.Close, "Remove attachment") },
+                    label = { Text("${attachment.filename} · ${attachment.sizeBytes} bytes") },
+                    trailingIcon = { Icon(Icons.Outlined.Close, "Remove ${attachment.filename}") },
                 )
             }
-            TextButton(
-                onClick = {
-                    attachments =
-                        attachments +
-                            Attachment(
-                                UUID.randomUUID().toString(),
-                                id,
-                                "ticket.pdf",
-                                "application/pdf",
-                                2400,
-                            )
-                }
-            ) {
+            TextButton(onClick = { filePicker.launch(arrayOf("*/*")) }, enabled = !importing) {
                 Icon(Icons.Outlined.AttachFile, null)
-                Text("Attach sample PDF")
+                Text(if (importing) "Adding attachments…" else "Attach files")
             }
             Text(
                 "Demo only. Messages stay on this device.",

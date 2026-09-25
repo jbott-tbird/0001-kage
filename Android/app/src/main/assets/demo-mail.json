@@ -1,0 +1,490 @@
+[
+  {
+    "id": "m01",
+    "accountId": "personal",
+    "folderId": "personal-inbox",
+    "from": {
+      "name": "Jordan Lee",
+      "address": "jordan@example.com"
+    },
+    "to": [
+      "alex@example.com"
+    ],
+    "cc": [],
+    "subject": "Weekend plans",
+    "preview": "Let’s meet at the park on Saturday.",
+    "bodyText": "Let’s meet at the park on Saturday.",
+    "bodyHtml": null,
+    "receivedAt": "2026-09-22T11:00:00Z",
+    "isRead": true,
+    "isNewSinceLastVisit": false,
+    "bodyDownloadState": "available",
+    "attachments": [],
+    "relatedGroupId": null,
+    "scenario": "plain text, old and read"
+  },
+  {
+    "id": "m02",
+    "accountId": "personal",
+    "folderId": "personal-inbox",
+    "from": {
+      "name": "Jordan Lee",
+      "address": "jordan@example.com"
+    },
+    "to": [
+      "alex@example.com"
+    ],
+    "cc": [],
+    "subject": "Lighthouse itinerary",
+    "preview": "The train leaves at nine. Please confirm.",
+    "bodyText": "The train leaves at nine. Please confirm.",
+    "bodyHtml": null,
+    "receivedAt": "2026-09-22T11:00:00Z",
+    "isRead": false,
+    "isNewSinceLastVisit": false,
+    "bodyDownloadState": "available",
+    "attachments": [],
+    "relatedGroupId": null,
+    "scenario": "old and unread"
+  },
+  {
+    "id": "m03",
+    "accountId": "personal",
+    "folderId": "personal-inbox",
+    "from": {
+      "name": "Jordan Lee",
+      "address": "jordan@example.com"
+    },
+    "to": [
+      "alex@example.com"
+    ],
+    "cc": [],
+    "subject": "Lighthouse booking confirmed",
+    "preview": "Your room is ready for the weekend.",
+    "bodyText": "Your room is ready for the weekend.",
+    "bodyHtml": null,
+    "receivedAt": "2026-09-24T11:00:00Z",
+    "isRead": false,
+    "isNewSinceLastVisit": true,
+    "bodyDownloadState": "available",
+    "attachments": [],
+    "relatedGroupId": null,
+    "scenario": "new and unread"
+  },
+  {
+    "id": "m04",
+    "accountId": "personal",
+    "folderId": "personal-inbox",
+    "from": {
+      "name": "Jordan Lee",
+      "address": "jordan@example.com"
+    },
+    "to": [
+      "alex@example.org"
+    ],
+    "cc": [
+      "sam@example.org",
+      "morgan@example.org"
+    ],
+    "subject": "Lighthouse review",
+    "preview": "Already read on another device; still new this visit.",
+    "bodyText": "Already read on another device; still new this visit.",
+    "bodyHtml": null,
+    "receivedAt": "2026-09-24T11:00:00Z",
+    "isRead": true,
+    "isNewSinceLastVisit": true,
+    "bodyDownloadState": "available",
+    "attachments": [],
+    "relatedGroupId": null,
+    "scenario": "new but read"
+  },
+  {
+    "id": "m06",
+    "accountId": "personal",
+    "folderId": "personal-inbox",
+    "from": {
+      "name": "Jordan Lee",
+      "address": "jordan@example.com"
+    },
+    "to": [
+      "alex@example.com"
+    ],
+    "cc": [],
+    "subject": "",
+    "preview": "This message has no subject.",
+    "bodyText": "This message has no subject.",
+    "bodyHtml": null,
+    "receivedAt": "2026-09-22T11:00:00Z",
+    "isRead": true,
+    "isNewSinceLastVisit": false,
+    "bodyDownloadState": "available",
+    "attachments": [],
+    "relatedGroupId": null,
+    "scenario": "missing subject"
+  },
+  {
+    "id": "m07",
+    "accountId": "personal",
+    "folderId": "personal-inbox",
+    "from": {
+      "name": "Jordan Lee",
+      "address": "jordan@example.com"
+    },
+    "to": [
+      "alex@example.org"
+    ],
+    "cc": [],
+    "subject": "مرحبا — Design review",
+    "preview": "مرحبا، هذه رسالة تجريبية. こんにちは 👋",
+    "bodyText": "مرحبا، هذه رسالة تجريبية. こんにちは 👋",
+    "bodyHtml": null,
+    "receivedAt": "2026-09-22T11:00:00Z",
+    "isRead": false,
+    "isNewSinceLastVisit": false,
+    "bodyDownloadState": "available",
+    "attachments": [],
+    "relatedGroupId": null,
+    "scenario": "Unicode and right-to-left content"
+  },
+  {
+    "id": "m08",
+    "accountId": "personal",
+    "folderId": "personal-inbox",
+    "from": {
+      "name": "Jordan Lee",
+      "address": "jordan@example.com"
+    },
+    "to": [
+      "alex@example.com"
+    ],
+    "cc": [],
+    "subject": "Travel tickets",
+    "preview": "Your ticket is attached. Open it to download.",
+    "bodyText": "Your ticket is attached. Open it to download.",
+    "bodyHtml": null,
+    "receivedAt": "2026-09-24T11:00:00Z",
+    "isRead": false,
+    "isNewSinceLastVisit": true,
+    "bodyDownloadState": "available",
+    "attachments": [
+      {
+        "id": "att-8",
+        "filename": "ticket.pdf",
+        "mimeType": "application/pdf",
+        "sizeBytes": 712,
+        "downloadState": "notDownloaded",
+        "mockPayload": true
+      }
+    ],
+    "relatedGroupId": null,
+    "scenario": "attachment not downloaded"
+  },
+  {
+    "id": "m09",
+    "accountId": "personal",
+    "folderId": "personal-inbox",
+    "from": {
+      "name": "Jordan Lee",
+      "address": "jordan@example.com"
+    },
+    "to": [
+      "alex@example.org"
+    ],
+    "cc": [],
+    "subject": "Updated floor plan",
+    "preview": "The downloaded diagram is available locally.",
+    "bodyText": "The downloaded diagram is available locally.",
+    "bodyHtml": null,
+    "receivedAt": "2026-09-22T11:00:00Z",
+    "isRead": true,
+    "isNewSinceLastVisit": false,
+    "bodyDownloadState": "available",
+    "attachments": [
+      {
+        "id": "att-9",
+        "filename": "ticket.pdf",
+        "mimeType": "application/pdf",
+        "sizeBytes": 712,
+        "downloadState": "available",
+        "mockPayload": true
+      }
+    ],
+    "relatedGroupId": null,
+    "scenario": "downloaded attachment"
+  },
+  {
+    "id": "m10",
+    "accountId": "personal",
+    "folderId": "personal-drafts",
+    "from": {
+      "name": "Alex",
+      "address": "alex@example.com"
+    },
+    "to": [
+      "jordan@example.com"
+    ],
+    "cc": [],
+    "subject": "Draft: dinner invitation",
+    "preview": "Please join us next Friday.",
+    "bodyText": "Please join us next Friday.",
+    "bodyHtml": null,
+    "receivedAt": "2026-09-22T11:00:00Z",
+    "isRead": true,
+    "isNewSinceLastVisit": false,
+    "bodyDownloadState": "available",
+    "attachments": [],
+    "relatedGroupId": null,
+    "scenario": "editable draft",
+    "isDraft": true
+  },
+  {
+    "id": "m11",
+    "accountId": "personal",
+    "folderId": "personal-inbox",
+    "from": {
+      "name": "Jordan Lee",
+      "address": "jordan@example.com"
+    },
+    "to": [
+      "alex@example.org"
+    ],
+    "cc": [],
+    "subject": "Launch checklist",
+    "preview": "Please review the launch checklist.",
+    "bodyText": "Please review the launch checklist.",
+    "bodyHtml": null,
+    "receivedAt": "2026-09-22T11:00:00Z",
+    "isRead": true,
+    "isNewSinceLastVisit": false,
+    "bodyDownloadState": "available",
+    "attachments": [],
+    "relatedGroupId": "launch",
+    "scenario": "related message, first"
+  },
+  {
+    "id": "m12",
+    "accountId": "personal",
+    "folderId": "personal-inbox",
+    "from": {
+      "name": "Jordan Lee",
+      "address": "jordan@example.com"
+    },
+    "to": [
+      "alex@example.org"
+    ],
+    "cc": [],
+    "subject": "Re: Launch checklist",
+    "preview": "Reviewed. The launch checklist is ready.",
+    "bodyText": "Reviewed. The launch checklist is ready.",
+    "bodyHtml": null,
+    "receivedAt": "2026-09-24T11:00:00Z",
+    "isRead": false,
+    "isNewSinceLastVisit": true,
+    "bodyDownloadState": "available",
+    "attachments": [],
+    "relatedGroupId": "launch",
+    "scenario": "related message, reply"
+  },
+  {
+    "id": "design-0",
+    "accountId": "personal",
+    "folderId": "personal-inbox",
+    "to": [
+      "rhea@example.com"
+    ],
+    "cc": [],
+    "subject": "Bird beach hangout plans: sun, snacks, and a very long afternoon by the water",
+    "bodyText": "Thinking we grab a quiet spot by the water, compare nest-building notes, and share some snacks.\n\nBring a blanket and your favorite beach book. Who can make Saturday?\n\nRochelle",
+    "bodyHtml": null,
+    "receivedAt": "2026-09-23T12:00:00Z",
+    "isRead": true,
+    "isNewSinceLastVisit": false,
+    "isPinned": true,
+    "isFlagged": false,
+    "attachments": [],
+    "from": {
+      "name": "Rochelle Thunderbird",
+      "address": "rochelle@example.net"
+    }
+  },
+  {
+    "id": "design-1",
+    "accountId": "personal",
+    "folderId": "personal-inbox",
+    "to": [
+      "rhea@example.com"
+    ],
+    "cc": [],
+    "subject": "Fwd: Message list edge-cases you might encounter with very long sender names and subject lines",
+    "bodyText": "Another test message with a sender that forces truncation in a narrow message list.\n\nThe full name and subject should remain available when you open the email.\n\nRhea",
+    "bodyHtml": null,
+    "receivedAt": "2026-09-23T12:01:00Z",
+    "isRead": false,
+    "isNewSinceLastVisit": false,
+    "isPinned": false,
+    "isFlagged": false,
+    "attachments": [],
+    "from": {
+      "name": "Rhea Starfeather-Windwhisper Skylark Thunderbird",
+      "address": "rhea.skylark@example.net"
+    }
+  },
+  {
+    "id": "design-2",
+    "accountId": "personal",
+    "folderId": "personal-inbox",
+    "to": [
+      "rhea@example.com"
+    ],
+    "cc": [],
+    "subject": "早朝観察会参加案内 — 冬の渡り鳥を追いかける特別ツアー",
+    "bodyText": "いつも北空鳥観察研究会の活動にご参加いただきありがとうございます。\n\n今週末は湖の周辺で渡り鳥を観察します。午前六時に入口でお会いしましょう。\n\n双眼鏡と暖かい服をご用意ください。",
+    "bodyHtml": null,
+    "receivedAt": "2026-09-23T12:02:00Z",
+    "isRead": false,
+    "isNewSinceLastVisit": true,
+    "isPinned": false,
+    "isFlagged": false,
+    "attachments": [],
+    "from": {
+      "name": "北空鳥観察研究会 森と湖の渡り鳥プロジェクト",
+      "address": "birds@example.net"
+    }
+  },
+  {
+    "id": "design-3",
+    "accountId": "personal",
+    "folderId": "personal-inbox",
+    "to": [
+      "rhea@example.com"
+    ],
+    "cc": [
+      "rhea@example.com",
+      "rochelle@example.net",
+      "skye@example.net"
+    ],
+    "subject": "",
+    "bodyText": "",
+    "bodyHtml": null,
+    "receivedAt": "2026-09-23T12:03:00Z",
+    "isRead": true,
+    "isNewSinceLastVisit": false,
+    "isPinned": false,
+    "isFlagged": true,
+    "attachments": [],
+    "from": {
+      "name": "",
+      "address": "roc@example.net"
+    }
+  },
+  {
+    "id": "design-4",
+    "accountId": "personal",
+    "folderId": "personal-inbox",
+    "to": [
+      "rhea@example.com"
+    ],
+    "cc": [],
+    "subject": "سير عمل بريد إلكتروني واحد عبر الهاتف والكمبيوتر",
+    "bodyText": "مرحباً،\n\nكنت أفكر في الطريقة التي أستخدم بها البريد الإلكتروني. أقرأ الرسائل على هاتفي وأكتب الردود الطويلة على الكمبيوتر.\n\nكيف يمكننا جعل هذه التجربة أبسط؟\n\nروك",
+    "bodyHtml": null,
+    "receivedAt": "2026-09-23T12:04:00Z",
+    "isRead": false,
+    "isNewSinceLastVisit": false,
+    "isPinned": false,
+    "isFlagged": false,
+    "attachments": [],
+    "from": {
+      "name": "روك ثاندربيرد",
+      "address": "roc.ar@example.net"
+    }
+  },
+  {
+    "id": "design-5",
+    "accountId": "personal",
+    "folderId": "personal-inbox",
+    "to": [
+      "rhea@example.com"
+    ],
+    "cc": [],
+    "subject": "סקירה אחרונה של עיצוב רשימת ההודעות בעברית",
+    "bodyText": "שלום לכולם,\n\nזהו מייל בדיקה שמטרתו לראות איך שדה השולח והנושא נראים בעברית.\n\nThe next review is on Friday at 10:00.\n\nתודה!",
+    "bodyHtml": null,
+    "receivedAt": "2026-09-23T12:05:00Z",
+    "isRead": false,
+    "isNewSinceLastVisit": false,
+    "isPinned": false,
+    "isFlagged": false,
+    "attachments": [],
+    "from": {
+      "name": "ריאה ת׳נדרבירד — עיצוב מערכת, צוות חוויית משתמש",
+      "address": "rhea.he@example.net"
+    }
+  },
+  {
+    "id": "design-6",
+    "accountId": "personal",
+    "folderId": "personal-inbox",
+    "to": [
+      "rhea@example.com"
+    ],
+    "cc": [],
+    "subject": "😀 Subject line — topic of interest and maybe it goes to two lines 😀",
+    "bodyText": "Rhea and friends,\n\nI sort my mail on the phone and write longer replies on my computer. It would be great to carry drafts, read states, and archive decisions between them.\n\nWhat would make your daily email routine easier? 🐦\n\nRoc",
+    "bodyHtml": null,
+    "receivedAt": "2026-09-23T12:06:00Z",
+    "isRead": true,
+    "isNewSinceLastVisit": false,
+    "isPinned": false,
+    "isFlagged": false,
+    "attachments": [],
+    "from": {
+      "name": "😀 Roc Thunderbird",
+      "address": "roc@example.net"
+    }
+  },
+  {
+    "id": "design-7",
+    "accountId": "personal",
+    "folderId": "personal-inbox",
+    "to": [
+      "tb-design@lists.example.net"
+    ],
+    "cc": [],
+    "subject": "[tb-design] Weekly UX notes for mobile message lists",
+    "bodyText": "This week’s review covers sender names, missing subjects, attachment indicators, and larger text.\n\nPlease try the sample messages at a narrow width and with increased text size.\n\nSent via Community Updates",
+    "bodyHtml": null,
+    "receivedAt": "2026-09-23T12:07:00Z",
+    "isRead": false,
+    "isNewSinceLastVisit": false,
+    "isPinned": false,
+    "isFlagged": false,
+    "attachments": [],
+    "from": {
+      "name": "Thunderbird Design Updates via lists.example.net",
+      "address": "tb-design@lists.example.net"
+    }
+  },
+  {
+    "id": "design-8",
+    "accountId": "personal",
+    "folderId": "personal-inbox",
+    "to": [
+      "rhea@example.com"
+    ],
+    "cc": [],
+    "subject": "One_email_workflow_across_iOS_and_desktop",
+    "bodyText": "Hi Roc,\n\nThis old message shows up with broken characters:\n\n- Th=F6rbird instead of Thörbird\n- =E2=80=99 instead of an apostrophe\n- Ã¼ber instead of über\n\nThese deliberately broken strings mirror the legacy encoding example in the designs.\n\nRhea",
+    "bodyHtml": null,
+    "receivedAt": "2007-06-12T11:11:00Z",
+    "isRead": false,
+    "isNewSinceLastVisit": false,
+    "isPinned": false,
+    "isFlagged": false,
+    "attachments": [],
+    "from": {
+      "name": "Rhea Th=F6rbird",
+      "address": "archive@example.net"
+    }
+  }
+]

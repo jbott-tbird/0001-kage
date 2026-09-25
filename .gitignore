@@ -5,3 +5,5 @@ dist/
 z_ignore/
 .vercel
 .env*
+
+.vite/

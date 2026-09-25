@@ -1,0 +1,19 @@
+// Run against the explicitly chosen local Thunderbird checkout; no source changes or downloads of source.
+gradle.beforeProject { p ->
+    if (p.path in [':mail:protocols:imap', ':mail:protocols:smtp', ':mail:common']) {
+        p.afterEvaluate {
+            p.tasks.register('exportMailSpike') {
+                dependsOn p.tasks.named('jar'), p.configurations.runtimeClasspath
+                doLast {
+                    def files = p.configurations.runtimeClasspath.files + p.tasks.named('jar').get().archiveFile.get().asFile
+                    files.each { f ->
+                        if (f.name.endsWith('.jar') && !f.name.startsWith('kotlin-stdlib') && !f.name.startsWith('annotations-')) {
+                            def hash = java.security.MessageDigest.getInstance('SHA-256').digest(f.bytes).encodeHex().toString().substring(0,12)
+                            p.copy { from f; into System.getProperty('kage.spike.output', '/tmp/kage-tb-spike-jars'); rename { hash + '-' + f.name } }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

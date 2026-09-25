@@ -113,27 +113,8 @@ class AngusMimeCodec(
             msg.setHeader("References", email.references.joinToString(" ") { safe(it) })
         msg.saveChanges()
         msg.setHeader("Message-ID", safe(email.messageId))
-        val out =
-            object : ByteArrayOutputStream() {
-                private fun checkSize(addition: Int) {
-                    if (count.toLong() + addition > maxBytes)
-                        throw MailFailure(
-                            FailureKind.LIMIT_EXCEEDED,
-                            "Encoded message exceeds limit",
-                        )
-                }
-
-                override fun write(value: Int) {
-                    checkSize(1)
-                    super.write(value)
-                }
-
-                override fun write(bytes: ByteArray, offset: Int, length: Int) {
-                    checkSize(length)
-                    super.write(bytes, offset, length)
-                }
-            }
-        msg.writeTo(out)
+        val out = ByteArrayOutputStream()
+        msg.writeTo(BoundedOutputStream(out, maxBytes.toLong()))
         return out.toByteArray()
     }
 }

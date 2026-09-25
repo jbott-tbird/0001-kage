@@ -47,6 +47,9 @@ interface MailStore : AutoCloseable {
 
     fun message(identity: MessageIdentity): Email
 
+    /** Stream the complete server MIME source, without marking it read. Caller owns the sink. */
+    fun downloadRawMessage(identity: MessageIdentity, output: OutputStream): Long
+
     fun attachment(identity: MessageIdentity, partId: String): ByteArray
 
     /**

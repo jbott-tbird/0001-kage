@@ -29,3 +29,6 @@ include(":core:account", ":core:mime", ":core:transport", ":core:imap", ":core:s
 include(":core:integration")
 
 include(":core:testkit")
+
+// Explicit local input keeps the comparison out of shipping builds and CI.
+if (providers.gradleProperty("thunderbirdSpikeJars").isPresent) include(":spikes:thunderbird")

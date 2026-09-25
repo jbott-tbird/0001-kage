@@ -54,6 +54,31 @@ class MailProtocolIntegrationTest {
         )
 
     @Test
+    fun rawMessageStreamPreservesMimeAndDoesNotMarkRead() {
+        val raw = org.foxred.kage.core.mime.AngusMimeCodec().encode(email())
+        lateinit var identity: MessageIdentity
+        AngusImapClient().use { client ->
+            client.connect(incoming(), Authorization("password"))
+            client.append("INBOX", raw)
+            identity = client.messages("INBOX", Instant.EPOCH).single().identity!!
+            val output = java.io.ByteArrayOutputStream()
+            assertEquals(raw.size.toLong(), client.downloadRawMessage(identity, output))
+            assertArrayEquals(raw, output.toByteArray())
+            assertFalse(client.message(identity).read)
+        }
+        AngusImapClient(maxPartBytes = 64).use { client ->
+            client.connect(incoming(), Authorization("password"))
+            val output = java.io.ByteArrayOutputStream()
+            val failure =
+                assertThrows(MailFailure::class.java) {
+                    client.downloadRawMessage(identity, output)
+                }
+            assertEquals(FailureKind.LIMIT_EXCEEDED, failure.kind)
+            assertTrue(output.size() <= 64)
+        }
+    }
+
+    @Test
     fun tlsSubmissionAndUidReadingRoundTrip() {
         AngusSmtpClient().send(outgoing(), Authorization("password"), email())
         assertTrue(mail.waitForIncomingEmail(5000, 2))

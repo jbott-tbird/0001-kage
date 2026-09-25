@@ -1794,7 +1794,8 @@
         "MOVE preserves unrelated messages",
         "unsupported MOVE rejected before mutation",
         "reconnect after cancellation",
-        "Android TLS socket login/list/status"
+        "Android TLS socket login/list/status",
+        "original raw MIME streaming: byte identity, bounded size, unread preservation"
       ],
       "untestedOrIncomplete": [
         "full malformed response and literal matrix acceptance",
@@ -3069,5 +3070,14 @@
       "uiWired": false,
       "difference": "One envelope per send; batch caller owns partial completion and must not retry ambiguous delivery"
     }
-  ]
+  ],
+  "engineDecision": {
+    "selected": "org.eclipse.angus:jakarta.mail:2.0.4",
+    "activation": "org.eclipse.angus:angus-activation:2.0.2",
+    "activationApi": "jakarta.activation:jakarta.activation-api:2.1.3",
+    "candidateRevision": "a3175bffe668b81242406b32899371608676ebbb",
+    "candidateEvidence": "ThunderbirdRuntimeTest: 2 passing API30 tests; production runtime suite: 3 passing API30 tests",
+    "rationale": "Smaller dependency and setup surface; tested adapter failure matrix; preserve iOS interfaces independent of engine",
+    "scope": "Engine choice accepted; full M1 parity acceptance remains open"
+  }
 }

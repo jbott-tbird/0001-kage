@@ -10,10 +10,12 @@ import java.util.Properties
 import org.eclipse.angus.mail.iap.BadCommandException
 import org.eclipse.angus.mail.iap.CommandFailedException
 import org.eclipse.angus.mail.imap.IMAPFolder
+import org.eclipse.angus.mail.imap.IMAPMessage
 import org.eclipse.angus.mail.imap.IMAPStore
 import org.foxred.kage.core.account.*
 import org.foxred.kage.core.mime.AngusEnvelopeReader
 import org.foxred.kage.core.mime.AngusPartReader
+import org.foxred.kage.core.mime.BoundedOutputStream
 import org.foxred.kage.core.transport.ConnectionControl
 import org.foxred.kage.core.transport.connectionProperties
 
@@ -241,6 +243,16 @@ class AngusImapClient(
             val content = partReader.read(m)
             envelope(f, m)
                 .copy(body = content.body, attachments = content.attachments, bodyDownloaded = true)
+        }
+
+    @Synchronized
+    override fun downloadRawMessage(identity: MessageIdentity, output: OutputStream): Long =
+        folder(identity.mailbox) { f ->
+            val message = identified(f, identity) as IMAPMessage
+            val bounded = BoundedOutputStream(output, maxPartBytes.toLong())
+            // The provider MIME stream preserves original headers and transfer encodings.
+            message.mimeStream.use { it.copyTo(bounded) }
+            bounded.count
         }
 
     @Synchronized

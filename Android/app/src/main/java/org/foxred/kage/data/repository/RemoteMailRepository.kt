@@ -52,7 +52,12 @@ class RemoteMailRepository(
 
     data class FlushResult(val applied: Int, val failed: Int)
 
-    suspend fun addAccount(account: Account, incoming: Authorization, outgoing: Authorization) =
+    suspend fun addAccount(
+        account: Account,
+        incoming: Authorization,
+        outgoing: Authorization,
+        initialMailboxes: List<org.foxred.kage.core.account.Mailbox> = emptyList(),
+    ) =
         withContext(Dispatchers.IO) {
             val entity = CoreRoomMapper.account(account)
             require(dao.account(account.id) == null) { "Account already exists" }
@@ -62,6 +67,7 @@ class RemoteMailRepository(
                 db.withTransaction {
                     dao.insertAccount(entity)
                     dao.saveServers(account.servers.map { CoreRoomMapper.server(account.id, it) })
+                    dao.saveFolders(initialMailboxes.map { CoreRoomMapper.folder(account.id, it) })
                 }
             } catch (error: Throwable) {
                 credentials.removeAccount(account.id)
@@ -71,6 +77,8 @@ class RemoteMailRepository(
 
     suspend fun account(accountId: String): Account? =
         dao.account(accountId)?.let { CoreRoomMapper.account(it, dao.servers(accountId)) }
+
+    suspend fun inboxFolder(accountId: String): String? = dao.folderByRole(accountId, "inbox")?.id
 
     /** Cancels active network work first so no in-flight response can recreate removed rows. */
     suspend fun removeAccount(accountId: String) =

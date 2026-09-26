@@ -71,4 +71,18 @@ class MailSocketRuntimeTest {
             assertTrue(transcript.commands.contains("..dot"))
         }
     }
+
+    @Test
+    fun smtpStartTlsValidationDoesNotSendOnAndroid() {
+        val transcript = SmtpTranscript(tls)
+        LoopbackServer(handler = transcript::serve).use { server ->
+            AngusSmtpClient().verifyConnection(
+                Server("localhost", server.port, ServerProtocol.SMTP,
+                    ConnectionSecurity.STARTTLS, "user"),
+                Authorization("password"),
+            )
+            server.awaitCompletion()
+            assertFalse(transcript.commands.any { it.startsWith("MAIL FROM:") || it == "DATA" })
+        }
+    }
 }

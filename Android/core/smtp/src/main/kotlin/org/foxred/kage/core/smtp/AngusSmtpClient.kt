@@ -18,6 +18,37 @@ class AngusSmtpClient(
         control?.cancel()
     }
 
+    /** Authenticate and negotiate TLS without issuing MAIL FROM or delivering a message. */
+    @Synchronized
+    fun verifyConnection(server: Server, authorization: Authorization) {
+        require(server.protocol == ServerProtocol.SMTP)
+        val operation = ConnectionControl()
+        val properties = connectionProperties(server, authorization, timeoutMillis)
+        operation.install(properties, "smtp")
+        val transport = Session.getInstance(properties).getTransport("smtp")
+        control = operation
+        try {
+            transport.connect(
+                server.hostname,
+                server.port,
+                server.username.takeUnless { authorization.kind == Authorization.Kind.NONE },
+                authorization.secret.takeUnless { authorization.kind == Authorization.Kind.NONE },
+            )
+        } catch (error: AuthenticationFailedException) {
+            throw MailFailure(FailureKind.AUTHENTICATION, "SMTP authentication failed", error)
+        } catch (error: Exception) {
+            throw MailFailure(
+                if (operation.cancelled) FailureKind.CANCELLED else FailureKind.CONNECTION,
+                "SMTP connection failed",
+                error,
+            )
+        } finally {
+            operation.cancel()
+            runCatching { transport.close() }
+            control = null
+        }
+    }
+
     @Synchronized
     override fun send(server: Server, authorization: Authorization, email: OutgoingEmail) {
         require(server.protocol == ServerProtocol.SMTP)

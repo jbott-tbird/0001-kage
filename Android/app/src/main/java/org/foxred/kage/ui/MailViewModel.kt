@@ -10,8 +10,9 @@ import kotlinx.coroutines.sync.withLock
 import org.foxred.kage.domain.model.*
 import org.foxred.kage.domain.repository.MailRepository
 import org.foxred.kage.domain.usecase.FilterMessages
+import org.foxred.kage.data.setup.RealAccountSetup
 
-class MailViewModel(val repository: MailRepository) : ViewModel() {
+class MailViewModel(val repository: MailRepository, val realAccountSetup: RealAccountSetup? = null) : ViewModel() {
     private val preferencesMutex = Mutex()
     val mailbox = MutableStateFlow(Mailbox())
     val ready = MutableStateFlow(false)

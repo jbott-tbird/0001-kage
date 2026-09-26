@@ -52,6 +52,7 @@ fun KageApp(vm: MailViewModel) {
                 composable("welcome") {
                     WelcomeScreen(
                         { nav.navigate("setup") },
+                        { nav.navigate("setup-real") },
                         {
                             vm.action(success = { inbox() }) {
                                 if (mail.accounts.isEmpty()) vm.repository.resetDemo()
@@ -62,7 +63,8 @@ fun KageApp(vm: MailViewModel) {
                         },
                     )
                 }
-                composable("setup") { SetupScreen(vm, { nav.popBackStack() }, { inbox() }) }
+                composable("setup") { SetupScreen(vm, { nav.popBackStack() }, { inbox() }, { nav.navigate("setup-real") }) }
+                composable("setup-real") { RealSetupScreen(vm, { nav.popBackStack() }, { inbox() }) }
                 composable("mail") {
                     InboxScreen(
                         vm,

@@ -19,6 +19,7 @@ class RoomMailRepository(
     private val context: Context,
     private val demo: DemoMail,
     private val credentials: org.foxred.kage.core.account.CredentialStore,
+    private val remote: RemoteMailRepository? = null,
 ) : MailRepository {
     private val dao = db.mailDao()
     override val mailbox =
@@ -88,7 +89,9 @@ class RoomMailRepository(
 
     override suspend fun removeAccount(id: String) =
         withContext(Dispatchers.IO) {
-            credentials.removeAccount(id)
+            if (db.remoteMailDao().account(id)?.mode == "REAL" && remote != null)
+                remote.removeAccount(id)
+            else credentials.removeAccount(id)
             db.withTransaction {
                 dao.removeAccount(id)
                 val prefs = dao.getPreferences() ?: Preferences().entity()
@@ -221,11 +224,17 @@ class RoomMailRepository(
 
     override suspend fun resetDemo() =
         withContext(Dispatchers.IO) {
-            credentials.clear()
+            val demoIds = dao.demoAccountIds()
             db.withTransaction {
-                dao.clearAccounts()
-                dao.clearPreferences()
-                seed()
+                val prefs = dao.getPreferences()
+                val selectedAccount = prefs?.selectedFolder?.let { dao.folderAccountId(it) }
+                val preserveSelection = selectedAccount != null && selectedAccount in dao.realAccountIds()
+                demoIds.forEach { dao.removeAccount(it) }
+                demo.accounts.forEach { insertAccount(it) }
+                dao.savePreferences(
+                    if (preserveSelection) prefs!! else Preferences().entity()
+                )
             }
+            demoIds.forEach { credentials.removeAccount(it) }
         }
 }

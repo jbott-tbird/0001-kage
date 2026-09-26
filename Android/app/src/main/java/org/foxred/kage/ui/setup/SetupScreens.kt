@@ -24,7 +24,7 @@ import org.foxred.kage.ui.components.MailIconButton
 import org.foxred.kage.ui.theme.DesignTokens as T
 
 @Composable
-fun WelcomeScreen(setup: () -> Unit, explore: () -> Unit) {
+fun WelcomeScreen(setup: () -> Unit, connectReal: () -> Unit, explore: () -> Unit) {
     Surface(color = MaterialTheme.colorScheme.primaryContainer, modifier = Modifier.fillMaxSize()) {
         Column(
             Modifier.safeDrawingPadding().padding(T.xl),
@@ -44,6 +44,9 @@ fun WelcomeScreen(setup: () -> Unit, explore: () -> Unit) {
             )
             Spacer(Modifier.weight(1f))
             Button(onClick = setup, modifier = Modifier.fillMaxWidth()) { Text("Get started") }
+            OutlinedButton(onClick = connectReal, modifier = Modifier.fillMaxWidth()) {
+                Text("Connect a real account")
+            }
             TextButton(onClick = explore) { Text("Explore the demo inbox") }
             Text("Local demo · no email is sent", style = MaterialTheme.typography.bodySmall)
         }
@@ -52,7 +55,7 @@ fun WelcomeScreen(setup: () -> Unit, explore: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SetupScreen(vm: MailViewModel, close: () -> Unit, finish: () -> Unit) {
+fun SetupScreen(vm: MailViewModel, close: () -> Unit, finish: () -> Unit, connectReal: () -> Unit) {
     val mail by vm.mailbox.collectAsStateWithLifecycle()
     var step by rememberSaveable { mutableIntStateOf(0) }
     var email by rememberSaveable {
@@ -101,6 +104,7 @@ fun SetupScreen(vm: MailViewModel, close: () -> Unit, finish: () -> Unit) {
             when (step) {
                 0 -> {
                     Text("Add your email account", style = MaterialTheme.typography.headlineSmall)
+                    TextButton(onClick = connectReal) { Text("Connect a real account instead") }
                     OutlinedTextField(
                         email,
                         { email = it },

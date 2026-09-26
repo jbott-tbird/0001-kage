@@ -34,6 +34,15 @@ interface MailDao {
 
     @Query("SELECT id FROM folders WHERE role = 'inbox' LIMIT 1") suspend fun firstInbox(): String?
 
+    @Query("SELECT accountId FROM folders WHERE id = :folderId LIMIT 1")
+    suspend fun folderAccountId(folderId: String): String?
+
+    @Query("SELECT id FROM accounts WHERE mode = 'DEMO'")
+    suspend fun demoAccountIds(): List<String>
+
+    @Query("SELECT id FROM accounts WHERE mode = 'REAL'")
+    suspend fun realAccountIds(): List<String>
+
     @Insert suspend fun insertAccounts(accounts: List<AccountEntity>)
 
     @Insert suspend fun insertFolders(folders: List<FolderEntity>)

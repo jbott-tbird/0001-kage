@@ -54,6 +54,18 @@ class MailProtocolIntegrationTest {
         )
 
     @Test
+    fun smtpConnectionCanBeVerifiedWithoutSendingMail() {
+        val client = AngusSmtpClient()
+        client.verifyConnection(outgoing(), Authorization("password"))
+        assertTrue(mail.receivedMessages.isEmpty())
+        val failure = assertThrows(MailFailure::class.java) {
+            client.verifyConnection(outgoing(), Authorization("wrong"))
+        }
+        assertEquals(FailureKind.AUTHENTICATION, failure.kind)
+        assertTrue(mail.receivedMessages.isEmpty())
+    }
+
+    @Test
     fun unicodeMailboxNamesRoundTripThroughListAppendAndRename() {
         AngusImapClient().use { client ->
             client.connect(incoming(), Authorization("password"))

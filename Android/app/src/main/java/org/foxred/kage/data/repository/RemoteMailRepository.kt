@@ -113,6 +113,8 @@ class RemoteMailRepository(
                 requireNotNull(folder.remotePath) { "Folder has no server mailbox" }
                 refreshFolders(folder.accountId)
                 checkNotNull(dao.folder(folderId)) { "Folder was removed on the server" }
+                // Reconnect and apply durable user intent before merging the server's state.
+                flushOperations(folder.accountId)
                 syncMessages(folderId, since, full = full, reconcile = true)
             }
         } catch (timeout: TimeoutCancellationException) {
@@ -226,7 +228,9 @@ class RemoteMailRepository(
                     if (scanFully) fullPassId = cursor?.fullPassId ?: newId()
                     lastCompletedAt = dao.cursor(folderId)?.lastCompletedAt
                     // Every later page for this mailbox is fetched after this point, under the lock.
-                    dao.purgeApplied(folder.accountId, path, passStartedAt)
+                    // A QRESYNC delta was read before this transaction; keep confirmed intent
+                    // until it has been merged so an older response cannot undo it.
+                    if (changes == null) dao.purgeApplied(folder.accountId, path, passStartedAt)
                     // Moves confirmed before this pass began have server copies within its range.
                     settle = dao.settledPlaceholders(folderId, passStartedAt).mapTo(HashSet()) { it.id }
                     val top = folder.uidNext?.takeIf { cursor != null }?.coerceAtMost(status.uidNext)
@@ -333,12 +337,13 @@ class RemoteMailRepository(
         changes.flags.forEach { change ->
             val row = dao.messageByUid(folderId, generation, change.uid) ?: return@forEach
             val intent = dao.activeOperations(folder.accountId, path, generation,
-                change.uid, passStartedAt)
+                change.uid, Long.MIN_VALUE)
             dao.saveMessage(row.copy(
                 isRead = if (intent.any { it.kind == OperationKind.READ.name }) row.isRead else change.read,
                 flagged = if (intent.any { it.kind == OperationKind.FLAG.name }) row.flagged else change.flagged,
             ))
         }
+        dao.purgeApplied(folder.accountId, path, passStartedAt)
         dao.cursor(folderId)?.takeIf { it.uidValidity == generation && it.beforeUid == null }
             ?.let { dao.saveCursor(it.copy(highestModSeq = changes.highestModSeq)) }
     }

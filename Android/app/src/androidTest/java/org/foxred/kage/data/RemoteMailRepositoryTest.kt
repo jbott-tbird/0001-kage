@@ -588,6 +588,32 @@ class RemoteMailRepositoryTest {
     }
 
     @Test
+    fun visibleRefreshReplaysOfflineActionsBeforeMergingServerFlags() = runBlocking {
+        val db = open()
+        var repo = repository(db)
+        ready(repo)
+        server("a").append("INBOX", raw(1))
+        repo.refreshVisibleFolder(inbox(), Instant.EPOCH)
+        val message = rows(db, inbox()).single()
+        val identity = MessageIdentity("INBOX", message.uidValidity!!, message.uid!!)
+
+        repo.markRead(message.id, true)
+        repo.flag(message.id, true)
+        repo = repository(db)
+        offline = true
+        assertEquals(FailureKind.CONNECTION,
+            (runCatching { repo.refreshVisibleFolder(inbox(), Instant.EPOCH) }
+                .exceptionOrNull() as MailFailure).kind)
+        assertTrue(db.remoteMailDao().operations("a").all { it.state == OperationState.PENDING })
+
+        offline = false
+        repo.refreshVisibleFolder(inbox(), Instant.EPOCH)
+        assertTrue(server("a").message(identity).let { it.read && it.flagged })
+        assertTrue(db.remoteMailDao().operations("a").all { it.state == OperationState.APPLIED })
+        assertTrue(db.remoteMailDao().message(message.id)!!.let { it.isRead && it.flagged })
+    }
+
+    @Test
     fun stalePageFetchedBeforeConfirmationCannotRevertIntent() = runBlocking {
         val db = open()
         val repo = repository(db)

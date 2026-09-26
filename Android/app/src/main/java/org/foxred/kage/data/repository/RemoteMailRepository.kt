@@ -15,9 +15,11 @@ import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import org.foxred.kage.core.account.*
 import org.foxred.kage.data.local.*
 import org.foxred.kage.data.sync.AccountSessions
@@ -37,7 +39,9 @@ class RemoteMailRepository(
     private val outbox: DurableOutbox,
     private val now: () -> Instant = Instant::now,
     private val newId: () -> String = { UUID.randomUUID().toString() },
+    private val refreshTimeoutMillis: Long = 60_000,
 ) {
+    init { require(refreshTimeoutMillis > 0) }
     private val dao = db.remoteMailDao()
     private val folderLocks = ConcurrentHashMap<String, Mutex>()
     private val attachmentLocks = ConcurrentHashMap<String, Mutex>()
@@ -102,13 +106,18 @@ class RemoteMailRepository(
     }
 
     /** A visible-folder refresh discovers current paths before paging the selected mailbox. */
-    suspend fun refreshVisibleFolder(folderId: String, since: Instant, full: Boolean = false): Int {
-        val folder = checkNotNull(dao.folder(folderId)) { "Folder was removed" }
-        requireNotNull(folder.remotePath) { "Folder has no server mailbox" }
-        refreshFolders(folder.accountId)
-        checkNotNull(dao.folder(folderId)) { "Folder was removed on the server" }
-        return syncMessages(folderId, since, full = full)
-    }
+    suspend fun refreshVisibleFolder(folderId: String, since: Instant, full: Boolean = false): Int =
+        try {
+            withTimeout(refreshTimeoutMillis) {
+                val folder = checkNotNull(dao.folder(folderId)) { "Folder was removed" }
+                requireNotNull(folder.remotePath) { "Folder has no server mailbox" }
+                refreshFolders(folder.accountId)
+                checkNotNull(dao.folder(folderId)) { "Folder was removed on the server" }
+                syncMessages(folderId, since, full = full, reconcile = true)
+            }
+        } catch (timeout: TimeoutCancellationException) {
+            throw MailFailure(FailureKind.CONNECTION, "Mailbox refresh timed out")
+        }
 
     /** Leaving a folder records the largest UID shown and clears its local new markers. */
     suspend fun finishVisit(folderId: String) = db.withTransaction {
@@ -165,13 +174,14 @@ class RemoteMailRepository(
      * an interrupted pass resumes where it stopped. After a completed pass, the next refresh only
      * pages UIDs above the previous pass's UIDNEXT, then continues any unfinished older range.
      * [full] re-reads the whole window so server flag changes on older messages are merged.
-     * Server-side expunges and flag deltas are reconciled by incremental sync (T13).
+     * A visible refresh uses QRESYNC deltas when available, otherwise a resumable full scan.
      */
     suspend fun syncMessages(
         folderId: String,
         since: Instant,
         pageSize: Int = 100,
         full: Boolean = false,
+        reconcile: Boolean = false,
     ): Int {
         require(pageSize in 1..1000)
         return folderLocks.computeIfAbsent(folderId) { Mutex() }.withLock {
@@ -182,9 +192,24 @@ class RemoteMailRepository(
             if (status.uidValidity < 1 || status.uidNext < 1)
                 throw MailFailure(FailureKind.PROTOCOL, "Server did not report mailbox identity")
             val generation = status.uidValidity
+            val previous = dao.cursor(folderId)?.takeIf {
+                start.uidValidity == generation && it.uidValidity == generation &&
+                    it.sinceEpochMillis == since.toEpochMilli()
+            }
+            val changes = if (reconcile && !full && previous?.beforeUid == null &&
+                previous?.highestModSeq != null && previous.fullPassId == null)
+                readChanges(start.accountId, path, generation, previous.highestModSeq)
+            else null
+            val scanFully = full || previous?.fullPassId != null || (reconcile && changes == null)
+            val scanToken = if (scanFully)
+                if (previous?.fullPassId != null && previous.beforeUid != null)
+                    previous.highestModSeq
+                else readChanges(start.accountId, path, generation, null)?.highestModSeq
+            else null
             data class Segment(val from: Long, val floor: Long?)
             var lastCompletedAt: Long? = null
             var settle: Set<String> = emptySet()
+            var fullPassId: String? = null
             val segments =
                 db.withTransaction {
                     val folder = checkNotNull(dao.folder(folderId)) { "Folder was removed" }
@@ -192,11 +217,13 @@ class RemoteMailRepository(
                         resetGeneration(folder)
                     val cursor =
                         dao.cursor(folderId)?.takeIf {
-                            !full &&
-                                folder.uidValidity == generation &&
+                            folder.uidValidity == generation &&
                                 it.uidValidity == generation &&
-                                it.sinceEpochMillis == since.toEpochMilli()
+                                it.sinceEpochMillis == since.toEpochMilli() &&
+                            if (scanFully) it.fullPassId != null && it.beforeUid != null
+                                else it.fullPassId == null
                         }
+                    if (scanFully) fullPassId = cursor?.fullPassId ?: newId()
                     lastCompletedAt = dao.cursor(folderId)?.lastCompletedAt
                     // Every later page for this mailbox is fetched after this point, under the lock.
                     dao.purgeApplied(folder.accountId, path, passStartedAt)
@@ -238,7 +265,7 @@ class RemoteMailRepository(
                             require(it.identity?.uidValidity == generation) {
                                 "Page belongs to another mailbox generation"
                             }
-                            if (upsert(it, folder, placeholders, fetchedAt)) stored++
+                            if (upsert(it, folder, placeholders, fetchedAt, fullPassId)) stored++
                         }
                         dao.updateFolderState(
                             folderId,
@@ -249,6 +276,17 @@ class RemoteMailRepository(
                         )
                         if (resumeAt == null) lastCompletedAt = now().toEpochMilli()
                         if (resumeAt == null) dao.initializeVisit(folderId, status.uidNext - 1)
+                        if (resumeAt == null && fullPassId != null) {
+                            val completedPass = fullPassId
+                            dao.remoteMessages(folderId)
+                                .filter { row ->
+                                    row.uidValidity == generation && row.uid!! < status.uidNext &&
+                                        row.lastSeenPassId != completedPass &&
+                                        runCatching { !Instant.parse(row.receivedAt).isBefore(since) }
+                                            .getOrDefault(false)
+                                }
+                                .forEach { detach(it.id) }
+                        }
                         dao.saveCursor(
                             SyncCursorEntity(
                                 folderId,
@@ -256,6 +294,8 @@ class RemoteMailRepository(
                                 resumeAt,
                                 since.toEpochMilli(),
                                 lastCompletedAt,
+                                fullPassId = if (resumeAt == null) null else fullPassId,
+                                highestModSeq = if (scanFully) scanToken else previous?.highestModSeq,
                             )
                         )
                         if (resumeAt == null)
@@ -266,8 +306,41 @@ class RemoteMailRepository(
                     before = lower
                 } while (!done)
             }
+            if (changes != null) applyChanges(folderId, generation, path, changes, passStartedAt)
             stored
         }
+    }
+
+    private suspend fun readChanges(
+        accountId: String, path: String, uidValidity: Long, sinceModSeq: Long?,
+    ): MailboxChanges? = try {
+        sessions.withStore(accountId) { it.changes(path, uidValidity, sinceModSeq) }
+            ?.takeIf { it.uidValidity == uidValidity &&
+                it.highestModSeq >= (sinceModSeq ?: 0L) }
+    } catch (failure: MailFailure) {
+        if (failure.kind == FailureKind.PROTOCOL) null else throw failure
+    }
+
+    private suspend fun applyChanges(
+        folderId: String, generation: Long, path: String,
+        changes: MailboxChanges, passStartedAt: Long,
+    ) = db.withTransaction {
+        val folder = checkNotNull(dao.folder(folderId)) { "Folder was removed" }
+        check(folder.uidValidity == generation) { "Mailbox identity changed during sync" }
+        changes.vanishedUids.forEach { uid ->
+            dao.messageByUid(folderId, generation, uid)?.let { detach(it.id) }
+        }
+        changes.flags.forEach { change ->
+            val row = dao.messageByUid(folderId, generation, change.uid) ?: return@forEach
+            val intent = dao.activeOperations(folder.accountId, path, generation,
+                change.uid, passStartedAt)
+            dao.saveMessage(row.copy(
+                isRead = if (intent.any { it.kind == OperationKind.READ.name }) row.isRead else change.read,
+                flagged = if (intent.any { it.kind == OperationKind.FLAG.name }) row.flagged else change.flagged,
+            ))
+        }
+        dao.cursor(folderId)?.takeIf { it.uidValidity == generation && it.beforeUid == null }
+            ?.let { dao.saveCursor(it.copy(highestModSeq = changes.highestModSeq)) }
     }
 
     /** Fetches text/HTML and attachment metadata for one cached message. */
@@ -497,6 +570,7 @@ class RemoteMailRepository(
         folder: FolderEntity,
         placeholders: MutableList<MessageEntity>,
         fetchedAt: Long,
+        seenPassId: String? = null,
     ): Boolean {
         val identity = requireNotNull(email.identity) { "Server message has no identity" }
         val intent =
@@ -529,6 +603,7 @@ class RemoteMailRepository(
                     isNew = existing?.isNew ?: (folder.lastVisitedUid?.let { identity.uid > it } ?: false),
                     remoteEmailId = existing?.remoteEmailId,
                     rawMessagePath = existing?.rawMessagePath,
+                    lastSeenPassId = seenPassId ?: existing?.lastSeenPassId,
                 )
         )
         if (email.bodyDownloaded) saveAttachments(id, email.attachments)

@@ -16,7 +16,7 @@ import androidx.room.RoomDatabase
             PendingOperationEntity::class,
             OutboxEntity::class,
         ],
-    version = 3,
+    version = 4,
     exportSchema = true,
 )
 abstract class MailDatabase : RoomDatabase() {

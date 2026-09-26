@@ -31,6 +31,9 @@ interface MailStore : AutoCloseable {
 
     fun poll(mailbox: String): MailboxStatus
 
+    /** Optional QRESYNC changes since a durable token; null also requests an initial token. */
+    fun changes(mailbox: String, uidValidity: Long, sinceModSeq: Long?): MailboxChanges? = null
+
     /** Server-confirmed APPEND; identity may be unavailable when UIDPLUS is not supported. */
     fun append(mailbox: String, raw: ByteArray, read: Boolean = false): MessageIdentity?
 

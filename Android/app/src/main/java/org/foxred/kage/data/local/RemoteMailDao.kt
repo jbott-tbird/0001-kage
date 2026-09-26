@@ -82,6 +82,9 @@ interface RemoteMailDao {
     @Query("SELECT id FROM messages WHERE folderId = :folderId AND uid IS NOT NULL")
     suspend fun remoteMessageIds(folderId: String): List<String>
 
+    @Query("SELECT * FROM messages WHERE folderId = :folderId AND uid IS NOT NULL")
+    suspend fun remoteMessages(folderId: String): List<MessageEntity>
+
     @Query("SELECT MAX(uid) FROM messages WHERE folderId = :folderId")
     suspend fun highestCachedUid(folderId: String): Long?
 

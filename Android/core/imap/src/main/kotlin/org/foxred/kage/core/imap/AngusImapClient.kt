@@ -12,6 +12,8 @@ import org.eclipse.angus.mail.iap.CommandFailedException
 import org.eclipse.angus.mail.imap.IMAPFolder
 import org.eclipse.angus.mail.imap.IMAPMessage
 import org.eclipse.angus.mail.imap.IMAPStore
+import org.eclipse.angus.mail.imap.MessageVanishedEvent
+import org.eclipse.angus.mail.imap.ResyncData
 import org.foxred.kage.core.account.*
 import org.foxred.kage.core.mime.AngusEnvelopeReader
 import org.foxred.kage.core.mime.AngusPartReader
@@ -151,6 +153,33 @@ class AngusImapClient(
             }
             MailboxStatus(f.uidValidity, f.uidNext, f.messageCount, f.unreadMessageCount)
         }
+
+    @Synchronized
+    override fun changes(mailbox: String, uidValidity: Long, sinceModSeq: Long?): MailboxChanges? {
+        if (!supports("QRESYNC")) return null
+        val f = connected().getFolder(mailbox) as IMAPFolder
+        try {
+            val events = f.open(Folder.READ_ONLY,
+                if (sinceModSeq == null) ResyncData.CONDSTORE
+                else ResyncData(uidValidity, sinceModSeq))
+            if (f.uidValidity != uidValidity)
+                throw MailFailure(FailureKind.PROTOCOL, "Mailbox identity changed; refresh required")
+            val highest = f.highestModSeq
+            if (highest <= 0) return null
+            val flags = if (sinceModSeq == null) emptyList() else
+                f.getMessagesByUIDChangedSince(1, UIDFolder.LASTUID, sinceModSeq).map { message ->
+                    MailboxFlagChange(f.getUID(message), message.isSet(Flags.Flag.SEEN),
+                        message.isSet(Flags.Flag.FLAGGED))
+                }
+            val vanished = events.orEmpty().filterIsInstance<MessageVanishedEvent>()
+                .flatMap { it.getUIDs().toList() }.toSet()
+            return MailboxChanges(uidValidity, highest, flags, vanished)
+        } catch (error: Exception) {
+            throw failure(error)
+        } finally {
+            if (f.isOpen) runCatching { f.close(false) }
+        }
+    }
 
     @Synchronized
     override fun append(mailbox: String, raw: ByteArray, read: Boolean): MessageIdentity? {

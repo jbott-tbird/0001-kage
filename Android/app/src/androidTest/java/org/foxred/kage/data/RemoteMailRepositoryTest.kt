@@ -92,6 +92,13 @@ class RemoteMailRepositoryTest {
             return server.downloadAttachment(identity, partId, output)
         }
 
+        override fun changes(mailbox: String, uidValidity: Long, sinceModSeq: Long?): MailboxChanges? {
+            if (!deltaEnabled) return null
+            return if (sinceModSeq == null)
+                MailboxChanges(uidValidity, 10, emptyList(), emptySet())
+            else nextChanges ?: MailboxChanges(uidValidity, sinceModSeq, emptyList(), emptySet())
+        }
+
         override fun cancel() {
             cancelled.countDown()
         }
@@ -104,6 +111,8 @@ class RemoteMailRepositoryTest {
     private var pageCalls = 0
     private var failPageAt: Int? = null
     private var failPart = false
+    private var deltaEnabled = false
+    private var nextChanges: MailboxChanges? = null
     private var corruptPageAt: Int? = null
     private var afterPage: (() -> Unit)? = null
     private var cancelled = CountDownLatch(1)
@@ -442,6 +451,88 @@ class RemoteMailRepositoryTest {
     }
 
     @Test
+    fun fullScanRemovesExpungesOnlyAfterResumedPassCompletes() = runBlocking {
+        var db = open(file = true)
+        var repo = repository(db)
+        ready(repo)
+        repeat(3) { server("a").append("INBOX", raw(it + 1)) }
+        repo.syncMessages(inbox(), Instant.EPOCH, pageSize = 2)
+        val original = rows(db, inbox()).associateBy { it.uid }
+        repo.downloadBody(original.getValue(2L).id)
+        val identity = MessageIdentity("INBOX", original.getValue(1L).uidValidity!!, 1)
+        server("a").move(identity, "Trash")
+        server("a").markRead(identity.copy(uid = 2), true)
+        pageCalls = 0
+        failPageAt = 2
+        val interrupted = runCatching {
+            repo.syncMessages(inbox(), Instant.EPOCH, pageSize = 2, full = true)
+        }.exceptionOrNull()
+        assertEquals(FailureKind.CONNECTION, (interrupted as MailFailure).kind)
+        assertEquals(3, rows(db, inbox()).size)
+        val checkpoint = db.remoteMailDao().cursor(inbox())!!
+        assertNotNull(checkpoint.fullPassId)
+        assertEquals(2L, checkpoint.beforeUid)
+
+        db.close()
+        db = open(file = true)
+        repo = repository(db)
+        failPageAt = null
+        repo.syncMessages(inbox(), Instant.EPOCH, pageSize = 2, full = true)
+        assertEquals(setOf(2L, 3L), rows(db, inbox()).mapNotNull { it.uid }.toSet())
+        assertTrue(db.remoteMailDao().message(original.getValue(2L).id)!!.isRead)
+        assertTrue(db.remoteMailDao().message(original.getValue(2L).id)!!.bodyDownloaded)
+        assertNull(db.remoteMailDao().cursor(inbox())!!.fullPassId)
+    }
+
+    @Test
+    fun visibleRefreshAppliesQresyncFlagsAndVanishedWithoutFullEnvelopeScan() = runBlocking {
+        val db = open()
+        val repo = repository(db)
+        ready(repo)
+        deltaEnabled = true
+        repeat(3) { server("a").append("INBOX", raw(it + 1)) }
+        repo.refreshVisibleFolder(inbox(), Instant.EPOCH)
+        val old = rows(db, inbox()).associateBy { it.uid }
+        assertEquals(10L, db.remoteMailDao().cursor(inbox())!!.highestModSeq)
+        val validity = old.getValue(1L).uidValidity!!
+        server("a").markRead(MessageIdentity("INBOX", validity, 2), true)
+        server("a").move(MessageIdentity("INBOX", validity, 1), "Trash")
+        nextChanges = MailboxChanges(validity, 11,
+            listOf(MailboxFlagChange(2, read = true, flagged = false)), setOf(1))
+        pageCalls = 0
+        repo.refreshVisibleFolder(inbox(), Instant.EPOCH)
+        assertEquals(0, pageCalls)
+        assertNull(db.remoteMailDao().message(old.getValue(1L).id))
+        assertTrue(db.remoteMailDao().message(old.getValue(2L).id)!!.isRead)
+        assertEquals(11L, db.remoteMailDao().cursor(inbox())!!.highestModSeq)
+
+        repo.markRead(old.getValue(3L).id, true)
+        nextChanges = MailboxChanges(validity, 12,
+            listOf(MailboxFlagChange(3, read = false, flagged = false)), emptySet())
+        repo.refreshVisibleFolder(inbox(), Instant.EPOCH)
+        assertTrue("Queued intent wins over QRESYNC", db.remoteMailDao().message(old.getValue(3L).id)!!.isRead)
+    }
+
+    @Test
+    fun visibleRefreshFallsBackToFullScanWhenQresyncIsUnavailable() = runBlocking {
+        val db = open()
+        val repo = repository(db)
+        ready(repo)
+        repeat(2) { server("a").append("INBOX", raw(it + 1)) }
+        repo.refreshVisibleFolder(inbox(), Instant.EPOCH)
+        val original = rows(db, inbox()).associateBy { it.uid }
+        val validity = original.getValue(1L).uidValidity!!
+        server("a").move(MessageIdentity("INBOX", validity, 1), "Trash")
+        server("a").markRead(MessageIdentity("INBOX", validity, 2), true)
+        pageCalls = 0
+        repo.refreshVisibleFolder(inbox(), Instant.EPOCH)
+        assertTrue("Fallback scans UID pages", pageCalls > 0)
+        assertEquals(listOf(2L), rows(db, inbox()).mapNotNull { it.uid })
+        assertTrue(db.remoteMailDao().message(original.getValue(2L).id)!!.isRead)
+        assertNull(db.remoteMailDao().cursor(inbox())!!.highestModSeq)
+    }
+
+    @Test
     fun rejectedPageRollsBackWithoutAdvancingCursor() = runBlocking {
         val db = open()
         val repo = repository(db)
@@ -679,6 +770,83 @@ class RemoteMailRepositoryTest {
     }
 
     @Test
+    fun visibleRefreshTimeoutClosesStalledStoreAndNextAttemptReconnects() = runBlocking {
+        val db = open()
+        ready(repository(db))
+        val entered = CountDownLatch(1)
+        val released = CountDownLatch(1)
+        var created = 0
+        val sessions = AccountSessions(RemoteMailRepository.incomingServer(db), credentials) { id ->
+            created++
+            val attempt = created
+            object : MailStore by ScriptedStore(server(id)) {
+                override fun status(mailbox: String): MailboxStatus {
+                    if (attempt == 1) {
+                        entered.countDown()
+                        check(released.await(5, TimeUnit.SECONDS)) { "Timed out store was not closed" }
+                        throw MailFailure(FailureKind.CANCELLED, "Interrupted")
+                    }
+                    return server(id).status(mailbox)
+                }
+
+                override fun cancel() { released.countDown() }
+                override fun close() { released.countDown() }
+            }
+        }
+        val repo = RemoteMailRepository(db, sessions, credentials,
+            DurableOutbox(db, context, codec), refreshTimeoutMillis = 500)
+        val failure = runCatching {
+            repo.refreshVisibleFolder(inbox(), Instant.EPOCH)
+        }.exceptionOrNull() as MailFailure
+        assertTrue(failure.kind == FailureKind.CONNECTION || failure.kind == FailureKind.CANCELLED)
+        assertTrue(entered.await(1, TimeUnit.SECONDS))
+        assertTrue(released.await(1, TimeUnit.SECONDS))
+        assertEquals(0, repo.refreshVisibleFolder(inbox(), Instant.EPOCH))
+        assertEquals(2, created)
+        sessions.closeAll()
+    }
+
+    @Test
+    fun cancelledIdleReconnectsAndUsesNoopFallback() = runBlocking {
+        val db = open()
+        ready(repository(db))
+        val idling = CountDownLatch(1)
+        val cancelledIdle = CountDownLatch(1)
+        var created = 0
+        val sessions = AccountSessions(RemoteMailRepository.incomingServer(db), credentials) { id ->
+            created++
+            val attempt = created
+            object : MailStore by ScriptedStore(server(id)) {
+                override fun supports(capability: String): Boolean =
+                    capability == "IDLE" && attempt == 1
+
+                override fun awaitChange(mailbox: String) {
+                    idling.countDown()
+                    check(cancelledIdle.await(5, TimeUnit.SECONDS)) { "IDLE was not interrupted" }
+                    throw MailFailure(FailureKind.CANCELLED, "IDLE interrupted")
+                }
+
+                override fun poll(mailbox: String): MailboxStatus = server(id).poll(mailbox)
+                override fun cancel() { cancelledIdle.countDown() }
+                override fun close() { cancelledIdle.countDown() }
+            }
+        }
+        val waiting = async(Dispatchers.Default) {
+            runCatching { sessions.withStore("a") { it.awaitChange("INBOX") } }
+        }
+        assertTrue(idling.await(2, TimeUnit.SECONDS))
+        waiting.cancel()
+        withTimeout(2_000) { waiting.join() }
+        val status = sessions.withStore("a") { store ->
+            if (store.supports("IDLE")) store.awaitChange("INBOX")
+            store.poll("INBOX")
+        }
+        assertEquals(server("a").status("INBOX").uidValidity, status.uidValidity)
+        assertEquals(2, created)
+        sessions.closeAll()
+    }
+
+    @Test
     fun missingCredentialsFailBeforeNetworkWithoutChangingRows() = runBlocking {
         val db = open()
         val repo = repository(db)
@@ -719,6 +887,38 @@ class RemoteMailRepositoryTest {
                 server.awaitCompletion()
                 assertTrue(transcript.commands.contains("LIST"))
                 assertTrue(transcript.commands.contains("EXAMINE") || transcript.commands.contains("SELECT"))
+            }
+        } finally {
+            SSLContext.setDefault(original)
+        }
+    }
+
+    @Test
+    fun realAngusSessionUsesQresyncAfterDurableBaseline() = runBlocking {
+        val original = SSLContext.getDefault()
+        val tls = testTlsContext(
+            InstrumentationRegistry.getInstrumentation().context.assets.open("localhost.p12")
+        )
+        SSLContext.setDefault(tls)
+        try {
+            val transcript = ImapTranscript(additionalCapabilities = "ENABLE CONDSTORE QRESYNC")
+            LoopbackServer(tls, transcript::serve).use { server ->
+                val db = open()
+                val sessions = AccountSessions(RemoteMailRepository.incomingServer(db), credentials) { AngusImapClient() }
+                val repo = RemoteMailRepository(db, sessions, credentials,
+                    DurableOutbox(db, context, codec))
+                val configured = account("wire").copy(
+                    incomingServer = Server("localhost", server.port, ServerProtocol.IMAP, username = "user")
+                )
+                repo.addAccount(configured, Authorization("password"), Authorization("password"))
+                repo.refreshFolders("wire")
+                repo.refreshVisibleFolder(inbox("wire"), Instant.EPOCH)
+                assertEquals(10L, db.remoteMailDao().cursor(inbox("wire"))!!.highestModSeq)
+                repo.refreshVisibleFolder(inbox("wire"), Instant.EPOCH)
+                assertTrue(transcript.sawQresync)
+                assertEquals(10L, db.remoteMailDao().cursor(inbox("wire"))!!.highestModSeq)
+                sessions.closeAll()
+                server.awaitCompletion()
             }
         } finally {
             SSLContext.setDefault(original)

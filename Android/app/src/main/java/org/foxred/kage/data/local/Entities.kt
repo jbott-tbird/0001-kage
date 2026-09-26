@@ -103,6 +103,7 @@ data class MessageEntity(
     @ColumnInfo(defaultValue = "'{}'") val envelopeJson: String = "{}",
     @ColumnInfo(defaultValue = "1") val bodyDownloaded: Boolean = true,
     val rawMessagePath: String? = null,
+    val lastSeenPassId: String? = null,
 )
 
 @Entity(

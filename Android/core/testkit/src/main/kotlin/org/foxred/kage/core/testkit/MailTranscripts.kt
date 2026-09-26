@@ -98,6 +98,7 @@ constructor(
     val idling = CountDownLatch(1)
     val change = CountDownLatch(1)
     val commands = mutableListOf<String>()
+    @Volatile var sawQresync = false
 
     fun serve(socket: Socket) {
         val reader = socket.inputStream.bufferedReader(Charsets.US_ASCII)
@@ -139,6 +140,10 @@ constructor(
                     )
                     reply("$tag OK authenticated")
                 }
+                command.startsWith("ENABLE ") -> {
+                    reply("* ENABLED QRESYNC CONDSTORE")
+                    reply("$tag OK enabled")
+                }
                 command.startsWith("SUBSCRIBE ") || command.startsWith("UNSUBSCRIBE ") -> {
                     check(rejectSubscription)
                     reply("$tag NO Permission denied")
@@ -152,18 +157,25 @@ constructor(
                     reply("$tag OK listed")
                 }
                 command.startsWith("EXAMINE ") || command.startsWith("SELECT ") -> {
+                    if (command.contains("QRESYNC", ignoreCase = true)) sawQresync = true
                     reply("* FLAGS (\\Seen \\Flagged \\Deleted)")
                     reply("* ${if (singleMessage) 1 else 0} EXISTS")
                     reply("* 0 RECENT")
                     reply("* OK [UIDVALIDITY 77] generation")
                     reply("* OK [UIDNEXT ${if (singleMessage) 2 else 1}] next")
+                    if (additionalCapabilities.contains("QRESYNC"))
+                        reply("* OK [HIGHESTMODSEQ 10] highest")
                     reply(
                         "$tag OK [${if (command.startsWith("SELECT ")) "READ-WRITE" else "READ-ONLY"}] selected"
                     )
                 }
                 command.startsWith("UID FETCH ") -> {
-                    check(singleMessage)
-                    reply("* 1 FETCH (UID 1 FLAGS ())")
+                    if (command.contains("CHANGEDSINCE", ignoreCase = true)) {
+                        // No fixture message changed since the saved token.
+                    } else {
+                        check(singleMessage)
+                        reply("* 1 FETCH (UID 1 FLAGS ())")
+                    }
                     reply("$tag OK fetched")
                 }
                 command.startsWith("SEARCH ") -> {

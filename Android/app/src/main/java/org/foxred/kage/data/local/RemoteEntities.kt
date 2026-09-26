@@ -45,6 +45,8 @@ data class SyncCursorEntity(
     val beforeUid: Long?,
     val sinceEpochMillis: Long,
     val lastCompletedAt: Long?,
+    val fullPassId: String? = null,
+    val highestModSeq: Long? = null,
 )
 
 /**

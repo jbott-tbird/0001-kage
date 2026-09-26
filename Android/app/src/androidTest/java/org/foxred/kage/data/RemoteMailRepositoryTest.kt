@@ -614,6 +614,33 @@ class RemoteMailRepositoryTest {
     }
 
     @Test
+    fun rejectedReadAndFlagActionsReconcileFromServerOnRefresh() = runBlocking {
+        val db = open()
+        val initial = repository(db)
+        ready(initial)
+        server("a").append("INBOX", raw(1))
+        initial.refreshVisibleFolder(inbox(), Instant.EPOCH)
+        val message = rows(db, inbox()).single()
+        val repo = repository(db) { id ->
+            object : MailStore by ScriptedStore(server(id)) {
+                override fun markRead(identity: MessageIdentity, read: Boolean) {
+                    throw MailFailure(FailureKind.PROTOCOL, "Read rejected")
+                }
+                override fun flag(identity: MessageIdentity, flagged: Boolean) {
+                    throw MailFailure(FailureKind.PROTOCOL, "Flag rejected")
+                }
+            }
+        }
+        repo.markRead(message.id, true)
+        repo.flag(message.id, true)
+        assertTrue(db.remoteMailDao().message(message.id)!!.let { it.isRead && it.flagged })
+        repo.refreshVisibleFolder(inbox(), Instant.EPOCH)
+        assertFalse(db.remoteMailDao().message(message.id)!!.isRead)
+        assertFalse(db.remoteMailDao().message(message.id)!!.flagged)
+        assertTrue(db.remoteMailDao().operations("a").all { it.state == OperationState.FAILED })
+    }
+
+    @Test
     fun stalePageFetchedBeforeConfirmationCannotRevertIntent() = runBlocking {
         val db = open()
         val repo = repository(db)
@@ -660,6 +687,8 @@ class RemoteMailRepositoryTest {
         assertTrue("Queued moves are not re-added to the source", rows(db, inbox()).isEmpty())
 
         server("a").deleteMailbox("Temporary")
+        val interrupted = db.remoteMailDao().operations("a").single { it.messageId == rejected.id }
+        db.remoteMailDao().saveOperation(interrupted.copy(state = OperationState.IN_FLIGHT))
         assertEquals(RemoteMailRepository.FlushResult(1, 1), repo.flushOperations("a"))
         val restored = db.remoteMailDao().message(rejected.id)!!
         assertEquals(inbox(), restored.folderId)

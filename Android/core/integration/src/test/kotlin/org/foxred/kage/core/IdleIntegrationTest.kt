@@ -211,6 +211,23 @@ class IdleIntegrationTest {
     }
 
     @Test
+    fun uidplusMoveFallbackExpungesOnlyTheSelectedUid() {
+        val transcript = ImapTranscript(singleMessage = true, additionalCapabilities = "UIDPLUS")
+        LoopbackServer(context(), transcript::serve).use { server ->
+            AngusImapClient().use { client ->
+                client.connect(
+                    Server("localhost", server.port, ServerProtocol.IMAP, username = "user"),
+                    Authorization("password"),
+                )
+                client.move(MessageIdentity("INBOX", 77, 1), "Archive")
+            }
+            server.awaitCompletion()
+        }
+        assertTrue(transcript.sawUidExpunge)
+        assertFalse(transcript.commands.contains("EXPUNGE"))
+    }
+
+    @Test
     fun malformedGreetingFailsWithoutAnUnboundedRead() {
         LoopbackServer(context()) { socket ->
                 socket.outputStream.write("invalid IMAP greeting\r\n".toByteArray())

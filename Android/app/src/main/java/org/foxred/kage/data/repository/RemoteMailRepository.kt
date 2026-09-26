@@ -488,14 +488,12 @@ class RemoteMailRepository(
     /**
      * Sends queued intent in creation order. Connection-level failures stop the flush and keep the
      * remaining intent queued; server rejections mark only that operation failed and restore any
-     * moved placeholder. An operation interrupted mid-flight is retried; for MOVE a rejection
-     * after interruption is treated as possibly applied and left for target-folder sync.
+     * moved placeholder. An operation interrupted mid-flight is retried; a later server rejection
+     * stays failed rather than assuming the move succeeded.
      */
     suspend fun flushOperations(accountId: String): FlushResult =
         queueLocks.computeIfAbsent(accountId) { Mutex() }.withLock {
             val queued = dao.activeOperations(accountId)
-            val interrupted =
-                queued.filter { it.state == OperationState.IN_FLIGHT }.mapTo(HashSet()) { it.id }
             var applied = 0
             var failed = 0
             for (op in queued) {
@@ -529,13 +527,8 @@ class RemoteMailRepository(
                         finish(started.id, OperationState.PENDING, failure.message)
                         throw failure
                     }
-                    if (started.kind == OperationKind.MOVE.name && started.id in interrupted) {
-                        finish(started.id, OperationState.APPLIED, failure.message)
-                        applied++
-                    } else {
-                        reject(started, failure)
-                        failed++
-                    }
+                    reject(started, failure)
+                    failed++
                 }
             }
             FlushResult(applied, failed)

@@ -314,13 +314,19 @@ class AngusImapClient(
 
     @Synchronized
     override fun move(identity: MessageIdentity, targetMailbox: String) {
-        // Check before selecting a folder; capability discovery must not open a second session.
-        // Never emulate MOVE with unrestricted EXPUNGE of another client's deleted messages.
-        if (!supports("MOVE"))
+        // Never use unrestricted EXPUNGE; it could remove messages deleted by another client.
+        val nativeMove = supports("MOVE")
+        if (!nativeMove && !supports("UIDPLUS"))
             throw MailFailure(FailureKind.PROTOCOL, "Server does not support safe MOVE")
         val destination = connected().getFolder(targetMailbox)
         folder(identity.mailbox, true) { f ->
-            f.moveMessages(arrayOf(identified(f, identity)), destination)
+            val source = identified(f, identity)
+            if (nativeMove) f.moveMessages(arrayOf(source), destination)
+            else {
+                f.copyUIDMessages(arrayOf(source), destination)
+                source.setFlag(Flags.Flag.DELETED, true)
+                f.expunge(arrayOf(source))
+            }
         }
     }
 

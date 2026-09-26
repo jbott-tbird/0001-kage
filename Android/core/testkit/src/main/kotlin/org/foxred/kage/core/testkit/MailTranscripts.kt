@@ -99,6 +99,7 @@ constructor(
     val change = CountDownLatch(1)
     val commands = mutableListOf<String>()
     @Volatile var sawQresync = false
+    @Volatile var sawUidExpunge = false
 
     fun serve(socket: Socket) {
         val reader = socket.inputStream.bufferedReader(Charsets.US_ASCII)
@@ -177,6 +178,15 @@ constructor(
                         reply("* 1 FETCH (UID 1 FLAGS ())")
                     }
                     reply("$tag OK fetched")
+                }
+                command.startsWith("UID COPY ") || command.startsWith("COPY ") ->
+                    reply("$tag OK [COPYUID 78 1 7] copied")
+                command.startsWith("UID STORE ") || command.startsWith("STORE ") ->
+                    reply("$tag OK stored")
+                command.startsWith("UID EXPUNGE ") -> {
+                    sawUidExpunge = true
+                    reply("* 1 EXPUNGE")
+                    reply("$tag OK expunged")
                 }
                 command.startsWith("SEARCH ") -> {
                     reply("* SEARCH")

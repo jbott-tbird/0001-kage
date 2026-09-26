@@ -501,23 +501,22 @@ class RemoteMailRepository(
                     db.withTransaction {
                         dao.operation(op.id)
                             ?.takeIf { it.state == OperationState.PENDING || it.state == OperationState.IN_FLIGHT }
-                            ?.also {
-                                dao.saveOperation(
-                                    it.copy(
-                                        state = OperationState.IN_FLIGHT,
-                                        attempts = it.attempts + 1,
-                                        updatedAt = now().toEpochMilli(),
-                                    )
-                                )
+                            ?.let {
+                                it.copy(
+                                    state = OperationState.IN_FLIGHT,
+                                    attempts = it.attempts + 1,
+                                    updatedAt = now().toEpochMilli(),
+                                ).also { next -> dao.saveOperation(next) }
                             }
                     } ?: continue
                 val identity = MessageIdentity(started.mailbox, started.uidValidity, started.uid)
                 try {
-                    sessions.withStore(accountId) { store ->
+                    if (started.kind == OperationKind.MOVE.name) performMove(started, identity)
+                    else sessions.withStore(accountId) { store ->
                         when (OperationKind.valueOf(started.kind)) {
                             OperationKind.READ -> store.markRead(identity, requireNotNull(started.desiredValue))
                             OperationKind.FLAG -> store.flag(identity, requireNotNull(started.desiredValue))
-                            OperationKind.MOVE -> store.move(identity, requireNotNull(started.targetMailbox))
+                            OperationKind.MOVE -> error("MOVE is handled with a durable checkpoint")
                         }
                     }
                     finish(started.id, OperationState.APPLIED, null)
@@ -533,6 +532,88 @@ class RemoteMailRepository(
             }
             FlushResult(applied, failed)
         }
+
+    /** Replays a MOVE only after checking for a copy created since its durable target boundary. */
+    private suspend fun performMove(op: PendingOperationEntity, source: MessageIdentity) {
+        val target = requireNotNull(op.targetMailbox)
+        if (op.moveMode == "LEGACY_UNCERTAIN")
+            throw MailFailure(FailureKind.PROTOCOL, "Older move needs manual reconciliation")
+        val checkpoint = if (op.moveTargetUidNext != null) op else {
+            val boundary = sessions.withStore(op.accountId) { store ->
+                val status = store.status(target)
+                if (status.uidValidity < 1 || status.uidNext < 1)
+                    throw MailFailure(FailureKind.PROTOCOL, "Target mailbox has no stable UID boundary")
+                val mode = when {
+                    store.supports("MOVE") -> "MOVE"
+                    store.supports("UIDPLUS") -> "COPY_UIDPLUS"
+                    else -> throw MailFailure(FailureKind.PROTOCOL, "Server does not support safe MOVE")
+                }
+                status to mode
+            }
+            val headerId = op.messageId?.let { dao.message(it) }?.let(::headerMessageId)
+            db.withTransaction {
+                val current = checkNotNull(dao.operation(op.id)) { "Queued move was removed" }
+                current.copy(
+                    moveTargetUidValidity = boundary.first.uidValidity,
+                    moveTargetUidNext = boundary.first.uidNext,
+                    moveSourceMessageId = headerId,
+                    moveMode = boundary.second,
+                ).also { next -> dao.saveOperation(next) }
+            }
+        }
+        sessions.withStore(op.accountId) { store ->
+            if (checkpoint.attempts > 1 && reconcileMove(store, checkpoint, source)) return@withStore
+            store.move(source, target)
+        }
+    }
+
+    /** Returns true when the earlier attempt was completed without issuing another COPY. */
+    private fun reconcileMove(
+        store: MailStore, op: PendingOperationEntity, source: MessageIdentity,
+    ): Boolean {
+        val target = requireNotNull(op.targetMailbox)
+        val headerId = op.moveSourceMessageId
+            ?: throw MailFailure(FailureKind.PROTOCOL, "Move outcome needs manual reconciliation")
+        val targetStatus = store.status(target)
+        if (targetStatus.uidValidity != op.moveTargetUidValidity)
+            throw MailFailure(FailureKind.PROTOCOL, "Target mailbox identity changed during move")
+        val copies = targetCopiesSince(store, target, targetStatus,
+            requireNotNull(op.moveTargetUidNext), headerId)
+        if (copies.size > 1)
+            throw MailFailure(FailureKind.PROTOCOL, "Multiple target copies need reconciliation")
+        val sourceExists = store.exists(source)
+        if (copies.isEmpty()) {
+            if (!sourceExists)
+                throw MailFailure(FailureKind.PROTOCOL, "Source disappeared without a target copy")
+            return false
+        }
+        if (sourceExists) {
+            if (op.moveMode != "COPY_UIDPLUS")
+                throw MailFailure(FailureKind.PROTOCOL, "Move outcome needs manual reconciliation")
+            store.delete(source)
+        }
+        return true
+    }
+
+    private fun targetCopiesSince(
+        store: MailStore, path: String, status: MailboxStatus,
+        firstUid: Long, headerId: String,
+    ): List<Email> {
+        val matches = mutableListOf<Email>()
+        var before = status.uidNext
+        while (before > firstUid && matches.size < 2) {
+            val page = store.messagePage(path, Instant.EPOCH,
+                MessageCursor(path, status.uidValidity, before, Instant.EPOCH), 100)
+            matches += page.messages.filter {
+                (it.identity?.uid ?: 0L) >= firstUid && it.messageId == headerId
+            }
+            val next = page.next?.beforeUid ?: break
+            if (next >= before)
+                throw MailFailure(FailureKind.PROTOCOL, "Target paging made no progress")
+            before = next
+        }
+        return matches
+    }
 
     private suspend fun finish(id: String, state: String, error: String?) =
         db.withTransaction {

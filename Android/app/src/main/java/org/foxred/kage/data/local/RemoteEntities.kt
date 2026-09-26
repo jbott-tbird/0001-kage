@@ -92,6 +92,10 @@ data class PendingOperationEntity(
     val lastError: String? = null,
     val createdAt: Long,
     val updatedAt: Long,
+    val moveTargetUidValidity: Long? = null,
+    val moveTargetUidNext: Long? = null,
+    val moveSourceMessageId: String? = null,
+    val moveMode: String? = null,
 )
 
 /** MIME source is held in a private file; envelope metadata preserves Bcc independently. */

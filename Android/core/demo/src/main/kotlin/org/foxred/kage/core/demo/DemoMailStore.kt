@@ -107,6 +107,13 @@ class DemoMailStore(
         }
 
     @Synchronized
+    override fun exists(identity: MessageIdentity): Boolean =
+        box(identity.mailbox).let {
+            if (it.generation != identity.uidValidity) fail("Mailbox identity changed")
+            identity.uid in it.messages
+        }
+
+    @Synchronized
     override fun createMailbox(mailbox: String) {
         checkConnected()
         require(mailbox.isNotBlank())
@@ -243,6 +250,12 @@ class DemoMailStore(
         if (identity.mailbox == targetMailbox) return
         val next = MessageIdentity(targetMailbox, target.generation, target.next++)
         target.messages[next.uid] = item.copy(email = item.email.copy(identity = next))
+        box(identity.mailbox).messages.remove(identity.uid)
+    }
+
+    @Synchronized
+    override fun delete(identity: MessageIdentity) {
+        stored(identity)
         box(identity.mailbox).messages.remove(identity.uid)
     }
 }

@@ -18,6 +18,9 @@ interface MailStore : AutoCloseable {
 
     fun status(mailbox: String): MailboxStatus
 
+    /** Check one stable UID without downloading its body. */
+    fun exists(identity: MessageIdentity): Boolean
+
     fun createMailbox(mailbox: String)
 
     fun renameMailbox(mailbox: String, target: String)
@@ -65,6 +68,9 @@ interface MailStore : AutoCloseable {
     fun flag(identity: MessageIdentity, flagged: Boolean)
 
     fun move(identity: MessageIdentity, targetMailbox: String)
+
+    /** Permanently remove one UID; implementations must never issue unrestricted EXPUNGE. */
+    fun delete(identity: MessageIdentity)
 }
 
 interface MimeCodec {

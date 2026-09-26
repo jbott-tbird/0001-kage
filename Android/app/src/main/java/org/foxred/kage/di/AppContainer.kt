@@ -5,6 +5,7 @@ import androidx.room.Room
 import org.foxred.kage.data.local.MIGRATION_1_2
 import org.foxred.kage.data.local.MIGRATION_2_3
 import org.foxred.kage.data.local.MIGRATION_3_4
+import org.foxred.kage.data.local.MIGRATION_4_5
 import org.foxred.kage.data.local.MailDatabase
 import org.foxred.kage.data.repository.RoomMailRepository
 import org.foxred.kage.data.repository.RemoteMailRepository
@@ -21,7 +22,7 @@ import org.foxred.kage.domain.repository.MailRepository
 class AppContainer(context: Context) {
     private val database =
         Room.databaseBuilder(context.applicationContext, MailDatabase::class.java, "kage-mail.db")
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
             .build()
     private val credentials =
         org.foxred.kage.data.security.AndroidCredentialStore(context.applicationContext)

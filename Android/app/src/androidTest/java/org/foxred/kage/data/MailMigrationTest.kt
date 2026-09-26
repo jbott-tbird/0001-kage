@@ -10,6 +10,7 @@ import kotlinx.coroutines.runBlocking
 import org.foxred.kage.data.local.MIGRATION_1_2
 import org.foxred.kage.data.local.MIGRATION_2_3
 import org.foxred.kage.data.local.MIGRATION_3_4
+import org.foxred.kage.data.local.MIGRATION_4_5
 import org.foxred.kage.data.local.MailDatabase
 import org.json.JSONObject
 import org.junit.Assert.*
@@ -28,6 +29,9 @@ class MailMigrationTest {
     fun migrationFromV3PreservesRemoteCursorAndMessages() = runBlocking {
         verifyMigration(3)
     }
+
+    @Test
+    fun migrationFromV4PreservesPendingActions() = runBlocking { verifyMigration(4) }
 
     private suspend fun verifyMigration(version: Int) {
         val context = ApplicationProvider.getApplicationContext<Context>()
@@ -75,17 +79,22 @@ class MailMigrationTest {
                 db.execSQL("UPDATE accounts SET requireAuth = 0")
                 db.execSQL("UPDATE attachments SET cached = 1, localFile = '/private/kept.pdf'")
             }
-            if (version == 3) {
+            if (version >= 3) {
                 db.execSQL("UPDATE attachments SET downloadState = 'DOWNLOADED', downloadedBytes = 2400")
                 db.execSQL("INSERT INTO servers VALUES ('imap-v3', 'personal', 'IMAP', 'imap.example.com', 993, 'TLS', 'rhea@example.com', 'PASSWORD')")
                 db.execSQL("INSERT INTO servers VALUES ('smtp-v3', 'personal', 'SMTP', 'smtp.example.com', 465, 'TLS', 'rhea@example.com', 'NONE')")
-                db.execSQL("INSERT INTO sync_cursors VALUES ('personal-inbox', 77, 42, 1234, NULL)")
+                if (version == 3)
+                    db.execSQL("INSERT INTO sync_cursors VALUES ('personal-inbox', 77, 42, 1234, NULL)")
+                else {
+                    db.execSQL("INSERT INTO sync_cursors (folderId, uidValidity, beforeUid, sinceEpochMillis) VALUES ('personal-inbox', 77, 42, 1234)")
+                    db.execSQL("INSERT INTO pending_operations (id, accountId, messageId, mailbox, uidValidity, uid, kind, targetMailbox, state, attempts, createdAt, updatedAt) VALUES ('move-v4', 'personal', 'kept', 'INBOX', 77, 1, 'MOVE', 'Archive', 'PENDING', 2, 1, 1)")
+                }
             }
             db.version = version
         }
         val upgraded =
             Room.databaseBuilder(context, MailDatabase::class.java, name)
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                 .build()
         try {
             val account = upgraded.mailDao().accounts().first().single()
@@ -106,11 +115,18 @@ class MailMigrationTest {
             assertTrue(message.flagged)
             assertTrue(message.bodyDownloaded)
             assertNull(message.lastSeenPassId)
-            if (version == 3) {
+            if (version >= 3) {
                 val cursor = upgraded.remoteMailDao().cursor("personal-inbox")!!
                 assertEquals(42L, cursor.beforeUid)
                 assertNull(cursor.fullPassId)
                 assertNull(cursor.highestModSeq)
+            }
+            if (version == 4) {
+                val action = upgraded.remoteMailDao().operations("personal").single()
+                assertEquals("MOVE", action.kind)
+                assertNull(action.moveTargetUidNext)
+                assertNull(action.moveSourceMessageId)
+                assertEquals("LEGACY_UNCERTAIN", action.moveMode)
             }
             assertNull(message.uid)
             val attachment = upgraded.mailDao().attachment("kept-pdf")!!

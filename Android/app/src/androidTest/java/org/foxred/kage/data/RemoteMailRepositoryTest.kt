@@ -709,6 +709,104 @@ class RemoteMailRepositoryTest {
     }
 
     @Test
+    fun interruptedCopyFallbackFinishesSourceWithoutCopyingTwiceAfterRestart() = runBlocking {
+        var db = open(file = true)
+        ready(repository(db))
+        server("a").append("INBOX", raw(1))
+        repository(db).syncMessages(inbox(), Instant.EPOCH)
+        val source = rows(db, inbox()).single()
+        val identity = MessageIdentity("INBOX", source.uidValidity!!, source.uid!!)
+        var moveCalls = 0
+        val store: (String) -> MailStore = { id ->
+            object : MailStore by ScriptedStore(server(id)) {
+                override fun supports(capability: String): Boolean =
+                    if (capability == "MOVE") false else server(id).supports(capability)
+
+                override fun move(identity: MessageIdentity, targetMailbox: String) {
+                    moveCalls++
+                    if (moveCalls > 1) error("Interrupted COPY must not be replayed")
+                    server(id).append(targetMailbox, raw(1))
+                    throw MailFailure(FailureKind.CONNECTION, "Disconnected after COPY")
+                }
+            }
+        }
+        var repo = repository(db, store)
+        repo.move(source.id, CoreRoomMapper.folderId("a", "Archive"))
+        assertEquals(FailureKind.CONNECTION,
+            (runCatching { repo.flushOperations("a") }.exceptionOrNull() as MailFailure).kind)
+        assertEquals(1, moveCalls)
+        assertTrue(server("a").exists(identity))
+        assertEquals(1, server("a").status("Archive").messageCount)
+        val checkpoint = db.remoteMailDao().operations("a").single()
+        assertEquals(1L, checkpoint.moveTargetUidNext)
+        assertNotNull(checkpoint.moveSourceMessageId)
+
+        db.close()
+        db = open(file = true)
+        repo = repository(db, store)
+        assertEquals(RemoteMailRepository.FlushResult(1, 0), repo.flushOperations("a"))
+        assertFalse(server("a").exists(identity))
+        assertEquals(1, server("a").status("Archive").messageCount)
+        assertEquals(1, moveCalls)
+        assertEquals(OperationState.APPLIED, db.remoteMailDao().operations("a").single().state)
+    }
+
+    @Test
+    fun retryIgnoresMatchingCopyThatPredatesMoveBoundary() = runBlocking {
+        val db = open()
+        ready(repository(db))
+        server("a").append("INBOX", raw(1))
+        server("a").append("Archive", raw(1))
+        repository(db).syncMessages(inbox(), Instant.EPOCH)
+        val source = rows(db, inbox()).single()
+        var calls = 0
+        val repo = repository(db) { id ->
+            object : MailStore by ScriptedStore(server(id)) {
+                override fun supports(capability: String): Boolean =
+                    if (capability == "MOVE") false else server(id).supports(capability)
+
+                override fun move(identity: MessageIdentity, targetMailbox: String) {
+                    calls++
+                    if (calls == 1) throw MailFailure(FailureKind.CONNECTION, "Before COPY")
+                    server(id).move(identity, targetMailbox)
+                }
+            }
+        }
+        repo.move(source.id, CoreRoomMapper.folderId("a", "Archive"))
+        assertEquals(FailureKind.CONNECTION,
+            (runCatching { repo.flushOperations("a") }.exceptionOrNull() as MailFailure).kind)
+        assertEquals(2L, db.remoteMailDao().operations("a").single().moveTargetUidNext)
+        assertEquals(RemoteMailRepository.FlushResult(1, 0), repo.flushOperations("a"))
+        assertEquals(2, calls)
+        assertEquals(2, server("a").status("Archive").messageCount)
+    }
+
+    @Test
+    fun moveRetriesAfterConnectionFailsBeforeTargetCheckpoint() = runBlocking {
+        val db = open()
+        ready(repository(db))
+        server("a").append("INBOX", raw(1))
+        repository(db).syncMessages(inbox(), Instant.EPOCH)
+        val source = rows(db, inbox()).single()
+        var statusCalls = 0
+        val repo = repository(db) { id ->
+            object : MailStore by ScriptedStore(server(id)) {
+                override fun status(mailbox: String): MailboxStatus {
+                    if (mailbox == "Archive" && ++statusCalls == 1)
+                        throw MailFailure(FailureKind.CONNECTION, "Before checkpoint")
+                    return server(id).status(mailbox)
+                }
+            }
+        }
+        repo.move(source.id, CoreRoomMapper.folderId("a", "Archive"))
+        assertEquals(FailureKind.CONNECTION,
+            (runCatching { repo.flushOperations("a") }.exceptionOrNull() as MailFailure).kind)
+        assertNull(db.remoteMailDao().operations("a").single().moveTargetUidNext)
+        assertEquals(RemoteMailRepository.FlushResult(1, 0), repo.flushOperations("a"))
+        assertEquals(1, server("a").status("Archive").messageCount)
+    }
+
+    @Test
     fun uidValidityChangeDropsStaleRowsAndFailsOldIntent() = runBlocking {
         val db = open()
         val repo = repository(db)

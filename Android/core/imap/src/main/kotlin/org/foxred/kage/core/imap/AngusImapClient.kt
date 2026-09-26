@@ -101,6 +101,14 @@ class AngusImapClient(
             MailboxStatus(f.uidValidity, f.uidNext, f.messageCount, f.unreadMessageCount)
         }
 
+    @Synchronized
+    override fun exists(identity: MessageIdentity): Boolean =
+        folder(identity.mailbox) { f ->
+            if (f.uidValidity != identity.uidValidity)
+                throw MailFailure(FailureKind.PROTOCOL, "Mailbox identity changed")
+            f.getMessageByUID(identity.uid) != null
+        }
+
     private fun mailboxAction(name: String, operation: (Folder) -> Boolean) {
         require(name.isNotBlank())
         try {
@@ -327,6 +335,17 @@ class AngusImapClient(
                 source.setFlag(Flags.Flag.DELETED, true)
                 f.expunge(arrayOf(source))
             }
+        }
+    }
+
+    @Synchronized
+    override fun delete(identity: MessageIdentity) {
+        if (!supports("UIDPLUS"))
+            throw MailFailure(FailureKind.PROTOCOL, "Server does not support selected-message deletion")
+        folder(identity.mailbox, true) { f ->
+            val source = identified(f, identity)
+            source.setFlag(Flags.Flag.DELETED, true)
+            f.expunge(arrayOf(source))
         }
     }
 

@@ -1,6 +1,7 @@
 package org.foxred.kage.ui.mail
 
 import androidx.compose.foundation.clickable
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -36,8 +37,10 @@ fun InboxScreen(
     val mail by vm.mailbox.collectAsStateWithLifecycle()
     val messages by vm.messages.collectAsStateWithLifecycle()
     val query by vm.query.collectAsStateWithLifecycle()
+    val sync by vm.folderSync.collectAsStateWithLifecycle()
     val drawer = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    BackHandler(drawer.isOpen) { scope.launch { drawer.close() } }
     var searching by rememberSaveable { mutableStateOf(false) }
     var filters by remember { mutableStateOf(false) }
     var options by remember { mutableStateOf(false) }
@@ -68,6 +71,11 @@ fun InboxScreen(
         selecting = false
         if (mail.preferences.selectedFolder == "unified")
             vm.query.value = vm.query.value.copy(scope = SearchScope.AllAccounts)
+        vm.refreshFolder(mail.preferences.selectedFolder)
+    }
+    DisposableEffect(mail.preferences.selectedFolder) {
+        val current = mail.preferences.selectedFolder
+        onDispose { vm.leaveFolder(current) }
     }
     val folder = mail.folders.find { it.id == mail.preferences.selectedFolder }
     val account = mail.accounts.find { it.id == folder?.accountId }
@@ -119,6 +127,10 @@ fun InboxScreen(
                         }
                     },
                     actions = {
+                        if (sync.remote && sync.folderId == mail.preferences.selectedFolder)
+                            MailIconButton("Refresh mailbox", Icons.Outlined.Refresh) {
+                                vm.refreshFolder(mail.preferences.selectedFolder, full = true)
+                            }
                         MailIconButton("Search messages", Icons.Outlined.Search) {
                             searching = !searching
                         }
@@ -234,6 +246,21 @@ fun InboxScreen(
             },
         ) { padding ->
             Column(Modifier.padding(padding).fillMaxSize()) {
+                if (sync.remote && sync.folderId == mail.preferences.selectedFolder) {
+                    if (sync.loading)
+                        LinearProgressIndicator(Modifier.fillMaxWidth())
+                    Text("Last 30 days · cached locally", Modifier.padding(horizontal = T.lg),
+                        style = MaterialTheme.typography.bodySmall)
+                    sync.error?.let { problem ->
+                        Row(Modifier.fillMaxWidth().padding(T.md),
+                            verticalAlignment = Alignment.CenterVertically) {
+                            Text(problem, Modifier.weight(1f), color = MaterialTheme.colorScheme.error)
+                            TextButton(onClick = { vm.refreshFolder(mail.preferences.selectedFolder) }) {
+                                Text("Retry")
+                            }
+                        }
+                    }
+                }
                 if (mail.preferences.offline)
                     Text(
                         "Offline preview · cached messages",
@@ -332,6 +359,10 @@ fun InboxScreen(
                         Text(
                             if (query.filter.active || query.text.isNotBlank())
                                 "No matching messages"
+                            else if (sync.loading && sync.folderId == mail.preferences.selectedFolder)
+                                "Loading mail…"
+                            else if (sync.remote && sync.folderId == mail.preferences.selectedFolder)
+                                "No messages in this folder"
                             else "You’re all caught up",
                             style = MaterialTheme.typography.titleLarge,
                         )

@@ -56,6 +56,15 @@ interface RemoteMailDao {
 
     @Query("SELECT * FROM folders WHERE id = :id") suspend fun folder(id: String): FolderEntity?
 
+    @Query("UPDATE folders SET lastVisitedUid = :uid WHERE id = :id AND lastVisitedUid IS NULL")
+    suspend fun initializeVisit(id: String, uid: Long)
+
+    @Query("UPDATE folders SET lastVisitedUid = :uid WHERE id = :id")
+    suspend fun saveVisit(id: String, uid: Long)
+
+    @Query("UPDATE messages SET isNew = 0 WHERE folderId = :folderId")
+    suspend fun clearNew(folderId: String)
+
     @Query("SELECT * FROM folders WHERE accountId = :accountId AND role = :role LIMIT 1")
     suspend fun folderByRole(accountId: String, role: String): FolderEntity?
 
@@ -72,6 +81,9 @@ interface RemoteMailDao {
 
     @Query("SELECT id FROM messages WHERE folderId = :folderId AND uid IS NOT NULL")
     suspend fun remoteMessageIds(folderId: String): List<String>
+
+    @Query("SELECT MAX(uid) FROM messages WHERE folderId = :folderId")
+    suspend fun highestCachedUid(folderId: String): Long?
 
     @Query("SELECT id FROM messages WHERE folderId = :folderId")
     suspend fun messageIds(folderId: String): List<String>

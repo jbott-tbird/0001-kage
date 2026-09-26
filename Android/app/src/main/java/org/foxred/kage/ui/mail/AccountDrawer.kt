@@ -10,6 +10,9 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.semantics.disabled
+import androidx.compose.ui.semantics.semantics
 import org.foxred.kage.domain.model.*
 import org.foxred.kage.ui.components.*
 import org.foxred.kage.ui.theme.DesignTokens as T
@@ -35,9 +38,11 @@ fun AccountDrawer(
                     onClick = { select("unified") },
                     icon = { Icon(Icons.Outlined.AllInbox, null) },
                     badge = {
-                        val inboxes =
-                            mail.folders.filter { it.role == "inbox" }.map { it.id }.toSet()
-                        val unread = mail.messages.count { it.folderId in inboxes && !it.isRead }
+                        val unread = mail.folders.filter { it.role == "inbox" }.sumOf { folder ->
+                            folder.serverUnreadCount ?: mail.messages.count {
+                                it.folderId == folder.id && !it.isRead
+                            }
+                        }
                         if (unread > 0) Text(unread.toString())
                     },
                 )
@@ -66,7 +71,11 @@ fun AccountDrawer(
                             horizontalArrangement = Arrangement.spacedBy(T.sm),
                         ) {
                             val unread =
-                                mail.messages.count { it.accountId == account.id && !it.isRead }
+                                mail.folders.filter { it.accountId == account.id }.sumOf { folder ->
+                                    folder.serverUnreadCount ?: mail.messages.count {
+                                        it.folderId == folder.id && !it.isRead
+                                    }
+                                }
                             if (!expanded && unread > 0) Text(unread.toString())
                             Icon(
                                 if (expanded) Icons.Outlined.ExpandLess
@@ -107,17 +116,24 @@ private fun DrawerFolder(folder: Folder, mail: Mailbox, select: (String) -> Unit
                     children.any { it.id == mail.preferences.selectedFolder }
             )
         }
-    val countedFolders = children.map { it.id }.toSet() + folder.id
-    val unread = mail.messages.count { it.folderId in countedFolders && !it.isRead }
+    fun descendants(id: String): List<Folder> = mail.folders.filter { it.parentId == id }
+        .flatMap { listOf(it) + descendants(it.id) }
+    val countedFolders = listOf(folder) + descendants(folder.id)
+    val unread = countedFolders.sumOf { candidate ->
+        candidate.serverUnreadCount ?: mail.messages.count {
+            it.folderId == candidate.id && !it.isRead
+        }
+    }
     Row(
         Modifier.padding(start = T.sm + T.lg * depth, end = T.sm),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         NavigationDrawerItem(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f)
+                .then(if (folder.selectable) Modifier else Modifier.alpha(0.65f).semantics { disabled() }),
             label = { Text(folder.name) },
             selected = mail.preferences.selectedFolder == folder.id,
-            onClick = { select(folder.id) },
+            onClick = { if (folder.selectable) select(folder.id) },
             icon = { Icon(folderIcon(folder.role), null) },
             badge = { if (unread > 0) Text(unread.toString()) },
         )

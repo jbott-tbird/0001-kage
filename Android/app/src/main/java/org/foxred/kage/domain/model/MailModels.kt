@@ -20,6 +20,9 @@ data class Folder(
     val name: String,
     val role: String,
     val parentId: String? = null,
+    val serverUnreadCount: Int? = null,
+    val serverTotalCount: Int? = null,
+    val selectable: Boolean = true,
 )
 
 data class Attachment(

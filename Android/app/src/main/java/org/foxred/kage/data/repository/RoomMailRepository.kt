@@ -107,14 +107,21 @@ class RoomMailRepository(
         cacheAutomaticAttachments()
     }
 
-    override suspend fun markRead(id: String, read: Boolean) = dao.markRead(id, read)
+    override suspend fun markRead(id: String, read: Boolean) {
+        if (remote?.isRealMessage(id) == true) remote.markRead(id, read)
+        else dao.markRead(id, read)
+    }
 
-    override suspend fun flag(id: String, value: Boolean) = dao.flag(id, value)
+    override suspend fun flag(id: String, value: Boolean) {
+        if (remote?.isRealMessage(id) == true) remote.flag(id, value)
+        else dao.flag(id, value)
+    }
 
     override suspend fun pin(id: String, value: Boolean) = dao.pin(id, value)
 
     override suspend fun move(id: String, role: String) =
-        db.withTransaction {
+        if (remote?.isRealMessage(id) == true) remote.moveToRole(id, role)
+        else db.withTransaction {
             val message = requireNotNull(dao.message(id))
             val folder = requireNotNull(dao.folder(message.accountId, role))
             dao.move(id, folder)
@@ -136,6 +143,9 @@ class RoomMailRepository(
 
     override suspend fun sendDemo(message: Message) =
         db.withTransaction {
+            check(db.remoteMailDao().account(message.accountId)?.mode != "REAL") {
+                "Sending from a real account is not available yet; your message was not sent."
+            }
             require(message.to.isNotBlank()) { "Enter a recipient." }
             require(
                 listOf(message.to, message.cc, message.bcc)

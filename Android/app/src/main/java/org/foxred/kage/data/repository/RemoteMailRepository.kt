@@ -67,7 +67,7 @@ class RemoteMailRepository(
                 db.withTransaction {
                     dao.insertAccount(entity)
                     dao.saveServers(account.servers.map { CoreRoomMapper.server(account.id, it) })
-                    dao.saveFolders(initialMailboxes.map { CoreRoomMapper.folder(account.id, it) })
+                    dao.saveFolders(CoreRoomMapper.folderTree(account.id, initialMailboxes))
                 }
             } catch (error: Throwable) {
                 credentials.removeAccount(account.id)
@@ -80,6 +80,38 @@ class RemoteMailRepository(
 
     suspend fun inboxFolder(accountId: String): String? = dao.folderByRole(accountId, "inbox")?.id
 
+    suspend fun isRemoteFolder(folderId: String): Boolean = dao.folder(folderId)?.remotePath != null
+
+    suspend fun isRealMessage(messageId: String): Boolean = dao.message(messageId)?.let {
+        dao.account(it.accountId)?.mode == "REAL"
+    } ?: false
+
+    suspend fun moveToRole(messageId: String, role: String) {
+        val row = checkNotNull(dao.message(messageId)) { "Message was removed" }
+        val target = checkNotNull(dao.folderByRole(row.accountId, role)) {
+            "This account has no $role folder"
+        }
+        move(messageId, target.id)
+    }
+
+    /** A visible-folder refresh discovers current paths before paging the selected mailbox. */
+    suspend fun refreshVisibleFolder(folderId: String, since: Instant, full: Boolean = false): Int {
+        val folder = checkNotNull(dao.folder(folderId)) { "Folder was removed" }
+        requireNotNull(folder.remotePath) { "Folder has no server mailbox" }
+        refreshFolders(folder.accountId)
+        checkNotNull(dao.folder(folderId)) { "Folder was removed on the server" }
+        return syncMessages(folderId, since, full = full)
+    }
+
+    /** Leaving a folder records the largest UID shown and clears its local new markers. */
+    suspend fun finishVisit(folderId: String) = db.withTransaction {
+        val folder = dao.folder(folderId) ?: return@withTransaction
+        if (folder.remotePath == null) return@withTransaction
+        val high = maxOf(folder.lastVisitedUid ?: 0L, dao.highestCachedUid(folderId) ?: 0L)
+        dao.saveVisit(folderId, high)
+        dao.clearNew(folderId)
+    }
+
     /** Cancels active network work first so no in-flight response can recreate removed rows. */
     suspend fun removeAccount(accountId: String) =
         withContext(Dispatchers.IO) {
@@ -91,13 +123,15 @@ class RemoteMailRepository(
         }
 
     suspend fun refreshFolders(accountId: String) {
-        val mailboxes = sessions.withStore(accountId) { it.mailboxes() }
+        val mailboxes = sessions.withStore(accountId) { store ->
+            store.namespaces()
+            store.mailboxes()
+        }
         db.withTransaction {
             checkNotNull(dao.account(accountId)) { "Account was removed" }
             val existing = dao.folders(accountId).associateBy { it.id }
             val folders =
-                mailboxes.map { mailbox ->
-                    val fresh = CoreRoomMapper.folder(accountId, mailbox)
+                CoreRoomMapper.folderTree(accountId, mailboxes).map { fresh ->
                     existing[fresh.id]?.let { old ->
                         fresh.copy(
                             uidValidity = old.uidValidity,
@@ -111,7 +145,7 @@ class RemoteMailRepository(
             dao.saveFolders(folders)
             val kept = folders.mapTo(HashSet()) { it.id }
             existing.values
-                .filter { it.remotePath != null && it.id !in kept }
+                .filter { it.id !in kept }
                 .forEach { gone ->
                     dao.messageIds(gone.id).forEach { detach(it) }
                     dao.removeFolder(gone.id)
@@ -207,6 +241,7 @@ class RemoteMailRepository(
                             status.messageCount,
                         )
                         if (resumeAt == null) lastCompletedAt = now().toEpochMilli()
+                        if (resumeAt == null) dao.initializeVisit(folderId, status.uidNext - 1)
                         dao.saveCursor(
                             SyncCursorEntity(
                                 folderId,
@@ -420,7 +455,7 @@ class RemoteMailRepository(
             CoreRoomMapper.email(merged, folder)
                 .copy(
                     pinned = existing?.pinned ?: replaced?.pinned ?: false,
-                    isNew = existing?.isNew ?: false,
+                    isNew = existing?.isNew ?: (folder.lastVisitedUid?.let { identity.uid > it } ?: false),
                     remoteEmailId = existing?.remoteEmailId,
                     rawMessagePath = existing?.rawMessagePath,
                 )
@@ -453,7 +488,7 @@ class RemoteMailRepository(
     private suspend fun resetGeneration(folder: FolderEntity) {
         dao.remoteMessageIds(folder.id).forEach { detach(it) }
         dao.removeCursor(folder.id)
-        dao.saveFolders(listOf(folder.copy(uidValidity = null, uidNext = null)))
+        dao.saveFolders(listOf(folder.copy(uidValidity = null, uidNext = null, lastVisitedUid = null)))
     }
 
     private suspend fun detach(messageId: String) {

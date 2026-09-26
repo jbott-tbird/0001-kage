@@ -91,6 +91,30 @@ object CoreRoomMapper {
             value.delimiter.toString(), value.isSubscribed, strings(attributes).toString(), encoded.toString(),
             serverUnreadCount = value.unreadEmails, serverTotalCount = value.totalEmails)
     }
+
+    /** LIST may omit container parents; materialize them so deep folders remain reachable. */
+    fun folderTree(accountId: String, mailboxes: List<Mailbox>): List<FolderEntity> {
+        val rows = linkedMapOf<String, FolderEntity>()
+        mailboxes.forEach { mailbox -> rows[mailbox.name] = folder(accountId, mailbox) }
+        mailboxes.forEach { mailbox ->
+            var path = mailbox.name
+            while (path.contains(mailbox.delimiter)) {
+                val parent = path.substringBeforeLast(mailbox.delimiter)
+                if (parent.isEmpty()) break
+                if (!(parent.equals("INBOX", true) && rows.keys.any { it.equals("INBOX", true) }))
+                    rows.putIfAbsent(parent, folder(accountId,
+                        Mailbox(parent, mailbox.delimiter, selectable = false)))
+                path = parent
+            }
+        }
+        return rows.map { (path, row) ->
+            val parentPath = path.substringBeforeLast(row.delimiter.single(), "")
+            val parent = rows[parentPath]
+                ?: rows.entries.firstOrNull { parentPath.equals("INBOX", true) &&
+                    it.key.equals("INBOX", true) }?.value
+            row.copy(parentId = parent?.id)
+        }
+    }
     fun mailbox(value: FolderEntity): Mailbox {
         val rights = value.rightsJson?.let(::JSONObject) ?: JSONObject()
         fun permission(key: String) = if (rights.isNull(key)) null else rights.getBoolean(key)

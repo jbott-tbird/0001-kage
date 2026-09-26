@@ -23,7 +23,11 @@ class MainActivity : ComponentActivity() {
                         object : ViewModelProvider.Factory {
                             @Suppress("UNCHECKED_CAST")
                             override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                                MailViewModel(container.mailRepository, container.realAccountSetup) as T
+                                MailViewModel(
+                                    container.mailRepository,
+                                    container.realAccountSetup,
+                                    container.remoteMailRepository,
+                                ) as T
                         }
                 )
             KageTheme { KageApp(vm) }

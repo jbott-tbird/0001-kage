@@ -32,7 +32,11 @@ fun AccountEntity.domain() =
 
 fun Folder.entity() = FolderEntity(id, accountId, name, role, parentId)
 
-fun FolderEntity.domain() = Folder(id, accountId, name, role, parentId)
+fun FolderEntity.domain() = Folder(
+    id, accountId, name, role, parentId,
+    serverUnreadCount, serverTotalCount,
+    remotePath == null || CoreRoomMapper.mailbox(this).selectable,
+)
 
 fun Attachment.entity() =
     AttachmentEntity(id, messageId, filename, mimeType, sizeBytes, cached, asset, localFile)

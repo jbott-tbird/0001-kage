@@ -241,6 +241,54 @@ class RemoteMailRepositoryTest {
     }
 
     @Test
+    fun newSinceVisitRemainsIndependentFromUnreadAndResetsWithVisit() = runBlocking {
+        val db = open()
+        val repo = repository(db)
+        ready(repo)
+        server("a").append("INBOX", raw(1))
+        repo.syncMessages(inbox(), Instant.EPOCH)
+        val first = rows(db, inbox()).single()
+        assertFalse(first.isNew)
+        assertFalse(first.isRead)
+        assertEquals(1L, db.remoteMailDao().folder(inbox())!!.lastVisitedUid)
+
+        server("a").append("INBOX", raw(2))
+        repo.syncMessages(inbox(), Instant.EPOCH)
+        val second = rows(db, inbox()).single { it.uid == 2L }
+        assertTrue(second.isNew)
+        assertFalse(second.isRead)
+        repo.markRead(second.id, true)
+        assertTrue(db.remoteMailDao().message(second.id)!!.isNew)
+        assertTrue(db.remoteMailDao().message(second.id)!!.isRead)
+        repo.finishVisit(inbox())
+        assertFalse(db.remoteMailDao().message(second.id)!!.isNew)
+        assertTrue(db.remoteMailDao().message(second.id)!!.isRead)
+        assertEquals(2L, db.remoteMailDao().folder(inbox())!!.lastVisitedUid)
+    }
+
+    @Test
+    fun missingListedParentsBecomeNonselectableDrawerContainers() = runBlocking {
+        val db = open()
+        val repo = repository(db)
+        ready(repo)
+        server("a").createMailbox("Orphan/Deep/Leaf")
+        repo.refreshFolders("a")
+        val folders = db.remoteMailDao().folders("a").associateBy { it.remotePath }
+        assertEquals(folders.getValue("Orphan").id, folders.getValue("Orphan/Deep").parentId)
+        assertEquals(folders.getValue("Orphan/Deep").id, folders.getValue("Orphan/Deep/Leaf").parentId)
+        assertFalse(CoreRoomMapper.mailbox(folders.getValue("Orphan")).selectable)
+        assertFalse(CoreRoomMapper.mailbox(folders.getValue("Orphan/Deep")).selectable)
+        assertTrue(CoreRoomMapper.mailbox(folders.getValue("Orphan/Deep/Leaf")).selectable)
+        assertEquals("archive", CoreRoomMapper.folder("a", Mailbox("All Mail", '/', true,
+            attributes = setOf("\\Archive"))).role)
+        server("a").deleteMailbox("Orphan/Deep/Leaf")
+        repo.refreshFolders("a")
+        assertTrue(db.remoteMailDao().folders("a").none {
+            it.remotePath?.startsWith("Orphan") == true
+        })
+    }
+
+    @Test
     fun interruptedSyncResumesFromDurableCursorAfterRestart() = runBlocking {
         var db = open(file = true)
         ready(repository(db))

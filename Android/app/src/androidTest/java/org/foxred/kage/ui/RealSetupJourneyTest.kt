@@ -9,6 +9,8 @@ import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.cancel
 import org.foxred.kage.core.account.FailureKind
 import org.foxred.kage.core.account.MailFailure
+import org.foxred.kage.core.account.*
+import java.time.Instant
 import org.foxred.kage.core.demo.DemoMailStore
 import org.foxred.kage.core.mime.AngusMimeCodec
 import org.foxred.kage.data.local.MailDatabase
@@ -33,18 +35,33 @@ class RealSetupJourneyTest {
     private val credentials by lazy { AndroidCredentialStore(context, "real-ui-test") }
     private lateinit var db: MailDatabase
     private lateinit var vm: MailViewModel
+    private val server = DemoMailStore()
     private var rejectSmtp = true
+    private var failPage = true
 
     @Before fun start() {
         credentials.clear()
         db = Room.inMemoryDatabaseBuilder(context, MailDatabase::class.java).build()
+        server.connect(Server("fixture.invalid", 993, ServerProtocol.IMAP, username = "real"), Authorization.none())
+        server.createMailbox("Orphan/Deep/Leaf")
+        server.createMailbox("Empty")
+        server.close()
         val remote = RemoteMailRepository(db,
-            AccountSessions(RemoteMailRepository.incomingServer(db), credentials) { DemoMailStore() },
+            AccountSessions(RemoteMailRepository.incomingServer(db), credentials) {
+                object : MailStore by server {
+                    override fun messagePage(
+                        mailbox: String, since: Instant, cursor: MessageCursor?, limit: Int,
+                    ): MessagePage {
+                        if (failPage) throw MailFailure(FailureKind.CONNECTION, "Fixture connection lost")
+                        return server.messagePage(mailbox, since, cursor, limit)
+                    }
+                }
+            },
             credentials, DurableOutbox(db, context, AngusMimeCodec()))
-        val setup = RealAccountSetup(remote, { DemoMailStore() }, { _, _ ->
+        val setup = RealAccountSetup(remote, { server }, { _, _ ->
             if (rejectSmtp) throw MailFailure(FailureKind.AUTHENTICATION, "Wrong SMTP app password")
         })
-        vm = MailViewModel(RoomMailRepository(db, context, DemoMail(context), credentials, remote), setup)
+        vm = MailViewModel(RoomMailRepository(db, context, DemoMail(context), credentials, remote), setup, remote)
         compose.setContent { KageTheme { KageApp(vm) } }
         compose.waitUntil(10000) { vm.ready.value }
     }
@@ -74,6 +91,9 @@ class RealSetupJourneyTest {
                 vm.mailbox.value.preferences.selectedFolder.startsWith("remote-folder-")
         }
         assertEquals("REAL", runBlockingAccountMode())
+        assertEquals("inbox", vm.mailbox.value.folders.single {
+            it.id == vm.mailbox.value.preferences.selectedFolder
+        }.role)
         try {
             compose.waitUntil(5000) {
                 compose.onAllNodesWithContentDescription("Open account drawer")
@@ -83,8 +103,52 @@ class RealSetupJourneyTest {
             throw AssertionError("Inbox did not open: ${compose.onRoot().printToString()}", timeout)
         }
         compose.onNodeWithContentDescription("Open account drawer").assertExists()
+        compose.onNodeWithContentDescription("Open account drawer").performClick()
+        compose.onNodeWithText("Empty").assertExists()
+        compose.onNodeWithContentDescription("Expand Orphan").performScrollTo().performClick()
+        compose.waitForIdle()
+        try {
+            compose.onNodeWithContentDescription("Expand Deep").performScrollTo().performClick()
+        } catch (failure: Throwable) {
+            throw AssertionError("Nested folder did not expand: ${compose.onRoot().printToString()}", failure)
+        }
+        compose.onNodeWithText("Leaf").assertExists()
+        androidx.test.espresso.Espresso.pressBack()
+        compose.waitUntil(5000) {
+            compose.onAllNodesWithContentDescription("Close navigation menu")
+                .fetchSemanticsNodes().isEmpty()
+        }
+        assertEquals("inbox", vm.mailbox.value.folders.single {
+            it.id == vm.mailbox.value.preferences.selectedFolder
+        }.role)
+        server.connect(Server("fixture.invalid", 993, ServerProtocol.IMAP, username = "real"), Authorization.none())
+        server.append("INBOX", AngusMimeCodec().encode(OutgoingEmail(
+            "<real-ui@example.test>", EmailAddress("sender@example.test"),
+            listOf(EmailAddress("kage.test-only.setup@gmail.com")), subject = "Real inbox header",
+            body = EmailBody("Stored on the fixture server", null),
+        )))
+        compose.waitUntil(10000) {
+            compose.onAllNodesWithContentDescription("Refresh mailbox").fetchSemanticsNodes().isNotEmpty()
+        }
+        compose.onNodeWithContentDescription("Refresh mailbox").performClick()
+        try {
+            compose.waitUntil(10000) {
+                compose.onAllNodesWithText("Fixture connection lost").fetchSemanticsNodes().isNotEmpty()
+            }
+        } catch (timeout: Throwable) {
+            throw AssertionError("No refresh error: ${vm.folderSync.value}; ${compose.onRoot().printToString()}", timeout)
+        }
+        failPage = false
+        compose.onNodeWithText("Retry").performClick()
+        compose.waitUntil(10000) {
+            vm.mailbox.value.messages.any { it.subject == "Real inbox header" }
+        }
+        compose.onNodeWithText("Real inbox header").assertExists()
         kotlinx.coroutines.runBlocking {
             val realId = vm.mailbox.value.accounts.single { it.address == "kage.test-only.setup@gmail.com" }.id
+            val row = vm.mailbox.value.messages.single { it.subject == "Real inbox header" }
+            vm.repository.markRead(row.id, true)
+            assertEquals("READ", db.remoteMailDao().operations(realId).single().kind)
             vm.repository.resetDemo()
             assertNotNull(db.remoteMailDao().account(realId))
             assertEquals("example-app-password", credentials.authorization(realId,

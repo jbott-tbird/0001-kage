@@ -47,6 +47,7 @@ dependencies {
     implementation(project(":core:imap"))
     implementation(project(":core:smtp"))
     implementation(project(":core:mime"))
+    implementation(libs.jsoup)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)

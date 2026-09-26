@@ -1,6 +1,13 @@
 package org.foxred.kage.domain.usecase
 
 import org.foxred.kage.domain.model.*
+import org.jsoup.Jsoup
+import org.jsoup.safety.Safelist
+
+object SearchText {
+    fun fromHtml(html: String): String =
+        Jsoup.parseBodyFragment(Jsoup.clean(html, Safelist.none())).text()
+}
 
 /** Search spans the selected account or all accounts; ordinary browsing stays in its folder. */
 class FilterMessages {
@@ -22,15 +29,11 @@ class FilterMessages {
                     (!query.filter.pinned || m.pinned) &&
                     (!query.filter.attachments || m.attachments.isNotEmpty()) &&
                     (needle.isEmpty() ||
-                        listOf(
-                                m.sender,
-                                m.senderAddress,
-                                m.to,
-                                m.subject,
-                                m.body,
-                                m.attachments.joinToString { it.filename },
-                            )
-                            .any { it.contains(needle, ignoreCase = true) })
+                        sequenceOf(m.sender, m.senderAddress, m.to, m.subject, m.preview, m.body,
+                            m.attachments.joinToString { it.filename })
+                            .any { it.contains(needle, ignoreCase = true) } ||
+                        (m.bodyDownloaded && m.html?.let(SearchText::fromHtml)
+                            ?.contains(needle, ignoreCase = true) == true))
             }
             .sortedByDescending { it.receivedAt }
     }

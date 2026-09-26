@@ -141,6 +141,17 @@ class MailViewModel(
         }
     }
 
+    /** CID images are part of the message body and load when the reader is visible. */
+    suspend fun prefetchInlineImages(messageId: String) {
+        if (mailbox.value.preferences.offline) return
+        val server = remote ?: return
+        server.inlineImageAttachmentIds(messageId).forEach { id ->
+            try { repository.cacheAttachment(id) }
+            catch (cancelled: CancellationException) { throw cancelled }
+            catch (_: Exception) { /* The attachment remains available for a manual retry. */ }
+        }
+    }
+
     fun downloadAttachment(id: String, onReady: (String) -> Unit) {
         if (attachmentTransfers.value[id]?.loading == true) return
         attachmentTransfers.value = attachmentTransfers.value +

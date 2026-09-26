@@ -33,6 +33,7 @@ import org.foxred.kage.data.seed.DemoMail
 import org.foxred.kage.data.repository.RemoteMailRepository.OperationState
 import org.foxred.kage.data.security.AndroidCredentialStore
 import org.foxred.kage.data.sync.AccountSessions
+import org.foxred.kage.ui.message.SafeMessageHtml
 import org.junit.*
 import org.junit.Assert.*
 import org.junit.runner.RunWith
@@ -340,6 +341,54 @@ class RemoteMailRepositoryTest {
         assertEquals("bytes 8", File(context.filesDir, "attachments/${part.id}").readText())
         File(context.filesDir, "attachments/${part.id}").delete()
         Unit
+    }
+
+    @Test
+    fun inlineMimePartFlowsIntoCachedCidImage() = runBlocking {
+        val db = open()
+        val remote = repository(db)
+        ready(remote)
+        val raw = """
+            From: Sender <sender@fixture.invalid>
+            To: Person <a@fixture.invalid>
+            Subject: Inline image
+            Message-ID: <inline@fixture.invalid>
+            MIME-Version: 1.0
+            Content-Type: multipart/related; boundary="fixture-boundary"
+
+            --fixture-boundary
+            Content-Type: text/html; charset=UTF-8
+
+            <p>Inline image <img src="cid:logo@fixture"></p>
+            --fixture-boundary
+            Content-Type: image/png
+            Content-ID: <logo@fixture>
+            Content-Disposition: inline; filename="logo.png"
+            Content-Transfer-Encoding: base64
+
+            AQIDBA==
+            --fixture-boundary--
+        """.trimIndent().replace("\n", "\r\n").toByteArray()
+        server("a").append("INBOX", raw)
+        remote.syncMessages(inbox(), Instant.EPOCH)
+        val row = rows(db, inbox()).single()
+        remote.downloadBody(row.id)
+        val part = db.remoteMailDao().attachments(row.id).single()
+        assertEquals("logo@fixture", part.contentId?.removeSurrounding("<", ">"))
+        assertTrue(part.inline)
+        assertEquals(listOf(part.id), remote.inlineImageAttachmentIds(row.id))
+        val room = RoomMailRepository(db, context, DemoMail(context), credentials, remote)
+        try {
+            room.cacheAttachment(part.id)
+            assertTrue(remote.inlineImageAttachmentIds(row.id).isEmpty())
+            val html = db.remoteMailDao().message(row.id)!!.html.orEmpty()
+            val safe = SafeMessageHtml.render(context, html,
+                listOf(db.mailDao().attachment(part.id)!!.domain()))
+            assertTrue(safe.contains("data:image/png;base64,AQIDBA=="))
+            assertFalse(safe.contains("cid:logo@fixture"))
+        } finally {
+            File(context.filesDir, "attachments/${part.id}").delete()
+        }
     }
 
     @Test

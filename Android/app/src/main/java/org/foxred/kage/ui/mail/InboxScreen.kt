@@ -297,6 +297,12 @@ fun InboxScreen(
                             label = { Text("All accounts") },
                         )
                     }
+                    Text(
+                        "Searches mail saved on this device. Real account results cover fetched headers and downloaded bodies from the last 30 days.",
+                        Modifier.padding(horizontal = T.lg),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
                 if (query.filter.active || query.text.isNotEmpty())
                     Row(

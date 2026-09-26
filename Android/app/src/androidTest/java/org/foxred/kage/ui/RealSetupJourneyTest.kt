@@ -38,6 +38,7 @@ class RealSetupJourneyTest {
     private val server = DemoMailStore()
     private var rejectSmtp = true
     private var failPage = true
+    private var failBody = true
 
     @Before fun start() {
         credentials.clear()
@@ -54,6 +55,10 @@ class RealSetupJourneyTest {
                     ): MessagePage {
                         if (failPage) throw MailFailure(FailureKind.CONNECTION, "Fixture connection lost")
                         return server.messagePage(mailbox, since, cursor, limit)
+                    }
+                    override fun message(identity: MessageIdentity): Email {
+                        if (failBody) throw MailFailure(FailureKind.CONNECTION, "Fixture body fetch lost")
+                        return server.message(identity)
                     }
                 }
             },
@@ -125,7 +130,7 @@ class RealSetupJourneyTest {
         server.append("INBOX", AngusMimeCodec().encode(OutgoingEmail(
             "<real-ui@example.test>", EmailAddress("sender@example.test"),
             listOf(EmailAddress("kage.test-only.setup@gmail.com")), subject = "Real inbox header",
-            body = EmailBody("Stored on the fixture server", null),
+            body = EmailBody("Stored on the fixture server", "<p>Exclusive formatted phrase</p>"),
             attachments = listOf(OutgoingAttachment("part-ui.txt", "text/plain",
                 "Reader attachment".toByteArray())),
         )))
@@ -156,9 +161,19 @@ class RealSetupJourneyTest {
             vm.repository.updatePreferences(vm.mailbox.value.preferences.copy(offline = false))
         }
         compose.waitUntil(10000) {
-            compose.onAllNodesWithText("Stored on the fixture server")
-                .fetchSemanticsNodes().isNotEmpty()
+            compose.onAllNodesWithText("Fixture body fetch lost").fetchSemanticsNodes().isNotEmpty()
         }
+        failBody = false
+        compose.onNodeWithText("Retry message").performClick()
+        compose.waitUntil(10000) {
+            vm.mailbox.value.messages.single { it.subject == "Real inbox header" }.bodyDownloaded
+        }
+        compose.onNodeWithText("Show plain text").performClick()
+        compose.onNodeWithText("Stored on the fixture server").assertExists()
+        compose.onNodeWithContentDescription("Find in message").performClick()
+        compose.onNodeWithText("Find in this message").performTextInput("Exclusive formatted phrase")
+        compose.onNodeWithText("1 / 1").assertExists()
+        compose.onNodeWithContentDescription("Close find").performClick()
         compose.onNodeWithText("part-ui.txt").assertExists()
         kotlinx.coroutines.runBlocking {
             val id = vm.mailbox.value.messages.single { it.subject == "Real inbox header" }
@@ -182,6 +197,7 @@ class RealSetupJourneyTest {
             compose.onAllNodesWithText("Real inbox header").fetchSemanticsNodes().isNotEmpty()
         }
         compose.onNodeWithText("Real inbox header").performClick()
+        compose.onNodeWithText("Show plain text").performClick()
         compose.onNodeWithText("Stored on the fixture server").assertExists()
         compose.onNodeWithText("Available offline", substring = true).assertExists()
         kotlinx.coroutines.runBlocking {

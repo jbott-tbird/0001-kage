@@ -34,6 +34,8 @@ data class Attachment(
     val cached: Boolean = false,
     val asset: String = "sample-ticket.pdf",
     val localFile: String? = null,
+    val contentId: String? = null,
+    val inline: Boolean = false,
 )
 
 data class Message(

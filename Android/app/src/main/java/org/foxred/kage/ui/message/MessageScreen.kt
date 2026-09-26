@@ -34,6 +34,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import java.io.File
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.foxred.kage.ui.MailViewModel
 import org.foxred.kage.ui.components.MailIconButton
 import org.foxred.kage.ui.theme.DesignTokens as T
@@ -49,6 +51,8 @@ fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (Str
     LaunchedEffect(id, message?.bodyDownloaded, mail.preferences.offline, bodyRetry) {
         if (message != null && !message.bodyDownloaded && !mail.preferences.offline)
             vm.loadBody(id)
+        else if (message?.bodyDownloaded == true && !mail.preferences.offline)
+            vm.prefetchInlineImages(id)
     }
     var details by remember { mutableStateOf(false) }
     var finding by rememberSaveable { mutableStateOf(false) }
@@ -68,20 +72,28 @@ fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (Str
         }
         return
     }
+    val htmlText = remember(message.html) { message.html?.let(SafeMessageHtml::searchableText).orEmpty() }
+    val findBody = remember(message.body, htmlText) {
+        when {
+            htmlText.isBlank() || htmlText == message.body -> message.body
+            message.body.isBlank() -> htmlText
+            else -> message.body + "\n\n" + htmlText
+        }
+    }
     val matches =
-        remember(message.body, query) {
+        remember(findBody, query) {
             if (query.isBlank()) emptyList()
             else
                 Regex(Regex.escape(query), RegexOption.IGNORE_CASE)
-                    .findAll(message.body)
+                    .findAll(findBody)
                     .map { it.range }
                     .toList()
         }
     val colors = MaterialTheme.colorScheme
     val highlighted =
-        remember(message.body, matches, activeMatch, colors) {
+        remember(findBody, matches, activeMatch, colors) {
             highlight(
-                message.body,
+                findBody,
                 matches,
                 activeMatch,
                 colors.primaryContainer,
@@ -261,10 +273,10 @@ fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (Str
                 TextButton(onClick = { html = !html }) {
                     Text(if (html) "Show plain text" else "Show formatted message")
                 }
-                if (html) SafeHtml(message.html)
+                if (html) SafeHtml(message.html, message.attachments)
                 else
                     Text(
-                        message.body,
+                        message.body.ifBlank { htmlText },
                         modifier = Modifier.fillMaxWidth(),
                         style =
                             MaterialTheme.typography.bodyLarge.copy(
@@ -272,7 +284,7 @@ fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (Str
                                 textAlign = TextAlign.Start,
                             ),
                     )
-            } else if (message.body.isBlank())
+            } else if (findBody.isBlank())
                 Text(
                     "This message has no text body.",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -436,8 +448,19 @@ private fun highlight(
 
 @Suppress("SetJavaScriptEnabled")
 @Composable
-private fun SafeHtml(html: String) {
+private fun SafeHtml(html: String, attachments: List<org.foxred.kage.domain.model.Attachment>) {
     val emailStyle = T.emailCss(MaterialTheme.colorScheme, LocalDensity.current.fontScale)
+    val context = LocalContext.current
+    val safeHtml by produceState<String?>(null, html, attachments) {
+        value = withContext(Dispatchers.IO) {
+            SafeMessageHtml.render(context, html, attachments)
+        }
+    }
+    val content = safeHtml
+    if (content == null) {
+        LinearProgressIndicator(Modifier.fillMaxWidth())
+        return
+    }
     AndroidView(
         modifier = Modifier.fillMaxWidth().height(T.messageHtmlHeight),
         factory = { context ->
@@ -446,6 +469,10 @@ private fun SafeHtml(html: String) {
                 settings.allowFileAccess = false
                 settings.allowContentAccess = false
                 settings.blockNetworkLoads = true
+                settings.domStorageEnabled = false
+                settings.javaScriptCanOpenWindowsAutomatically = false
+                settings.setSupportMultipleWindows(false)
+                settings.mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_NEVER_ALLOW
                 webViewClient =
                     object : WebViewClient() {
                         override fun shouldOverrideUrlLoading(
@@ -456,13 +483,13 @@ private fun SafeHtml(html: String) {
             }
         },
         update = { view ->
-            view.loadDataWithBaseURL(
-                null,
-                "<html><head><meta name='viewport' content='width=device-width, initial-scale=1'><meta http-equiv='Content-Security-Policy' content=\"default-src 'none'; style-src 'unsafe-inline'; img-src data:\"><style>$emailStyle</style></head><body dir='auto'>$html</body></html>",
-                "text/html",
-                "UTF-8",
-                null,
-            )
+            val page = "<html><head><meta name='viewport' content='width=device-width, initial-scale=1'>" +
+                "<meta http-equiv='Content-Security-Policy' content=\"default-src 'none'; style-src 'unsafe-inline'; img-src data:\">" +
+                "<style>$emailStyle</style></head><body dir='auto'>$content</body></html>"
+            if (view.tag != page) {
+                view.tag = page
+                view.loadDataWithBaseURL(null, page, "text/html", "UTF-8", null)
+            }
         },
         onRelease = { it.destroy() },
     )

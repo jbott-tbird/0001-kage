@@ -39,10 +39,12 @@ fun FolderEntity.domain() = Folder(
 )
 
 fun Attachment.entity() =
-    AttachmentEntity(id, messageId, filename, mimeType, sizeBytes, cached, asset, localFile)
+    AttachmentEntity(id, messageId, filename, mimeType, sizeBytes, cached, asset, localFile,
+        contentId = contentId, inline = inline)
 
 fun AttachmentEntity.domain() =
-    Attachment(id, messageId, filename, mimeType, sizeBytes, cached, asset, localFile)
+    Attachment(id, messageId, filename, mimeType, sizeBytes, cached, asset, localFile,
+        contentId, inline)
 
 fun Message.entity() =
     MessageEntity(

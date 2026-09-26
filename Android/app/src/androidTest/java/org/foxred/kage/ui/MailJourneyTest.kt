@@ -137,6 +137,8 @@ class MailJourneyTest {
     fun allAccountSearchShowsAccountAndFolderForResults() {
         compose.onNodeWithText("Explore the demo inbox").performClick()
         compose.onNodeWithContentDescription("Search messages").performClick()
+        compose.onNodeWithText("Searches mail saved on this device", substring = true).assertExists()
+        compose.onNode(hasText("This account") and hasClickAction()).assertIsSelected()
         compose.onNodeWithText("Search mail").performTextInput("Coffee this weekend?")
         compose.onNodeWithText("All accounts").performClick()
         compose.onNodeWithText("3 results").assertIsDisplayed()

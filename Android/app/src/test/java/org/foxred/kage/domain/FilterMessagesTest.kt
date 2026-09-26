@@ -107,4 +107,21 @@ class FilterMessagesTest {
     fun searchFindsAttachmentsAndIgnoresWhitespace() {
         assertEquals(listOf("1"), filter(mail, MailQuery("  TICKET.PDF  ")).map { it.id })
     }
+
+    @Test
+    fun searchIncludesPreviewAndDownloadedHtmlOnlyWithinChosenScope() {
+        val html = first.copy(id = "html", body = "", preview = "Server teaser",
+            html = "<p>Only in formatted content</p><script>secret marker</script>",
+            bodyDownloaded = true)
+        val headers = html.copy(id = "headers", accountId = "b", folderId = "b-inbox",
+            bodyDownloaded = false)
+        val mailbox = mail.copy(messages = listOf(html, headers))
+        assertEquals(listOf("html"), filter(mailbox, MailQuery("formatted")).map { it.id })
+        assertEquals(listOf("html"), filter(mailbox, MailQuery("teaser")).map { it.id })
+        assertEquals(setOf("html", "headers"),
+            filter(mailbox, MailQuery("teaser", SearchScope.AllAccounts)).map { it.id }.toSet())
+        assertEquals(listOf("html"),
+            filter(mailbox, MailQuery("formatted", SearchScope.AllAccounts)).map { it.id })
+        assertTrue(filter(mailbox, MailQuery("secret", SearchScope.AllAccounts)).isEmpty())
+    }
 }

@@ -11,6 +11,7 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.time.Instant
 import java.util.UUID
+import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
@@ -290,6 +291,13 @@ class RemoteMailRepository(
 
     suspend fun attachmentIds(messageId: String): List<String> =
         dao.attachments(messageId).map { it.id }
+
+    suspend fun inlineImageAttachmentIds(messageId: String): List<String> =
+        dao.attachments(messageId).filter {
+            it.inline && it.contentId != null && !it.cached &&
+                it.mimeType.lowercase(Locale.ROOT) in setOf("image/png", "image/jpeg", "image/gif", "image/webp") &&
+                it.sizeBytes <= 2L * 1024 * 1024
+        }.map { it.id }
 
     /** Streams one MIME part to a private file and publishes it only after a complete download. */
     suspend fun downloadAttachment(

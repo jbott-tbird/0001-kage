@@ -23,6 +23,18 @@ data class FolderSyncState(
     val error: String? = null,
 )
 
+data class MessageLoadState(
+    val messageId: String? = null,
+    val loading: Boolean = false,
+    val error: String? = null,
+)
+
+data class AttachmentTransferState(
+    val loading: Boolean = false,
+    val bytes: Long = 0,
+    val error: String? = null,
+)
+
 class MailViewModel(
     val repository: MailRepository,
     val realAccountSetup: RealAccountSetup? = null,
@@ -34,7 +46,10 @@ class MailViewModel(
     val error = MutableStateFlow<String?>(null)
     val notice = MutableStateFlow<String?>(null)
     val folderSync = MutableStateFlow(FolderSyncState())
+    val messageLoad = MutableStateFlow(MessageLoadState())
+    val attachmentTransfers = MutableStateFlow<Map<String, AttachmentTransferState>>(emptyMap())
     private var refreshJob: Job? = null
+    private val attachmentJobs = mutableMapOf<String, Job>()
     val query = MutableStateFlow(MailQuery())
     val messages =
         combine(mailbox, query) { mail, query -> FilterMessages()(mail, query) }
@@ -97,6 +112,64 @@ class MailViewModel(
 
     fun leaveFolder(folderId: String) {
         viewModelScope.launch { remote?.finishVisit(folderId) }
+    }
+
+    /** The reader calls this in a keyed effect, so leaving the screen cancels its network fetch. */
+    suspend fun loadBody(messageId: String) {
+        if (mailbox.value.preferences.offline) return
+        val server = remote ?: return
+        messageLoad.value = MessageLoadState(messageId, loading = true)
+        try {
+            server.downloadBody(messageId)
+            messageLoad.value = MessageLoadState(messageId)
+            if (mailbox.value.preferences.automaticAttachments) {
+                viewModelScope.launch {
+                    server.attachmentIds(messageId).forEach { id ->
+                        try { repository.cacheAttachment(id) }
+                        catch (cancelled: CancellationException) { throw cancelled }
+                        catch (failure: Exception) {
+                            error.value = failure.message ?: "Could not download an attachment"
+                        }
+                    }
+                }
+            }
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (failure: Exception) {
+            messageLoad.value = MessageLoadState(messageId,
+                error = failure.message ?: "Could not load this message")
+        }
+    }
+
+    fun downloadAttachment(id: String, onReady: (String) -> Unit) {
+        if (attachmentTransfers.value[id]?.loading == true) return
+        attachmentTransfers.value = attachmentTransfers.value +
+            (id to AttachmentTransferState(loading = true))
+        attachmentJobs[id] = viewModelScope.launch {
+            try {
+                val path = repository.cacheAttachment(id) { bytes ->
+                    attachmentTransfers.value = attachmentTransfers.value +
+                        (id to AttachmentTransferState(loading = true, bytes = bytes))
+                }
+                attachmentTransfers.value = attachmentTransfers.value +
+                    (id to AttachmentTransferState())
+                onReady(path)
+            } catch (cancelled: CancellationException) {
+                attachmentTransfers.value = attachmentTransfers.value +
+                    (id to AttachmentTransferState())
+                throw cancelled
+            } catch (failure: Exception) {
+                attachmentTransfers.value = attachmentTransfers.value +
+                    (id to AttachmentTransferState(error =
+                        failure.message ?: "Could not download this attachment"))
+            } finally {
+                attachmentJobs.remove(id)
+            }
+        }
+    }
+
+    fun cancelAttachment(id: String) {
+        attachmentJobs[id]?.cancel()
     }
 
     fun preferences(change: (Preferences) -> Preferences) = action {

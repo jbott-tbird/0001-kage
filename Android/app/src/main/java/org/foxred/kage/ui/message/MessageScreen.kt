@@ -42,7 +42,14 @@ import org.foxred.kage.ui.theme.DesignTokens as T
 @Composable
 fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (String) -> Unit) {
     val mail by vm.mailbox.collectAsStateWithLifecycle()
+    val bodyLoad by vm.messageLoad.collectAsStateWithLifecycle()
+    val transfers by vm.attachmentTransfers.collectAsStateWithLifecycle()
     val message = mail.messages.find { it.id == id }
+    var bodyRetry by remember(id) { mutableIntStateOf(0) }
+    LaunchedEffect(id, message?.bodyDownloaded, mail.preferences.offline, bodyRetry) {
+        if (message != null && !message.bodyDownloaded && !mail.preferences.offline)
+            vm.loadBody(id)
+    }
     var details by remember { mutableStateOf(false) }
     var finding by rememberSaveable { mutableStateOf(false) }
     var query by rememberSaveable { mutableStateOf("") }
@@ -235,7 +242,22 @@ fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (Str
                     leadingIcon = { Icon(Icons.Outlined.PushPin, null) },
                 )
             }
-            if (message.html != null && query.isBlank()) {
+            if (!message.bodyDownloaded) {
+                when {
+                    mail.preferences.offline -> Text("Body unavailable offline. Reconnect to download it.")
+                    bodyLoad.messageId == id && bodyLoad.loading ->
+                        Row(verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(T.sm)) {
+                            CircularProgressIndicator(Modifier.size(T.xl))
+                            Text("Loading message…")
+                        }
+                    bodyLoad.messageId == id && bodyLoad.error != null -> {
+                        Text(bodyLoad.error.orEmpty(), color = MaterialTheme.colorScheme.error)
+                        TextButton(onClick = { bodyRetry++ }) { Text("Retry message") }
+                    }
+                    else -> Text("Loading message…")
+                }
+            } else if (message.html != null && query.isBlank()) {
                 TextButton(onClick = { html = !html }) {
                     Text(if (html) "Show plain text" else "Show formatted message")
                 }
@@ -272,10 +294,10 @@ fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (Str
                     style = MaterialTheme.typography.titleMedium,
                 )
             message.attachments.forEach { attachment ->
+                val transfer = transfers[attachment.id]
                 OutlinedCard(
                     onClick = {
-                        vm.action {
-                            val path = vm.repository.cacheAttachment(attachment.id)
+                        vm.downloadAttachment(attachment.id) { path ->
                             val uri =
                                 FileProvider.getUriForFile(
                                     context,
@@ -301,16 +323,33 @@ fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (Str
                                     "Attachment downloaded. No compatible viewer is installed."
                             }
                         }
-                    }
+                    },
+                    enabled = transfer?.loading != true,
                 ) {
                     ListItem(
                         headlineContent = { Text(attachment.filename) },
                         supportingContent = {
-                            Text(
-                                "${attachment.sizeBytes / 1000} KB · ${if (attachment.cached) "Available offline" else "Download on demand"}"
-                            )
+                            Column {
+                                Text(when {
+                                    transfer?.loading == true ->
+                                        "Downloading ${transfer.bytes / 1000} / ${attachment.sizeBytes / 1000} KB"
+                                    attachment.cached ->
+                                        "${attachment.sizeBytes / 1000} KB · Available offline"
+                                    else ->
+                                        "${attachment.sizeBytes / 1000} KB · Download on demand"
+                                })
+                                transfer?.error?.let {
+                                    Text("$it · Tap to retry", color = MaterialTheme.colorScheme.error)
+                                }
+                            }
                         },
                         leadingContent = { Icon(Icons.Outlined.AttachFile, null) },
+                        trailingContent = {
+                            if (transfer?.loading == true)
+                                TextButton(onClick = { vm.cancelAttachment(attachment.id) }) {
+                                    Text("Cancel")
+                                }
+                        },
                     )
                 }
             }

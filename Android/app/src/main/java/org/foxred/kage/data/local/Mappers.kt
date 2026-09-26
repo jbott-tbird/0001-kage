@@ -64,7 +64,8 @@ fun Message.entity() =
         pinned,
         draft,
         relatedGroup,
-        preview,
+        preview = preview,
+        bodyDownloaded = bodyDownloaded,
     )
 
 fun MessageEntity.domain(attachments: List<Attachment>) =
@@ -89,6 +90,7 @@ fun MessageEntity.domain(attachments: List<Attachment>) =
         relatedGroup,
         attachments,
         preview.ifBlank { body.replace('\n', ' ') },
+        bodyDownloaded,
     )
 
 fun Preferences.entity() =

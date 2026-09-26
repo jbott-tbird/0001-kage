@@ -126,6 +126,8 @@ class RealSetupJourneyTest {
             "<real-ui@example.test>", EmailAddress("sender@example.test"),
             listOf(EmailAddress("kage.test-only.setup@gmail.com")), subject = "Real inbox header",
             body = EmailBody("Stored on the fixture server", null),
+            attachments = listOf(OutgoingAttachment("part-ui.txt", "text/plain",
+                "Reader attachment".toByteArray())),
         )))
         compose.waitUntil(10000) {
             compose.onAllNodesWithContentDescription("Refresh mailbox").fetchSemanticsNodes().isNotEmpty()
@@ -145,6 +147,44 @@ class RealSetupJourneyTest {
         }
         compose.onNodeWithText("Real inbox header").assertExists()
         kotlinx.coroutines.runBlocking {
+            vm.repository.updatePreferences(vm.mailbox.value.preferences.copy(offline = true))
+        }
+        compose.waitUntil(5000) { vm.mailbox.value.preferences.offline }
+        compose.onNodeWithText("Real inbox header").performClick()
+        compose.onNodeWithText("Body unavailable offline. Reconnect to download it.").assertExists()
+        kotlinx.coroutines.runBlocking {
+            vm.repository.updatePreferences(vm.mailbox.value.preferences.copy(offline = false))
+        }
+        compose.waitUntil(10000) {
+            compose.onAllNodesWithText("Stored on the fixture server")
+                .fetchSemanticsNodes().isNotEmpty()
+        }
+        compose.onNodeWithText("part-ui.txt").assertExists()
+        kotlinx.coroutines.runBlocking {
+            val id = vm.mailbox.value.messages.single { it.subject == "Real inbox header" }
+                .attachments.single().id
+            vm.repository.cacheAttachment(id)
+        }
+        compose.waitUntil(10000) {
+            val id = vm.mailbox.value.messages.single { it.subject == "Real inbox header" }
+                .attachments.single().id
+            kotlinx.coroutines.runBlocking { db.mailDao().attachment(id)?.cached == true }
+        }
+        val cachedPart = java.io.File(context.filesDir, "attachments/" +
+            vm.mailbox.value.messages.single { it.subject == "Real inbox header" }
+                .attachments.single().id)
+        assertTrue(cachedPart.isFile)
+        kotlinx.coroutines.runBlocking {
+            vm.repository.updatePreferences(vm.mailbox.value.preferences.copy(offline = true))
+        }
+        compose.onNodeWithContentDescription("Back").performClick()
+        compose.waitUntil(5000) {
+            compose.onAllNodesWithText("Real inbox header").fetchSemanticsNodes().isNotEmpty()
+        }
+        compose.onNodeWithText("Real inbox header").performClick()
+        compose.onNodeWithText("Stored on the fixture server").assertExists()
+        compose.onNodeWithText("Available offline", substring = true).assertExists()
+        kotlinx.coroutines.runBlocking {
             val realId = vm.mailbox.value.accounts.single { it.address == "kage.test-only.setup@gmail.com" }.id
             val row = vm.mailbox.value.messages.single { it.subject == "Real inbox header" }
             vm.repository.markRead(row.id, true)
@@ -155,6 +195,7 @@ class RealSetupJourneyTest {
                 org.foxred.kage.core.account.ServerProtocol.IMAP)?.secret)
             vm.repository.removeAccount(realId)
             assertNull(db.remoteMailDao().account(realId))
+            assertFalse(cachedPart.exists())
             assertNull(credentials.authorization(realId,
                 org.foxred.kage.core.account.ServerProtocol.IMAP))
         }

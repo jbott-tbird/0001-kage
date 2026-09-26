@@ -30,7 +30,7 @@ interface MailRepository {
 
     suspend fun importAttachment(messageId: String, sourceUri: String): Attachment
 
-    suspend fun cacheAttachment(id: String): String
+    suspend fun cacheAttachment(id: String, progress: (Long) -> Unit = {}): String
 
     suspend fun resetDemo()
 }

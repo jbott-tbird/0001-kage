@@ -9,8 +9,11 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import java.time.Instant
+import java.io.File
+import java.io.OutputStream
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
@@ -24,7 +27,9 @@ import org.foxred.kage.core.testkit.LoopbackServer
 import org.foxred.kage.core.testkit.testTlsContext
 import org.foxred.kage.data.local.*
 import org.foxred.kage.data.repository.RemoteMailRepository
+import org.foxred.kage.data.repository.RoomMailRepository
 import org.foxred.kage.data.repository.DurableOutbox
+import org.foxred.kage.data.seed.DemoMail
 import org.foxred.kage.data.repository.RemoteMailRepository.OperationState
 import org.foxred.kage.data.security.AndroidCredentialStore
 import org.foxred.kage.data.sync.AccountSessions
@@ -76,6 +81,16 @@ class RemoteMailRepositoryTest {
             } ?: page
         }
 
+        override fun downloadAttachment(
+            identity: MessageIdentity, partId: String, output: OutputStream,
+        ): Long {
+            if (failPart) {
+                output.write("partial".toByteArray())
+                throw MailFailure(FailureKind.CONNECTION, "Part stream dropped")
+            }
+            return server.downloadAttachment(identity, partId, output)
+        }
+
         override fun cancel() {
             cancelled.countDown()
         }
@@ -87,6 +102,7 @@ class RemoteMailRepositoryTest {
     private var connects = 0
     private var pageCalls = 0
     private var failPageAt: Int? = null
+    private var failPart = false
     private var corruptPageAt: Int? = null
     private var afterPage: (() -> Unit)? = null
     private var cancelled = CountDownLatch(1)
@@ -126,14 +142,14 @@ class RemoteMailRepositoryTest {
             ),
         )
 
-    private fun raw(n: Int, subject: String = "Message $n") =
+    private fun raw(n: Int, subject: String = "Message $n", html: String? = null) =
         codec.encode(
             OutgoingEmail(
                 "<$n.${subject.hashCode()}@fixture.invalid>",
                 EmailAddress("sender@fixture.invalid", "Sender"),
                 listOf(EmailAddress("to@fixture.invalid")),
                 subject = subject,
-                body = EmailBody("Body $n", null),
+                body = EmailBody("Body $n", html),
                 attachments =
                     listOf(OutgoingAttachment("part-$n.txt", "text/plain", "bytes $n".toByteArray())),
             )
@@ -264,6 +280,66 @@ class RemoteMailRepositoryTest {
         assertFalse(db.remoteMailDao().message(second.id)!!.isNew)
         assertTrue(db.remoteMailDao().message(second.id)!!.isRead)
         assertEquals(2L, db.remoteMailDao().folder(inbox())!!.lastVisitedUid)
+    }
+
+    @Test
+    fun attachmentStreamPublishesOnlyCompletePrivateFileAndRetries() = runBlocking {
+        val db = open()
+        val repo = repository(db)
+        ready(repo)
+        server("a").append("INBOX", raw(7, html = "<p>Rendered 7</p>"))
+        repo.syncMessages(inbox(), Instant.EPOCH)
+        val message = rows(db, inbox()).single()
+        assertFalse(message.bodyDownloaded)
+        repo.downloadBody(message.id)
+        assertEquals("<p>Rendered 7</p>", db.remoteMailDao().message(message.id)!!.html)
+        val part = db.remoteMailDao().attachments(message.id).single()
+        val directory = File(context.cacheDir, "remote-part-test-${System.nanoTime()}")
+        try {
+            failPart = true
+            val error = runCatching { repo.downloadAttachment(part.id, directory) }.exceptionOrNull()
+            assertEquals(FailureKind.CONNECTION, (error as MailFailure).kind)
+            assertFalse(File(directory, part.id).exists())
+            assertFalse(db.mailDao().attachment(part.id)!!.cached)
+            assertEquals("NOT_DOWNLOADED", db.mailDao().attachment(part.id)!!.downloadState)
+            failPart = false
+            assertTrue(runCatching {
+                repo.downloadAttachment(part.id, directory) { throw CancellationException("Reader left") }
+            }.exceptionOrNull() is CancellationException)
+            assertFalse(File(directory, part.id).exists())
+            assertEquals("NOT_DOWNLOADED", db.mailDao().attachment(part.id)!!.downloadState)
+            val progress = mutableListOf<Long>()
+            val path = repo.downloadAttachment(part.id, directory) { progress += it }
+            assertEquals("bytes 7", File(path).readText())
+            assertTrue(progress.isNotEmpty())
+            assertEquals(File(path).length(), progress.last())
+            assertTrue(db.mailDao().attachment(part.id)!!.cached)
+            assertEquals("DOWNLOADED", db.mailDao().attachment(part.id)!!.downloadState)
+        } finally {
+            directory.deleteRecursively()
+        }
+    }
+
+    @Test
+    fun automaticAttachmentPolicyWaitsUntilOnline() = runBlocking {
+        val db = open()
+        val remote = repository(db)
+        ready(remote)
+        server("a").append("INBOX", raw(8))
+        remote.syncMessages(inbox(), Instant.EPOCH)
+        val message = rows(db, inbox()).single()
+        remote.downloadBody(message.id)
+        val part = db.remoteMailDao().attachments(message.id).single()
+        val room = RoomMailRepository(db, context, DemoMail(context), credentials, remote)
+        val offline = org.foxred.kage.domain.model.Preferences(
+            selectedFolder = inbox(), started = true, automaticAttachments = true, offline = true)
+        room.updatePreferences(offline)
+        assertFalse(db.mailDao().attachment(part.id)!!.cached)
+        room.updatePreferences(offline.copy(offline = false))
+        assertTrue(db.mailDao().attachment(part.id)!!.cached)
+        assertEquals("bytes 8", File(context.filesDir, "attachments/${part.id}").readText())
+        File(context.filesDir, "attachments/${part.id}").delete()
+        Unit
     }
 
     @Test

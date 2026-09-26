@@ -89,9 +89,11 @@ class RoomMailRepository(
 
     override suspend fun removeAccount(id: String) =
         withContext(Dispatchers.IO) {
-            if (db.remoteMailDao().account(id)?.mode == "REAL" && remote != null)
+            if (db.remoteMailDao().account(id)?.mode == "REAL" && remote != null) {
+                val cached = db.remoteMailDao().accountAttachmentFiles(id)
                 remote.removeAccount(id)
-            else credentials.removeAccount(id)
+                cached.forEach { name -> File(context.filesDir, "attachments/$name").delete() }
+            } else credentials.removeAccount(id)
             db.withTransaction {
                 dao.removeAccount(id)
                 val prefs = dao.getPreferences() ?: Preferences().entity()
@@ -203,10 +205,19 @@ class RoomMailRepository(
             }
         }
 
-    override suspend fun cacheAttachment(id: String): String =
+    override suspend fun cacheAttachment(id: String, progress: (Long) -> Unit): String =
         withContext(Dispatchers.IO) {
             val item = requireNotNull(dao.attachment(id))
             val directory = File(context.filesDir, "attachments").apply { mkdirs() }
+            if (item.partId != null) {
+                val server = checkNotNull(remote) { "Real attachment downloads are unavailable" }
+                val target = File(directory, item.id)
+                if (item.cached && target.isFile) return@withContext target.absolutePath
+                check(dao.getPreferences()?.offline != true) {
+                    "This attachment is not available offline. Turn off offline preview to download it."
+                }
+                return@withContext server.downloadAttachment(id, directory, progress)
+            }
             val file =
                 if (item.localFile != null) File(directory, item.localFile)
                 else
@@ -229,6 +240,7 @@ class RoomMailRepository(
                 }
             }
             dao.cached(id)
+            progress(file.length())
             file.absolutePath
         }
 

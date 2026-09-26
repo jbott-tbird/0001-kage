@@ -5,10 +5,15 @@
 package org.foxred.kage.data.repository
 
 import androidx.room.withTransaction
+import java.io.File
+import java.io.FilterOutputStream
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.time.Instant
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -34,6 +39,7 @@ class RemoteMailRepository(
 ) {
     private val dao = db.remoteMailDao()
     private val folderLocks = ConcurrentHashMap<String, Mutex>()
+    private val attachmentLocks = ConcurrentHashMap<String, Mutex>()
     private val queueLocks = ConcurrentHashMap<String, Mutex>()
 
     enum class OperationKind {
@@ -278,6 +284,63 @@ class RemoteMailRepository(
                 if (current.uid != identity.uid || current.uidValidity != identity.uidValidity)
                     return@withTransaction
                 upsert(email, currentFolder, mutableListOf(), fetchedAt)
+            }
+        }
+    }
+
+    suspend fun attachmentIds(messageId: String): List<String> =
+        dao.attachments(messageId).map { it.id }
+
+    /** Streams one MIME part to a private file and publishes it only after a complete download. */
+    suspend fun downloadAttachment(
+        attachmentId: String,
+        directory: File,
+        progress: (Long) -> Unit = {},
+    ): String = withContext(Dispatchers.IO) {
+        attachmentLocks.computeIfAbsent(attachmentId) { Mutex() }.withLock {
+            val part = checkNotNull(db.mailDao().attachment(attachmentId)) { "Attachment was removed" }
+            val partId = requireNotNull(part.partId) { "Attachment has no server part" }
+            val row = checkNotNull(dao.message(part.messageId)) { "Message was removed" }
+            val folder = checkNotNull(dao.folder(row.folderId)) { "Folder was removed" }
+            val identity = remoteIdentity(row, folder)
+            directory.mkdirs()
+            val target = File(directory, attachmentId)
+            if (part.cached && target.isFile) return@withLock target.absolutePath
+            val temporary = File.createTempFile("part-", ".tmp", directory)
+            dao.saveAttachments(listOf(part.copy(downloadState = "DOWNLOADING", downloadedBytes = 0)))
+            try {
+                val count = temporary.outputStream().buffered().use { output ->
+                    var written = 0L
+                    val counted = object : FilterOutputStream(output) {
+                        override fun write(value: Int) {
+                            out.write(value)
+                            written++
+                            progress(written)
+                        }
+                        override fun write(bytes: ByteArray, offset: Int, length: Int) {
+                            out.write(bytes, offset, length)
+                            written += length
+                            progress(written)
+                        }
+                    }
+                    sessions.withStore(row.accountId) {
+                        it.downloadAttachment(identity, partId, counted)
+                    }
+                    written
+                }
+                Files.move(temporary.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING)
+                val current = checkNotNull(db.mailDao().attachment(attachmentId)) { "Attachment was removed" }
+                dao.saveAttachments(listOf(current.copy(cached = true, localFile = target.name,
+                    downloadState = "DOWNLOADED", downloadedBytes = count)))
+                target.absolutePath
+            } catch (failure: Throwable) {
+                temporary.delete()
+                withContext(NonCancellable) {
+                    db.mailDao().attachment(attachmentId)?.let {
+                        dao.saveAttachments(listOf(it.copy(downloadState = "NOT_DOWNLOADED", downloadedBytes = 0)))
+                    }
+                }
+                throw failure
             }
         }
     }

@@ -57,6 +57,7 @@ data class Message(
     val relatedGroup: String? = null,
     val attachments: List<Attachment> = emptyList(),
     val preview: String = body.replace('\n', ' '),
+    val bodyDownloaded: Boolean = true,
 )
 
 data class Preferences(

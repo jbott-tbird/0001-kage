@@ -118,6 +118,10 @@ interface RemoteMailDao {
     @Query("SELECT * FROM attachments WHERE messageId = :messageId ORDER BY rowid")
     suspend fun attachments(messageId: String): List<AttachmentEntity>
 
+    @Query("SELECT a.localFile FROM attachments a JOIN messages m ON m.id = a.messageId " +
+        "WHERE m.accountId = :accountId AND a.partId IS NOT NULL AND a.localFile IS NOT NULL")
+    suspend fun accountAttachmentFiles(accountId: String): List<String>
+
     @Upsert suspend fun saveAttachments(attachments: List<AttachmentEntity>)
 
     @Query("DELETE FROM attachments WHERE messageId = :messageId AND id NOT IN (:keep)")

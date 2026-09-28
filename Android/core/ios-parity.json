@@ -73,7 +73,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Account.id",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Account.kt",
               "task": "T31",
               "reason": "String identifier; Room mapping pending",
               "tests": [
@@ -84,7 +84,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Account.name",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Account.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -95,7 +95,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Account.deletePolicy",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Account.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -106,7 +106,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Account.identities",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Account.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -117,7 +117,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Account.servers",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Account.kt",
               "task": "T31",
               "reason": "Exactly one incoming IMAP and outgoing SMTP server initially; JMAP deferred",
               "tests": [
@@ -128,7 +128,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Account.avatarColor",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Account.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -139,7 +139,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Account.authConfig",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Account.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -150,7 +150,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Account.incomingServer",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Account.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -161,7 +161,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Account.outgoingServer",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Account.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -172,7 +172,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Account.emailAddress",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Account.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -252,7 +252,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Account.id",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Account.kt",
               "task": "T31",
               "reason": "String identifier; Room mapping pending",
               "tests": [
@@ -621,7 +621,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Server.username",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Server.kt",
               "task": "T31",
               "reason": "Server owns independent incoming/outgoing usernames",
               "tests": [
@@ -645,7 +645,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Authorization.secret",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Authorization.kt",
               "task": "T31",
               "reason": "Raw credential retained only in runtime credential object; no Basic prefix",
               "tests": [
@@ -657,7 +657,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Authorization.isExpired",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Authorization.kt",
               "task": "T31",
               "reason": "Expiry inclusive at instant; NONE is unexpired for unauthenticated server use",
               "tests": [
@@ -669,7 +669,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Authorization.refreshToken",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Authorization.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -818,7 +818,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Email.from",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Email.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -829,7 +829,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Email.sender",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Email.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -840,7 +840,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Email.replyTo",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Email.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -851,7 +851,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Email.to",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Email.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -862,7 +862,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Email.bcc",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Email.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -873,7 +873,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Email.cc",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Email.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -884,7 +884,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Email.receivedAt",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Email.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -895,7 +895,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Email.sentAt",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Email.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -906,7 +906,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Email.messageIds",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Email.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -917,7 +917,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Email.threadIds",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Email.kt",
               "task": "T31",
               "reason": "Reserved; Gmail X-GM-THRID and OBJECTID fetch remain pending",
               "tests": [
@@ -928,7 +928,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Email.inReplyTo",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Email.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -939,7 +939,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Email.subject",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Email.kt",
               "task": "T31",
               "reason": "Empty string substitutes for missing nullable subject",
               "tests": [
@@ -950,7 +950,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Email.body",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Email.kt",
               "task": "T31",
               "reason": "Non-null EmailBody plus bodyDownloaded distinguishes not-downloaded from decoded empty body; database mapping pending",
               "tests": [
@@ -961,7 +961,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Email.blobId",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Email.kt",
               "task": "T31",
               "reason": "Reserved for deferred JMAP",
               "tests": [
@@ -972,7 +972,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Email.identity",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Email.kt",
               "task": "T31",
               "reason": "Mailbox + UIDVALIDITY + UID; account scoping belongs to repository",
               "tests": [
@@ -1118,7 +1118,7 @@
             {
               "status": "pending_port",
               "androidTarget": "EmailAttachment.inline",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/EmailAttachment.kt",
               "task": "T31",
               "reason": "Inline boolean plus filename; full disposition parameters not retained",
               "tests": [
@@ -1129,7 +1129,7 @@
             {
               "status": "pending_port",
               "androidTarget": "EmailAttachment.contentId",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/EmailAttachment.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -1140,7 +1140,7 @@
             {
               "status": "pending_port",
               "androidTarget": "EmailAttachment.mediaType",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/EmailAttachment.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -1218,7 +1218,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Email.attachments",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Email.kt",
               "task": "T31",
               "reason": "Descriptors live on Email so part metadata is available without downloading body bytes",
               "tests": [
@@ -1229,7 +1229,7 @@
             {
               "status": "pending_port",
               "androidTarget": "EmailBody.text",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/EmailBody.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -1249,7 +1249,7 @@
             {
               "status": "pending_port",
               "androidTarget": "EmailBody.preview",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/EmailBody.kt",
               "task": "T31",
               "reason": "Locally derived from text up to 200 characters; upstream currently returns server preview only",
               "tests": [
@@ -1408,7 +1408,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Folder.name",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Folder.kt",
               "task": "T31",
               "reason": "Derived using server delimiter; no synthetic nullable root currently",
               "tests": [
@@ -1419,7 +1419,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Folder.path",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Folder.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -1430,7 +1430,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Folder.unreadEmails",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Folder.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -1441,7 +1441,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Folder.totalEmails",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Folder.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -1452,7 +1452,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Folder.id",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Folder.kt",
               "task": "T31",
               "reason": "Account ID and wire path distinguish local folders",
               "tests": [
@@ -1463,7 +1463,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Folder.mailbox",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Folder.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -1474,7 +1474,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Folder.subfolders",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Folder.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -1656,7 +1656,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Mailbox.role",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Mailbox.kt",
               "task": "T31",
               "reason": "Derived from IMAP SPECIAL-USE attributes and INBOX name",
               "tests": [],
@@ -1665,7 +1665,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Mailbox.rights",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Mailbox.kt",
               "task": "T31",
               "reason": "Unknown permissions are nullable; ACL fetching not implemented",
               "tests": [],
@@ -1674,7 +1674,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Mailbox.name",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Mailbox.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [],
@@ -1683,7 +1683,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Mailbox.isSubscribed",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Mailbox.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [],
@@ -1692,7 +1692,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Mailbox.unreadEmails",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Mailbox.kt",
               "task": "T31",
               "reason": "Model exists; counts fetched separately via MailStore.status",
               "tests": [],
@@ -1701,7 +1701,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Mailbox.totalEmails",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Mailbox.kt",
               "task": "T31",
               "reason": "Model exists; counts fetched separately via MailStore.status",
               "tests": [],
@@ -1728,7 +1728,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Mailbox.id",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Mailbox.kt",
               "task": "T31",
               "reason": "Nullable until persistence assigns local identity; wire name is the IMAP path",
               "tests": [],
@@ -1948,7 +1948,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Server.id",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Server.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -1977,7 +1977,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Server.protocol",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Server.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -1988,7 +1988,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Server.security",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Server.kt",
               "task": "T31",
               "reason": "TLS and required STARTTLS only; insecure transport intentionally excluded",
               "tests": [
@@ -1999,7 +1999,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Server.authenticationType",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Server.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -2010,7 +2010,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Server.username",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Server.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -2021,7 +2021,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Server.hostname",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Server.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -2032,7 +2032,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Server.port",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Server.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [
@@ -2052,7 +2052,7 @@
             {
               "status": "pending_port",
               "androidTarget": "Server.id",
-              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Models.kt",
+              "androidPath": "Android/core/account/src/main/kotlin/org/foxred/kage/core/account/Server.kt",
               "task": "T31",
               "reason": "Field exists; end-to-end population and persistence acceptance pending",
               "tests": [

@@ -21,7 +21,9 @@ describe("mail prototype journeys", () => {
   it("completes manual setup and never persists the password", async () => {
     const user = start("/");
     await user.click(screen.getByRole("button", { name: "Get started" }));
-    expect(screen.getByDisplayValue("skye@example.net")).toBeInTheDocument();
+    const email = screen.getByRole("textbox", { name: "Email Address" });
+    expect(email).toHaveValue("");
+    await user.type(email, "my-address@example.net");
     expect(screen.getByDisplayValue("sample-password")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Next" }));
     expect(screen.getByText("Planned for v2.0")).toBeInTheDocument();
@@ -29,7 +31,7 @@ describe("mail prototype journeys", () => {
     await user.click(screen.getByRole("button", { name: "Save" }));
     expect(screen.getByText("You’re all set.")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Finish" }));
-    expect(screen.getByText("skye@example.net")).toBeInTheDocument();
+    expect(screen.getByText("my-address@example.net")).toBeInTheDocument();
     expect(screen.getByText("Coffee this weekend?")).toBeInTheDocument();
     const saved = localStorage.getItem("kage-mail-v1")!;
     expect(saved).not.toContain("sample-password");

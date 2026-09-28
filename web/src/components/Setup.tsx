@@ -63,16 +63,7 @@ export function Setup() {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const step = Number(params.get("step") || "0");
-  function demoEmail() {
-    // Keep repeat walkthroughs from colliding with previously added accounts.
-    let suffix = 1;
-    let address = "skye@example.net";
-    while (state.accounts.some((a) => a.address.toLowerCase() === address)) {
-      address = `skye${++suffix}@example.net`;
-    }
-    return address;
-  }
-  const [email, setEmail] = useState(demoEmail);
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("sample-password");
   const [showPassword, setShowPassword] = useState(false);
   const [host, setHost] = useState("imap.example.com");
@@ -201,7 +192,7 @@ export function Setup() {
                   autoComplete="off"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your.email@example.com"
+                  placeholder="Enter your email address"
                 />
               </label>
               <label className="line-field">
@@ -232,11 +223,10 @@ export function Setup() {
                 type="button"
                 className="text-link"
                 onClick={() => {
-                  setEmail(demoEmail());
                   setPassword("sample-password");
                 }}
               >
-                Reset demo credentials
+                Reset demo password
               </button>
             </div>
             <Button size="lg" className="full-button" type="submit">

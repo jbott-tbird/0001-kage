@@ -58,13 +58,7 @@ fun WelcomeScreen(setup: () -> Unit, connectReal: () -> Unit, explore: () -> Uni
 fun SetupScreen(vm: MailViewModel, close: () -> Unit, finish: () -> Unit, connectReal: () -> Unit) {
     val mail by vm.mailbox.collectAsStateWithLifecycle()
     var step by rememberSaveable { mutableIntStateOf(0) }
-    var email by rememberSaveable {
-        mutableStateOf(
-            generateSequence(1) { it + 1 }
-                .map { if (it == 1) "skye@example.net" else "skye$it@example.net" }
-                .first { candidate -> mail.accounts.none { it.address.equals(candidate, true) } }
-        )
-    }
+    var email by rememberSaveable { mutableStateOf("") }
     // Credentials are intentionally kept out of saved state and the database.
     var password by remember { mutableStateOf("sample-password") }
     var reveal by remember { mutableStateOf(false) }
@@ -128,7 +122,7 @@ fun SetupScreen(vm: MailViewModel, close: () -> Unit, finish: () -> Unit, connec
                         singleLine = true,
                     )
                     Text(
-                        "Demo credentials are prefilled. No server connection is made and your password is never stored.",
+                        "The demo password is prefilled. No server connection is made and your password is never stored.",
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Button(

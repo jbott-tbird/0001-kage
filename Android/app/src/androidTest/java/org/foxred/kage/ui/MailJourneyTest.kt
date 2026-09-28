@@ -53,9 +53,10 @@ class MailJourneyTest {
     }
 
     @Test
-    fun setupIsPrefilledAndCreatesPopulatedMailbox() {
+    fun setupRequiresEmailAndCreatesPopulatedMailbox() {
         compose.onNodeWithText("Get started").performClick()
-        compose.onAllNodesWithText("skye@example.net").onFirst().assertIsDisplayed()
+        compose.onNodeWithText("Next").assertIsNotEnabled()
+        compose.onNodeWithText("Email address").performTextInput("my-address@example.net")
         compose.onNodeWithText("Next").performScrollTo().performClick()
         compose.onNodeWithText("Planned for v2.0").assertExists()
         compose.onNodeWithText("Next").performScrollTo().performClick()
@@ -63,10 +64,10 @@ class MailJourneyTest {
         compose.onNodeWithText("Save").performScrollTo().performClick()
         compose.waitUntil(10000) { vm.mailbox.value.accounts.size == 4 }
         Assert.assertFalse(
-            vm.mailbox.value.accounts.first { it.address == "skye@example.net" }.requireAuth
+            vm.mailbox.value.accounts.first { it.address == "my-address@example.net" }.requireAuth
         )
         compose.onNodeWithText("Finish").performScrollTo().performClick()
-        compose.onAllNodesWithText("skye@example.net").onFirst().assertIsDisplayed()
+        compose.onAllNodesWithText("my-address@example.net").onFirst().assertIsDisplayed()
         compose.onNodeWithContentDescription("Filter messages").assertExists()
         Assert.assertTrue(
             vm.mailbox.value.messages.any {

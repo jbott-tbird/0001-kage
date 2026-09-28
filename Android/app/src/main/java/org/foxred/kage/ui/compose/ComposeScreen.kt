@@ -18,7 +18,7 @@ import java.time.Instant
 import java.util.UUID
 import org.foxred.kage.domain.model.*
 import org.foxred.kage.ui.MailViewModel
-import org.foxred.kage.ui.components.MailIconButton
+import org.foxred.kage.ui.shared.MailIconButton
 import org.foxred.kage.ui.theme.DesignTokens as T
 
 @OptIn(ExperimentalMaterial3Api::class)

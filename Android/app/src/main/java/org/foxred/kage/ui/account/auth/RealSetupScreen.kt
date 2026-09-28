@@ -1,4 +1,4 @@
-package org.foxred.kage.ui.setup
+package org.foxred.kage.ui.account.auth
 
 import android.util.Patterns
 import androidx.compose.foundation.layout.*
@@ -28,7 +28,7 @@ import org.foxred.kage.core.account.Server
 import org.foxred.kage.core.account.ServerProtocol
 import org.foxred.kage.data.setup.ServerSuggestions
 import org.foxred.kage.ui.MailViewModel
-import org.foxred.kage.ui.components.MailIconButton
+import org.foxred.kage.ui.shared.MailIconButton
 import org.foxred.kage.ui.theme.DesignTokens as T
 
 /** App-password setup. Validation makes no account or credential changes until both servers pass. */

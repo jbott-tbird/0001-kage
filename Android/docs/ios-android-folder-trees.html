@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>iOS and Android folder trees · Kage</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --page: #f5f7fb;
+      --surface: #ffffff;
+      --surface-soft: #f9fbfe;
+      --ink: #18273b;
+      --muted: #5a6b80;
+      --line: #dbe3ee;
+      --link: #165ca7;
+      --same: #147b65;
+      --same-bg: #e5f6ef;
+      --moved: #9b6110;
+      --moved-bg: #fff1d6;
+      --unique: #774aaa;
+      --unique-bg: #f2eafb;
+      --android: #17679b;
+      --android-bg: #e7f3fa;
+      --shadow: 0 14px 38px rgba(24, 39, 59, .07);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --page: #111923;
+        --surface: #1a2735;
+        --surface-soft: #203041;
+        --ink: #eef4fa;
+        --muted: #b5c2d0;
+        --line: #33475c;
+        --link: #8dc4ff;
+        --same: #77dbc0;
+        --same-bg: #173f38;
+        --moved: #f6c879;
+        --moved-bg: #49391f;
+        --unique: #d9b5fb;
+        --unique-bg: #3d2c50;
+        --android: #9ad5f6;
+        --android-bg: #1c3b51;
+        --shadow: 0 14px 38px rgba(0, 0, 0, .16);
+      }
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; color: var(--ink); background: var(--page); font: 15px/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    button { font: inherit; }
+    a { color: var(--link); text-underline-offset: 3px; }
+    a:hover { text-decoration-thickness: 2px; }
+    a:focus-visible, button:focus-visible { outline: 3px solid var(--link); outline-offset: 3px; }
+    .shell { max-width: 1220px; margin: 0 auto; padding: 30px 22px 70px; }
+    .eyebrow { color: var(--same); font-size: .76rem; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { margin: 9px 0 12px; font-size: clamp(2.15rem, 4vw, 3.7rem); line-height: 1.08; letter-spacing: -.045em; }
+    h2 { margin: 0 0 6px; font-size: 1.35rem; letter-spacing: -.025em; }
+    h3 { margin: 0; font-size: 1rem; }
+    p { margin: 0; }
+    .lede { max-width: 76ch; color: var(--muted); font-size: 1.07rem; }
+    .toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin: 28px 0 14px; }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px; }
+    .legend span, .status { display: inline-flex; align-items: center; gap: 7px; border-radius: 999px; padding: 4px 9px; font-size: .75rem; font-weight: 700; white-space: nowrap; }
+    .legend span::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+    .legend .same, .status.same { color: var(--same); background: var(--same-bg); }
+    .legend .moved, .status.moved { color: var(--moved); background: var(--moved-bg); }
+    .legend .unique, .status.unique { color: var(--unique); background: var(--unique-bg); }
+    .legend .android, .status.android { color: var(--android); background: var(--android-bg); }
+    .toggle { border: 1px solid var(--line); border-radius: 9px; padding: 8px 12px; color: var(--ink); background: var(--surface); font-weight: 650; min-height: 40px; }
+    .toggle:hover { border-color: var(--same); }
+    .toggle[aria-pressed="true"] { color: var(--same); background: var(--same-bg); border-color: var(--same); }
+    .intro-counts { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 18px; }
+    .intro-counts div { display: flex; align-items: baseline; gap: 6px; color: var(--muted); }
+    .intro-counts strong { color: var(--ink); font-size: 1.45rem; font-variant-numeric: tabular-nums; }
+    .section-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 15px; margin: 30px 0 13px; }
+    .section-heading p { color: var(--muted); font-size: .9rem; }
+    .columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: stretch; }
+    .panel { min-width: 0; border: 1px solid var(--line); border-radius: 15px; padding: 20px; background: var(--surface); box-shadow: var(--shadow); }
+    .panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 13px; }
+    .platform { display: inline-block; margin-bottom: 4px; color: var(--muted); font-size: .74rem; font-weight: 750; letter-spacing: .09em; text-transform: uppercase; }
+    .count { color: var(--muted); font-size: .81rem; white-space: nowrap; }
+    .root-path { overflow-wrap: anywhere; border-bottom: 1px solid var(--line); padding-bottom: 14px; color: var(--muted); font: .8rem/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .tree, .tree ul { list-style: none; margin: 0; padding: 0; }
+    .tree { margin-top: 14px; }
+    .tree ul { margin-left: 12px; padding-left: 15px; border-left: 1px solid var(--line); }
+    .tree li { position: relative; margin: 0; padding: 4px 0 4px 7px; }
+    .tree ul > li::before { content: ""; position: absolute; top: 16px; left: -15px; width: 10px; border-top: 1px solid var(--line); }
+    .tree .folder > .line { font-weight: 680; }
+    .line { display: flex; align-items: flex-start; gap: 8px; min-width: 0; }
+    .line .name { min-width: 0; overflow-wrap: anywhere; font: .9rem/1.48 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .line .name a { color: inherit; text-decoration: none; }
+    .line .name a:hover { color: var(--link); text-decoration: underline; }
+    .line .note { color: var(--muted); font-size: .78rem; line-height: 1.55; }
+    .marker { flex: 0 0 auto; width: 8px; height: 8px; margin-top: 6px; border-radius: 50%; background: var(--line); }
+    .matched > .line .marker { background: var(--same); }
+    .moved > .line .marker { background: var(--moved); }
+    .unique > .line .marker { background: var(--unique); }
+    .android-only > .line .marker { background: var(--android); }
+    .file-list { margin-top: 14px; columns: 1; }
+    .file-list li { padding-top: 3px; padding-bottom: 3px; }
+    .file-list .line { align-items: center; }
+    .file-list .marker { margin-top: 0; }
+    .file-list .name { font-size: .85rem; }
+    .difference-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+    .difference { border-left: 3px solid var(--moved); padding: 5px 2px 5px 12px; }
+    .difference.unique { border-color: var(--unique); }
+    .difference.android-only { border-color: var(--android); }
+    .difference h3 { margin-bottom: 4px; }
+    .difference p { color: var(--muted); font-size: .9rem; }
+    .difference code, .footnote code { font: .89em ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .storage { margin-top: 16px; }
+    .storage .panel-head { margin-bottom: 8px; }
+    .storage .file-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 24px; }
+    .footnote { margin-top: 18px; color: var(--muted); font-size: .84rem; }
+    .differences-only .matched { display: none; }
+    .differences-only .matching-count { display: none; }
+    @media (max-width: 760px) {
+      .shell { padding: 24px 14px 52px; }
+      .columns, .difference-grid { grid-template-columns: 1fr; }
+      .section-heading { display: block; }
+      .section-heading p { margin-top: 3px; }
+      .panel { padding: 17px; }
+    }
+    @media (max-width: 440px) { .storage .file-list { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <main class="shell" id="comparison">
+    <header>
+      <div class="eyebrow">Kage · source layout</div>
+      <h1>iOS and Android, side by side</h1>
+      <p class="lede">The app screens now follow the iOS feature folders where practical. The core models also share recognizable names; Android keeps its platform storage and support code in separate layers.</p>
+      <div class="intro-counts" aria-label="Account folder file counts">
+        <div><strong>10</strong><span>matching model filenames</span></div>
+        <div><strong>12</strong><span>names only in iOS Account</span></div>
+        <div><strong>11</strong><span>names only in Android account</span></div>
+      </div>
+    </header>
+
+    <div class="toolbar">
+      <div class="legend" aria-label="Tree legend">
+        <span class="same">Matching name</span>
+        <span class="moved">Different folder</span>
+        <span class="unique">iOS only here</span>
+        <span class="android">Android only here</span>
+      </div>
+      <button class="toggle" id="difference-toggle" type="button" aria-pressed="false">Show differences only</button>
+    </div>
+
+    <section aria-labelledby="folders-title">
+      <div class="section-heading">
+        <h2 id="folders-title">Folder map</h2>
+        <p>The roots use each platform’s normal source layout</p>
+      </div>
+      <div class="columns">
+        <article class="panel">
+          <div class="panel-head"><div><span class="platform">Thunderbird iOS</span><h3>Core source folders</h3></div></div>
+          <p class="root-path">../thunderbird-ios/Core/Sources/</p>
+          <ul class="tree">
+            <li class="folder matched"><div class="line"><span class="marker"></span><span class="name"><a href="../../../thunderbird-ios/Core/Sources/Account/">Account/</a></span><span class="note">22 files · models and managers</span></div></li>
+            <li class="folder moved"><div class="line"><span class="marker"></span><span class="name"><a href="../../../thunderbird-ios/Core/Sources/EmailAddress/">EmailAddress/</a></span><span class="note">separate folder</span></div></li>
+            <li class="folder moved"><div class="line"><span class="marker"></span><span class="name"><a href="../../../thunderbird-ios/Core/Sources/Autoconfiguration/">Autoconfiguration/</a></span><span class="note">core package</span></div></li>
+            <li class="folder unique"><div class="line"><span class="marker"></span><span class="name">AutoconfigurationCLI/</span></div></li>
+            <li class="folder unique"><div class="line"><span class="marker"></span><span class="name">Core/</span></div></li>
+            <li class="folder matched"><div class="line"><span class="marker"></span><span class="name">IMAP/</span></div></li>
+            <li class="folder unique"><div class="line"><span class="marker"></span><span class="name"><a href="../../../thunderbird-ios/Core/Sources/JMAP/">JMAP/</a></span><span class="note">no Android module</span></div></li>
+            <li class="folder matched"><div class="line"><span class="marker"></span><span class="name">MIME/</span></div></li>
+            <li class="folder matched"><div class="line"><span class="marker"></span><span class="name">SMTP/</span></div></li>
+          </ul>
+        </article>
+        <article class="panel">
+          <div class="panel-head"><div><span class="platform">Kage Android</span><h3>Core and app folders</h3></div></div>
+          <p class="root-path">./Android/</p>
+          <ul class="tree">
+            <li class="folder"><div class="line"><span class="marker"></span><span class="name">core/</span></div>
+              <ul>
+                <li class="folder matched"><div class="line"><span class="marker"></span><span class="name"><a href="../core/account/src/main/kotlin/org/foxred/kage/core/account/">account/src/main/kotlin/…/account/</a></span><span class="note">21 files</span></div></li>
+                <li class="folder matched"><div class="line"><span class="marker"></span><span class="name">imap/</span></div></li>
+                <li class="folder matched"><div class="line"><span class="marker"></span><span class="name">mime/</span></div></li>
+                <li class="folder matched"><div class="line"><span class="marker"></span><span class="name">smtp/</span></div></li>
+                <li class="folder android-only"><div class="line"><span class="marker"></span><span class="name">transport/ · demo/ · testkit/ · integration/</span></div></li>
+              </ul>
+            </li>
+            <li class="folder"><div class="line"><span class="marker"></span><span class="name">app/src/main/java/org/foxred/kage/data/</span></div>
+              <ul>
+                <li class="folder moved"><div class="line"><span class="marker"></span><span class="name"><a href="../app/src/main/java/org/foxred/kage/data/setup/">setup/</a></span><span class="note">autoconfiguration</span></div></li>
+                <li class="folder moved"><div class="line"><span class="marker"></span><span class="name"><a href="../app/src/main/java/org/foxred/kage/data/repository/">repository/</a></span><span class="note">manager-like work</span></div></li>
+                <li class="folder android-only"><div class="line"><span class="marker"></span><span class="name"><a href="../app/src/main/java/org/foxred/kage/data/local/">local/</a></span><span class="note">Room entities and DAOs</span></div></li>
+              </ul>
+            </li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="app-folders-title">
+      <div class="section-heading">
+        <h2 id="app-folders-title">App screen folders</h2>
+        <p>SwiftUI feature names map to lowercase Android packages</p>
+      </div>
+      <div class="columns">
+        <article class="panel">
+          <div class="panel-head"><div><span class="platform">Thunderbird iOS</span><h3>SwiftUI app</h3></div></div>
+          <p class="root-path">../thunderbird-ios/Thunderbird/Thunderbird/</p>
+          <ul class="tree">
+            <li class="moved"><div class="line"><span class="marker"></span><span class="name">App.swift · ContentView.swift</span><span class="note">app entry and navigation</span></div></li>
+            <li class="moved"><div class="line"><span class="marker"></span><span class="name">WelcomeScreen.swift</span><span class="note">root file</span></div></li>
+            <li class="folder matched"><div class="line"><span class="marker"></span><span class="name"><a href="../../../thunderbird-ios/Thunderbird/Thunderbird/Account/">Account/</a></span></div>
+              <ul><li class="folder matched"><div class="line"><span class="marker"></span><span class="name">AccountAuth/</span></div></li></ul>
+            </li>
+            <li class="folder matched"><div class="line"><span class="marker"></span><span class="name"><a href="../../../thunderbird-ios/Thunderbird/Thunderbird/AccountList/">AccountList/</a></span></div></li>
+            <li class="folder matched"><div class="line"><span class="marker"></span><span class="name"><a href="../../../thunderbird-ios/Thunderbird/Thunderbird/EmailDisplay/">EmailDisplay/</a></span></div></li>
+            <li class="folder matched"><div class="line"><span class="marker"></span><span class="name"><a href="../../../thunderbird-ios/Thunderbird/Thunderbird/ComposeView/">ComposeView/</a></span></div></li>
+            <li class="folder matched"><div class="line"><span class="marker"></span><span class="name"><a href="../../../thunderbird-ios/Thunderbird/Thunderbird/Settings/">Settings/</a></span></div></li>
+            <li class="folder moved"><div class="line"><span class="marker"></span><span class="name">Util/</span><span class="note">shared views and helpers</span></div></li>
+            <li class="folder unique"><div class="line"><span class="marker"></span><span class="name">FeatureFlags/</span><span class="note">no Android screen yet</span></div></li>
+            <li class="folder moved"><div class="line"><span class="marker"></span><span class="name">Assets.xcassets/ · Localization/</span><span class="note">Apple resources</span></div></li>
+          </ul>
+        </article>
+        <article class="panel">
+          <div class="panel-head"><div><span class="platform">Kage Android</span><h3>Compose app</h3></div></div>
+          <p class="root-path">./Android/app/src/main/java/org/foxred/kage/</p>
+          <ul class="tree">
+            <li class="moved"><div class="line"><span class="marker"></span><span class="name">KageApplication.kt · MainActivity.kt</span><span class="note">Android entry</span></div></li>
+            <li class="folder"><div class="line"><span class="marker"></span><span class="name">ui/</span></div>
+              <ul>
+                <li class="folder moved"><div class="line"><span class="marker"></span><span class="name"><a href="../app/src/main/java/org/foxred/kage/ui/navigation/">navigation/</a></span><span class="note">KageApp.kt</span></div></li>
+                <li class="folder moved"><div class="line"><span class="marker"></span><span class="name"><a href="../app/src/main/java/org/foxred/kage/ui/welcome/">welcome/</a></span><span class="note">WelcomeScreen.kt</span></div></li>
+                <li class="folder matched"><div class="line"><span class="marker"></span><span class="name">account/</span></div>
+                  <ul><li class="folder matched"><div class="line"><span class="marker"></span><span class="name"><a href="../app/src/main/java/org/foxred/kage/ui/account/auth/">auth/</a></span><span class="note">setup and authorization</span></div></li></ul>
+                </li>
+                <li class="folder matched"><div class="line"><span class="marker"></span><span class="name"><a href="../app/src/main/java/org/foxred/kage/ui/accountlist/">accountlist/</a></span><span class="note">drawer and folder icon</span></div></li>
+                <li class="folder matched"><div class="line"><span class="marker"></span><span class="name"><a href="../app/src/main/java/org/foxred/kage/ui/emaildisplay/">emaildisplay/</a></span><span class="note">list and reader</span></div></li>
+                <li class="folder matched"><div class="line"><span class="marker"></span><span class="name"><a href="../app/src/main/java/org/foxred/kage/ui/compose/">compose/</a></span></div></li>
+                <li class="folder matched"><div class="line"><span class="marker"></span><span class="name"><a href="../app/src/main/java/org/foxred/kage/ui/settings/">settings/</a></span></div></li>
+                <li class="folder moved"><div class="line"><span class="marker"></span><span class="name"><a href="../app/src/main/java/org/foxred/kage/ui/shared/">shared/</a></span><span class="note">Avatar and common controls</span></div></li>
+                <li class="folder android-only"><div class="line"><span class="marker"></span><span class="name">theme/</span><span class="note">Material design tokens</span></div></li>
+              </ul>
+            </li>
+            <li class="folder moved"><div class="line"><span class="marker"></span><span class="name">res/</span><span class="note">Android drawables, icons, and strings</span></div></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="files-title">
+      <div class="section-heading">
+        <h2 id="files-title">Inside the account model folder</h2>
+        <p>Exact filename comparison; color describes location, not feature parity</p>
+      </div>
+      <div class="columns">
+        <article class="panel">
+          <div class="panel-head"><div><span class="platform">iOS · Account/</span><h3>22 Swift files</h3></div><span class="count matching-count">10 matching</span></div>
+          <p class="root-path">../thunderbird-ios/Core/Sources/Account/</p>
+          <ul class="tree file-list">
+            <li class="matched"><div class="line"><span class="marker"></span><span class="name">Account.swift</span></div></li>
+            <li class="matched"><div class="line"><span class="marker"></span><span class="name">AuthenticationType.swift</span></div></li>
+            <li class="matched"><div class="line"><span class="marker"></span><span class="name">Authorization.swift</span></div></li>
+            <li class="matched"><div class="line"><span class="marker"></span><span class="name">DeletePolicy.swift</span></div></li>
+            <li class="matched"><div class="line"><span class="marker"></span><span class="name">Email.swift</span></div></li>
+            <li class="matched"><div class="line"><span class="marker"></span><span class="name">EmailAttachment.swift</span></div></li>
+            <li class="matched"><div class="line"><span class="marker"></span><span class="name">EmailBody.swift</span></div></li>
+            <li class="matched"><div class="line"><span class="marker"></span><span class="name">Folder.swift</span></div></li>
+            <li class="matched"><div class="line"><span class="marker"></span><span class="name">Mailbox.swift</span></div></li>
+            <li class="matched"><div class="line"><span class="marker"></span><span class="name">Server.swift</span></div></li>
+            <li class="unique"><div class="line"><span class="marker"></span><span class="name">AccountError.swift</span></div></li>
+            <li class="unique"><div class="line"><span class="marker"></span><span class="name">AccountManager.swift</span></div></li>
+            <li class="unique"><div class="line"><span class="marker"></span><span class="name">EmailManager.swift</span></div></li>
+            <li class="unique"><div class="line"><span class="marker"></span><span class="name">FileManager.swift</span></div></li>
+            <li class="unique"><div class="line"><span class="marker"></span><span class="name">FolderManager.swift</span></div></li>
+            <li class="unique"><div class="line"><span class="marker"></span><span class="name">MailboxManager.swift</span></div></li>
+            <li class="unique"><div class="line"><span class="marker"></span><span class="name">String.swift</span></div></li>
+            <li class="unique"><div class="line"><span class="marker"></span><span class="name">TestResult.swift</span></div></li>
+            <li class="unique"><div class="line"><span class="marker"></span><span class="name">Token.swift</span></div></li>
+            <li class="unique"><div class="line"><span class="marker"></span><span class="name">UnifiedMailboxManager.swift</span></div></li>
+            <li class="unique"><div class="line"><span class="marker"></span><span class="name">URLCredentialStorage.swift</span></div></li>
+            <li class="unique"><div class="line"><span class="marker"></span><span class="name">URLProtectionSpace.swift</span></div></li>
+          </ul>
+        </article>
+        <article class="panel">
+          <div class="panel-head"><div><span class="platform">Android · core/account/</span><h3>21 Kotlin files</h3></div><span class="count matching-count">10 matching</span></div>
+          <p class="root-path">./Android/core/account/src/main/kotlin/org/foxred/kage/core/account/</p>
+          <ul class="tree file-list">
+            <li class="matched"><div class="line"><span class="marker"></span><span class="name">Account.kt</span></div></li>
+            <li class="matched"><div class="line"><span class="marker"></span><span class="name">AuthenticationType.kt</span></div></li>
+            <li class="matched"><div class="line"><span class="marker"></span><span class="name">Authorization.kt</span></div></li>
+            <li class="matched"><div class="line"><span class="marker"></span><span class="name">DeletePolicy.kt</span></div></li>
+            <li class="matched"><div class="line"><span class="marker"></span><span class="name">Email.kt</span></div></li>
+            <li class="matched"><div class="line"><span class="marker"></span><span class="name">EmailAttachment.kt</span></div></li>
+            <li class="matched"><div class="line"><span class="marker"></span><span class="name">EmailBody.kt</span></div></li>
+            <li class="matched"><div class="line"><span class="marker"></span><span class="name">Folder.kt</span></div></li>
+            <li class="matched"><div class="line"><span class="marker"></span><span class="name">Mailbox.kt</span></div></li>
+            <li class="matched"><div class="line"><span class="marker"></span><span class="name">Server.kt</span></div></li>
+            <li class="moved"><div class="line"><span class="marker"></span><span class="name">EmailAddress.kt</span><span class="note">iOS has its own folder</span></div></li>
+            <li class="android-only"><div class="line"><span class="marker"></span><span class="name">Contracts.kt</span></div></li>
+            <li class="android-only"><div class="line"><span class="marker"></span><span class="name">Credentials.kt</span></div></li>
+            <li class="android-only"><div class="line"><span class="marker"></span><span class="name">MailFailure.kt</span></div></li>
+            <li class="android-only"><div class="line"><span class="marker"></span><span class="name">MailboxChanges.kt</span></div></li>
+            <li class="android-only"><div class="line"><span class="marker"></span><span class="name">MailboxStatus.kt</span></div></li>
+            <li class="android-only"><div class="line"><span class="marker"></span><span class="name">MessageCursor.kt</span></div></li>
+            <li class="android-only"><div class="line"><span class="marker"></span><span class="name">Models.kt</span><span class="note">navigation comment only</span></div></li>
+            <li class="android-only"><div class="line"><span class="marker"></span><span class="name">Namespace.kt</span></div></li>
+            <li class="android-only"><div class="line"><span class="marker"></span><span class="name">OAuthConfiguration.kt</span></div></li>
+            <li class="android-only"><div class="line"><span class="marker"></span><span class="name">OutgoingEmail.kt</span></div></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="differences-title">
+      <div class="section-heading"><h2 id="differences-title">Where the folders diverge</h2></div>
+      <div class="difference-grid">
+        <div class="difference"><h3>Email address</h3><p>iOS uses <code>Core/Sources/EmailAddress/</code>. Android keeps <code>EmailAddress.kt</code> alongside the account models.</p></div>
+        <div class="difference"><h3>Managers and setup</h3><p>iOS groups managers with models and autoconfiguration in Core. Android places their work in app repositories, a ViewModel, and <code>data/setup/</code>.</p></div>
+        <div class="difference unique"><h3>JMAP</h3><p>iOS has a dedicated <code>JMAP/</code> package. This Android tree has no JMAP module.</p></div>
+        <div class="difference android-only"><h3>Database storage</h3><p>Android has a separate Room <code>data/local/</code> folder. This iOS checkout has no implemented counterpart to that entity layer.</p></div>
+      </div>
+    </section>
+
+    <section class="storage" aria-labelledby="storage-title">
+      <article class="panel">
+        <div class="panel-head"><div><span class="platform">Android-specific layer</span><h2 id="storage-title">One Room entity per file</h2></div><span class="status android">10 entities</span></div>
+        <p class="root-path">./Android/app/src/main/java/org/foxred/kage/data/local/</p>
+        <ul class="tree file-list">
+          <li class="android-only"><div class="line"><span class="marker"></span><span class="name">AccountEntity.kt</span></div></li>
+          <li class="android-only"><div class="line"><span class="marker"></span><span class="name">ServerEntity.kt</span></div></li>
+          <li class="android-only"><div class="line"><span class="marker"></span><span class="name">FolderEntity.kt</span></div></li>
+          <li class="android-only"><div class="line"><span class="marker"></span><span class="name">MessageEntity.kt</span></div></li>
+          <li class="android-only"><div class="line"><span class="marker"></span><span class="name">AttachmentEntity.kt</span></div></li>
+          <li class="android-only"><div class="line"><span class="marker"></span><span class="name">PreferencesEntity.kt</span></div></li>
+          <li class="android-only"><div class="line"><span class="marker"></span><span class="name">SyncCursorEntity.kt</span></div></li>
+          <li class="android-only"><div class="line"><span class="marker"></span><span class="name">HistoryCursorEntity.kt</span></div></li>
+          <li class="android-only"><div class="line"><span class="marker"></span><span class="name">PendingOperationEntity.kt</span></div></li>
+          <li class="android-only"><div class="line"><span class="marker"></span><span class="name">OutboxEntity.kt</span></div></li>
+        </ul>
+      </article>
+    </section>
+    <p class="footnote">Snapshot of the current local trees. A matching filename identifies a corresponding concept; it does not establish equal fields or behavior.</p>
+  </main>
+  <script>
+    const comparison = document.getElementById('comparison');
+    const toggle = document.getElementById('difference-toggle');
+    toggle.addEventListener('click', () => {
+      const pressed = toggle.getAttribute('aria-pressed') !== 'true';
+      toggle.setAttribute('aria-pressed', String(pressed));
+      toggle.textContent = pressed ? 'Show complete trees' : 'Show differences only';
+      comparison.classList.toggle('differences-only', pressed);
+    });
+  </script>
+</body>
+</html>

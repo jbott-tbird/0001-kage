@@ -1,4 +1,4 @@
-package org.foxred.kage.ui.mail
+package org.foxred.kage.ui.accountlist
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -14,7 +14,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.semantics
 import org.foxred.kage.domain.model.*
-import org.foxred.kage.ui.components.*
+import org.foxred.kage.ui.shared.Avatar
+import org.foxred.kage.ui.shared.MailIconButton
 import org.foxred.kage.ui.theme.DesignTokens as T
 
 @Composable

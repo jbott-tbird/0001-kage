@@ -33,7 +33,7 @@ import org.foxred.kage.data.seed.DemoMail
 import org.foxred.kage.data.repository.RemoteMailRepository.OperationState
 import org.foxred.kage.data.security.AndroidCredentialStore
 import org.foxred.kage.data.sync.AccountSessions
-import org.foxred.kage.ui.message.SafeMessageHtml
+import org.foxred.kage.ui.emaildisplay.SafeMessageHtml
 import org.junit.*
 import org.junit.Assert.*
 import org.junit.runner.RunWith

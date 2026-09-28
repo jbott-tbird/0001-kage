@@ -1,4 +1,4 @@
-package org.foxred.kage.ui.mail
+package org.foxred.kage.ui.emaildisplay
 
 import androidx.compose.foundation.clickable
 import androidx.activity.compose.BackHandler
@@ -22,7 +22,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import org.foxred.kage.domain.model.*
 import org.foxred.kage.ui.MailViewModel
-import org.foxred.kage.ui.components.*
+import org.foxred.kage.ui.accountlist.AccountDrawer
+import org.foxred.kage.ui.shared.*
 import org.foxred.kage.ui.theme.DesignTokens as T
 
 @OptIn(ExperimentalMaterial3Api::class)

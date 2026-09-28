@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.foxred.kage.domain.model.Account
 import org.foxred.kage.ui.MailViewModel
-import org.foxred.kage.ui.components.MailIconButton
+import org.foxred.kage.ui.shared.MailIconButton
 import org.foxred.kage.ui.theme.DesignTokens as T
 
 @OptIn(ExperimentalMaterial3Api::class)

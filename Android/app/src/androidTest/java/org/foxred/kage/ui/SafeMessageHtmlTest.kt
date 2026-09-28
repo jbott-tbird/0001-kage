@@ -4,7 +4,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import java.io.File
 import org.foxred.kage.domain.model.Attachment
-import org.foxred.kage.ui.message.SafeMessageHtml
+import org.foxred.kage.ui.emaildisplay.SafeMessageHtml
 import org.jsoup.Jsoup
 import org.junit.Assert.*
 import org.junit.Test

@@ -8,12 +8,12 @@ browser components. Live provider networking is not implemented by either protot
 
 | Requirement | Implementation | Verification |
 | --- | --- | --- |
-| Prefilled account setup, IMAP/JMAP roadmap, ports/TLS/authentication, confirmation | `ui/setup/SetupScreens.kt`; Account model and Room entity | `setupIsPrefilledAndCreatesPopulatedMailbox` traverses the flow, changes authentication, and checks persisted result |
-| Normal/custom/nested folders and multiple accounts | Exported fixtures; `ui/mail/AccountDrawer.kt` | Room seed test verifies all standard folders and exact parent assignments; drawer journey collapses/expands Travel and selects Drafts |
-| New vs unread and four conjunctive filters | `domain/usecase/FilterMessages.kt`; `ui/mail/InboxScreen.kt` | Five domain tests and native filter journey; read-change tests preserve independent new state |
+| Prefilled account setup, IMAP/JMAP roadmap, ports/TLS/authentication, confirmation | `ui/account/auth/SetupScreen.kt`; Account model and Room entity | `setupIsPrefilledAndCreatesPopulatedMailbox` traverses the flow, changes authentication, and checks persisted result |
+| Normal/custom/nested folders and multiple accounts | Exported fixtures; `ui/accountlist/AccountDrawer.kt` | Room seed test verifies all standard folders and exact parent assignments; drawer journey collapses/expands Travel and selects Drafts |
+| New vs unread and four conjunctive filters | `domain/usecase/FilterMessages.kt`; `ui/emaildisplay/InboxScreen.kt` | Five domain tests and native filter journey; read-change tests preserve independent new state |
 | Selected-message actions and sorting | Inbox selection state and native menu | `selectionMarksOnlyChosenMessagesAndSortCanBeReversed` verifies displayed order and isolated read updates |
 | Current-account/all-account/unified search | Query model, search controls, result provenance | Domain scope tests; all-account and unified native search tests |
-| Reader, details, archive/trash, reply/forward | `ui/message/MessageScreen.kt`, compose routes | Native reader runtime screenshot, Room move isolation test, source inspection of action bindings and compose initialization |
+| Reader, details, archive/trash, reply/forward | `ui/emaildisplay/MessageScreen.kt`, compose routes | Native reader runtime screenshot, Room move isolation test, source inspection of action bindings and compose initialization |
 | Find within active email | Fixed find bar, highlight, next/previous, BringIntoViewRequester | Native reader test verifies next/previous wraparound and mark-unread; keyboard inset issue fixed during this test |
 | Return to previous list position | Saved LazyListState | `backFromReaderRetainsListPosition` scrolls to old mail, opens it, and verifies visibility after back |
 | Related messages and long-body reading | Thread badges and expandable related cards; scrollable full text / sandboxed HTML | `relatedMessagesExpandAndCollapse`; full reader screenshot. The current web reader has no load-more button, and both readers expose the entire body through scrolling |

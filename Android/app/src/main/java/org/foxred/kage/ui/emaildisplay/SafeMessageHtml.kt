@@ -1,4 +1,4 @@
-package org.foxred.kage.ui.message
+package org.foxred.kage.ui.emaildisplay
 
 import android.content.Context
 import android.net.Uri

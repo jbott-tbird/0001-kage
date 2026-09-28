@@ -1,4 +1,4 @@
-package org.foxred.kage.ui.message
+package org.foxred.kage.ui.emaildisplay
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -37,7 +37,7 @@ import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.foxred.kage.ui.MailViewModel
-import org.foxred.kage.ui.components.MailIconButton
+import org.foxred.kage.ui.shared.MailIconButton
 import org.foxred.kage.ui.theme.DesignTokens as T
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -10,10 +10,11 @@ import androidx.navigation.compose.*
 import kotlinx.coroutines.flow.first
 import org.foxred.kage.ui.MailViewModel
 import org.foxred.kage.ui.compose.ComposeScreen
-import org.foxred.kage.ui.mail.InboxScreen
-import org.foxred.kage.ui.message.MessageScreen
+import org.foxred.kage.ui.emaildisplay.InboxScreen
+import org.foxred.kage.ui.emaildisplay.MessageScreen
 import org.foxred.kage.ui.settings.SettingsScreen
-import org.foxred.kage.ui.setup.*
+import org.foxred.kage.ui.account.auth.*
+import org.foxred.kage.ui.welcome.WelcomeScreen
 import org.foxred.kage.ui.theme.DesignTokens as T
 
 @Composable

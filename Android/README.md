@@ -31,7 +31,7 @@ A dedicated `Kage_API30` emulator was created for verification.
 | --- | --- | --- |
 | Design system | `ui/theme/DesignTokens.kt` | Single source for fonts, colors, spacing, shapes, and component dimensions |
 | Theme adapter | `ui/theme/Theme.kt` | Applies the tokens to Material 3, with light/dark system theme |
-| UI | `ui/setup`, `ui/mail`, `ui/message`, `ui/compose`, `ui/settings` | Compose screens and native Material components |
+| UI | `ui/welcome`, `ui/account/auth`, `ui/accountlist`, `ui/emaildisplay`, `ui/compose`, `ui/settings` | Compose screens and native Material components |
 | Presentation | `ui/MailViewModel.kt` | Lifecycle state, actions, errors, search/filter state |
 | Navigation | `ui/navigation/KageApp.kt` | Welcome, setup, inbox, message, compose, settings routes |
 | Domain | `domain/model`, `domain/repository`, `domain/usecase` | Framework-free models, repository contract, search/filter rules |

@@ -1,6 +1,5 @@
-package org.foxred.kage.ui.setup
+package org.foxred.kage.ui.account.auth
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -12,46 +11,14 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import java.util.UUID
-import org.foxred.kage.R
 import org.foxred.kage.domain.model.Account
 import org.foxred.kage.ui.MailViewModel
-import org.foxred.kage.ui.components.MailIconButton
+import org.foxred.kage.ui.shared.MailIconButton
 import org.foxred.kage.ui.theme.DesignTokens as T
-
-@Composable
-fun WelcomeScreen(setup: () -> Unit, connectReal: () -> Unit, explore: () -> Unit) {
-    Surface(color = MaterialTheme.colorScheme.primaryContainer, modifier = Modifier.fillMaxSize()) {
-        Column(
-            Modifier.safeDrawingPadding().padding(T.xl),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(T.xl),
-        ) {
-            Spacer(Modifier.weight(1f))
-            Image(
-                painterResource(R.drawable.thunderbird_logo),
-                "Thunderbird",
-                Modifier.size(T.logo),
-            )
-            Text("A calmer home for your email", style = MaterialTheme.typography.headlineMedium)
-            Text(
-                "An open source, privacy focused email experience.",
-                style = MaterialTheme.typography.bodyLarge,
-            )
-            Spacer(Modifier.weight(1f))
-            Button(onClick = setup, modifier = Modifier.fillMaxWidth()) { Text("Get started") }
-            OutlinedButton(onClick = connectReal, modifier = Modifier.fillMaxWidth()) {
-                Text("Connect a real account")
-            }
-            TextButton(onClick = explore) { Text("Explore the demo inbox") }
-            Text("Local demo · no email is sent", style = MaterialTheme.typography.bodySmall)
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

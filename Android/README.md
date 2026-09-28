@@ -43,10 +43,11 @@ A dedicated `Kage_API30` emulator was created for verification.
 The UI consumes domain models. Room entities stay in the data layer. Database
 reads stream through Flow; writes use suspending DAO calls and transactions.
 Seeding happens only for an uninitialized database. Removing accounts cascades
-to their folders, messages, and attachment rows. The schema is exported under
-`app/schemas/`. Version 2 has an explicit migration from version 1 that preserves
-existing mail and adds SMTP authentication, attachment storage, and preview fields.
-Future schema changes also need explicit Room migrations. There is no
+to their folders, messages, and attachment rows. The first complete Room schema
+is version 1, exported under `app/schemas/`. It includes the current indexes and
+chronological timestamp format. The database now uses `kage-mail-main.db`, so
+prototype installs start with a fresh database and do not reuse incompatible
+earlier files. Future schema changes need explicit Room migrations. There is no
 destructive migration fallback.
 
 ## Implemented
@@ -89,7 +90,7 @@ mail fixtures exercise display behavior, not complete app localization.
 - Seventeen emulator tests cover Room seeding, account isolation/removal, drafts,
   attachments, preferences, prefilled setup, native drawer/filters, reopening drafts, selection/sorting,
   search-result provenance, automatic attachment downloads, file picking and saved-state
-  restoration, reader controls, unified search, database migration/reopening, and list position.
+  restoration, reader controls, unified search, database baseline/reopening, and list position.
 - Android lint passes with zero errors. Remaining warnings concern available
   dependency updates and Android Studio's generated launcher asset variants.
 - The web app also passes all eleven tests and its production build from `web/`.

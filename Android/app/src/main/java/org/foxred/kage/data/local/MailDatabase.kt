@@ -1,6 +1,8 @@
 package org.foxred.kage.data.local
 
+import android.content.Context
 import androidx.room.Database
+import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
@@ -13,10 +15,11 @@ import androidx.room.RoomDatabase
             PreferencesEntity::class,
             ServerEntity::class,
             SyncCursorEntity::class,
+            HistoryCursorEntity::class,
             PendingOperationEntity::class,
             OutboxEntity::class,
         ],
-    version = 5,
+    version = 1,
     exportSchema = true,
 )
 abstract class MailDatabase : RoomDatabase() {
@@ -25,12 +28,7 @@ abstract class MailDatabase : RoomDatabase() {
     abstract fun remoteMailDao(): RemoteMailDao
 }
 
-/** Preserve existing installed prototypes when adding attachment storage and SMTP preferences. */
-val MIGRATION_1_2 =
-    object : androidx.room.migration.Migration(1, 2) {
-        override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
-            db.execSQL("ALTER TABLE accounts ADD COLUMN requireAuth INTEGER NOT NULL DEFAULT 1")
-            db.execSQL("ALTER TABLE attachments ADD COLUMN localFile TEXT")
-            db.execSQL("ALTER TABLE messages ADD COLUMN preview TEXT NOT NULL DEFAULT ''")
-        }
-    }
+// This filename separates the first complete schema from incompatible prototype databases.
+fun buildMailDatabase(context: Context, name: String = "kage-mail-main.db"): MailDatabase =
+    Room.databaseBuilder(context.applicationContext, MailDatabase::class.java, name)
+        .build()

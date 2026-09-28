@@ -13,7 +13,7 @@ import androidx.room.*
                 onDelete = ForeignKey.CASCADE,
             )
         ],
-    indices = [Index("messageId")],
+    indices = [Index("messageId"), Index(value = ["cached", "id"])],
 )
 data class AttachmentEntity(
     @PrimaryKey val id: String,

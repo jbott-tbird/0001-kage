@@ -16,9 +16,15 @@ import androidx.room.*
     indices =
         [
             Index("accountId"),
+            Index(value = ["accountId", "draft", "id"]),
+            Index(value = ["accountId", "receivedAt", "id"]),
             Index("folderId"),
+            Index(value = ["folderId", "receivedAt", "id"]),
+            Index(value = ["receivedAt", "id"]),
+            Index(value = ["isRead", "folderId"]),
             Index(value = ["folderId", "accountId"]),
             Index(value = ["folderId", "uidValidity", "uid"], unique = true),
+            Index(value = ["folderId", "uidValidity", "bodyDownloaded", "uid"]),
             Index(value = ["id", "accountId"], unique = true),
         ],
 )

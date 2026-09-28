@@ -28,6 +28,7 @@ import androidx.room.*
             Index("accountId"),
             Index(value = ["messageId", "accountId"]),
             Index(value = ["accountId", "state"]),
+            Index(value = ["accountId", "state", "createdAt", "id"]),
         ],
 )
 data class PendingOperationEntity(

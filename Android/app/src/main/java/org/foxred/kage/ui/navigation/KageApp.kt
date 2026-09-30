@@ -68,8 +68,8 @@ fun KageApp(vm: MailViewModel) {
                         },
                     )
                 }
-                composable("setup") { SetupScreen(vm, { nav.popBackStack() }, { inbox() }, { nav.navigate("setup-real") }) }
-                composable("setup-real") { RealSetupScreen(vm, { nav.popBackStack() }, { inbox() }) }
+                composable("setup") { entry -> SetupScreen(vm, { nav.popBackStackFrom(entry) }, { inbox() }, { nav.navigate("setup-real") }) }
+                composable("setup-real") { entry -> RealSetupScreen(vm, { nav.popBackStackFrom(entry) }, { inbox() }) }
                 composable("mail") {
                     InboxScreen(
                         vm,
@@ -88,7 +88,7 @@ fun KageApp(vm: MailViewModel) {
                     MessageScreen(
                         vm,
                         entry.arguments?.getString("id").orEmpty(),
-                        { nav.popBackStack() },
+                        { nav.popBackStackFrom(entry) },
                         { mode ->
                             nav.navigate("compose/$mode/${entry.arguments?.getString("id")}")
                         },
@@ -99,13 +99,13 @@ fun KageApp(vm: MailViewModel) {
                         vm,
                         entry.arguments?.getString("id"),
                         entry.arguments?.getString("mode").orEmpty(),
-                        { nav.popBackStack() },
+                        { nav.popBackStackFrom(entry) },
                     )
                 }
-                composable("settings") {
+                composable("settings") { entry ->
                     SettingsScreen(
                         vm,
-                        { nav.popBackStack() },
+                        { nav.popBackStackFrom(entry) },
                         { nav.navigate("setup") },
                         { welcome() },
                     )

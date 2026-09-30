@@ -101,6 +101,13 @@ fun InboxScreen(
                         settings()
                     }
                 },
+                outboxCount = outboxCounts.actionable,
+                openOutbox = {
+                    scope.launch {
+                        drawer.close()
+                        showingOutbox = true
+                    }
+                },
             )
         },
     ) {

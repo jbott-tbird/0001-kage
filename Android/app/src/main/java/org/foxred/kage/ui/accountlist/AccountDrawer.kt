@@ -24,6 +24,8 @@ fun AccountDrawer(
     select: (String) -> Unit,
     addAccount: () -> Unit,
     settings: () -> Unit,
+    outboxCount: Long,
+    openOutbox: () -> Unit,
 ) {
     ModalDrawerSheet(modifier = Modifier.widthIn(max = T.drawerMax)) {
         Text(
@@ -47,6 +49,14 @@ fun AccountDrawer(
                         if (unread > 0) Text(unread.toString())
                     },
                 )
+            // The durable sending queue is shared across accounts, separate from server folders.
+            NavigationDrawerItem(
+                label = { Text("Outbox") },
+                selected = false,
+                onClick = openOutbox,
+                icon = { Icon(Icons.Outlined.Outbox, null) },
+                badge = { if (outboxCount > 0) Text(outboxCount.toString()) },
+            )
             mail.accounts.forEach { account ->
                 var expanded by
                     rememberSaveable(account.id) {

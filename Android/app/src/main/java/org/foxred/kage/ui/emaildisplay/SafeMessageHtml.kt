@@ -56,6 +56,10 @@ object SafeMessageHtml {
             .addProtocols("img", "src", "data")
             .addAttributes(":all", "dir")
         val cleaned = Cleaner(safelist).clean(document)
+        // Newsletter tables often declare desktop widths; let the reader's viewport size them.
+        cleaned.select("table, colgroup, col, thead, tbody, tfoot, tr, th, td").forEach {
+            it.removeAttr("width")
+        }
         cleaned.outputSettings().prettyPrint(false)
         return cleaned.body().html()
     }

@@ -101,6 +101,16 @@ object DesignTokens {
         val size = typography.bodyLarge.fontSize.value * fontScale
         val lineHeight = typography.bodyLarge.lineHeight.value / typography.bodyLarge.fontSize.value
         fun Color.css() = "#%06X".format(toArgb() and 0xFFFFFF)
-        return "body{font:${size}px/$lineHeight sans-serif;color:${colors.onSurface.css()};background:${colors.surface.css()};overflow-wrap:anywhere}img{max-width:100%}a,h1,h2{color:${colors.primary.css()}}"
+        return """
+            html{box-sizing:border-box}
+            *,*::before,*::after{box-sizing:inherit}
+            body{margin:8px;font:${size}px/$lineHeight sans-serif;color:${colors.onSurface.css()};background:${colors.surface.css()};overflow-wrap:anywhere}
+            table{width:100%;max-width:100%;table-layout:auto}
+            th,td{overflow-wrap:anywhere}
+            img{max-width:100%;height:auto}
+            pre{white-space:pre-wrap;overflow-wrap:anywhere}
+            blockquote{margin-inline:16px}
+            a,h1,h2{color:${colors.primary.css()}}
+        """.trimIndent()
     }
 }

@@ -79,6 +79,11 @@ class RemoteMailRepository(
                     dao.insertAccount(entity)
                     dao.saveServers(account.servers.map { CoreRoomMapper.server(account.id, it) })
                     dao.saveFolders(CoreRoomMapper.folderTree(account.id, initialMailboxes))
+                    // Account creation and onboarding completion must survive together.
+                    val mailDao = db.mailDao()
+                    val preferences = mailDao.getPreferences()
+                        ?: org.foxred.kage.data.local.PreferencesEntity()
+                    mailDao.savePreferences(preferences.copy(started = true))
                 }
             } catch (error: Throwable) {
                 credentials.removeAccount(account.id)

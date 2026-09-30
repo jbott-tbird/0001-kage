@@ -42,7 +42,14 @@ class RoomMailRepository(
 
     override suspend fun initialize() =
         withContext(Dispatchers.IO) {
-            db.withTransaction { if (dao.initialized() == 0) seed() }
+            db.withTransaction {
+                if (dao.initialized() == 0) seed()
+                // Recover completion for accounts saved before onboarding was persisted atomically.
+                if (dao.realAccountIds().isNotEmpty()) {
+                    val prefs = dao.getPreferences() ?: Preferences().entity()
+                    if (!prefs.started) dao.savePreferences(prefs.copy(started = true))
+                }
+            }
             cacheAutomaticAttachments()
         }
 
@@ -254,7 +261,10 @@ class RoomMailRepository(
                 demoIds.forEach { dao.removeAccount(it) }
                 demo.accounts.forEach { insertAccount(it) }
                 dao.savePreferences(
-                    if (preserveSelection) prefs!! else Preferences().entity()
+                    if (preserveSelection) prefs!!.copy(started = true)
+                    else Preferences().entity().copy(
+                        started = prefs?.started == true || dao.realAccountIds().isNotEmpty(),
+                    )
                 )
             }
             demoIds.forEach { credentials.removeAccount(it) }

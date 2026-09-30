@@ -20,7 +20,16 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // Instrumentation may clear or uninstall its target. Never target the user's app.
+    testBuildType = "instrumented"
     buildTypes {
+        create("instrumented") {
+            initWith(getByName("debug"))
+            applicationIdSuffix = ".instrumented"
+            matchingFallbacks += "debug"
+            // Live Google OAuth is registered for the normal app identity only.
+            buildConfigField("String", "GOOGLE_ANDROID_CLIENT_ID", "\"\"")
+        }
         release {
             optimization {
                 enable = false
@@ -36,6 +45,7 @@ android {
     packaging { resources.merges += setOf("META-INF/LICENSE.md", "META-INF/NOTICE.md") }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -72,9 +82,9 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
     androidTestImplementation(libs.androidx.junit)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    "instrumentedImplementation"(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
-tasks.matching { it.name == "mergeDebugAndroidTestAssets" }.configureEach {
+tasks.matching { it.name == "mergeInstrumentedAndroidTestAssets" }.configureEach {
     dependsOn(":core:integration:createTestCertificate")
 }

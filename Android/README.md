@@ -12,7 +12,7 @@ From this directory:
 ```sh
 ./gradlew :app:assembleDebug
 ./gradlew :app:testDebugUnitTest
-./gradlew :app:connectedDebugAndroidTest  # emulator or device required
+./gradlew :app:connectedInstrumentedAndroidTest  # emulator or device required
 ./gradlew :app:lintDebug
 ```
 
@@ -23,7 +23,23 @@ JAVA_HOME='/Applications/Android Studio.app/Contents/jbr/Contents/Home' ./gradle
 ```
 
 Debug APK: `app/build/outputs/apk/debug/app-debug.apk`.
-A dedicated `Kage_API30` emulator was created for verification.
+A dedicated `Kage_Isolated_Tests_API30` emulator is used for verification.
+
+Instrumentation uses the **Kage Tests** build (`org.foxred.kage.instrumented`),
+with its own database, preferences, credentials, attachments, and app lifecycle.
+The runner is `org.foxred.kage.instrumented.test`; its target is never the normal
+`org.foxred.kage` app. Google authorization is faked in automated tests; live
+Google sign-in stays on the normal build.
+
+```sh
+./gradlew :app:assembleInstrumented :app:assembleInstrumentedAndroidTest
+ANDROID_SERIAL=emulator-5560 ./gradlew :app:connectedInstrumentedAndroidTest
+```
+
+The APKs are `app/build/outputs/apk/instrumented/app-instrumented.apk` and
+`app/build/outputs/apk/androidTest/instrumented/app-instrumented-androidTest.apk`.
+Use a dedicated test emulator so UI automation does not interrupt manual use.
+Never clear or uninstall `org.foxred.kage` as part of test setup or cleanup.
 
 ## Organization
 

@@ -464,7 +464,7 @@ private fun SafeHtml(html: String, attachments: List<org.foxred.kage.domain.mode
     AndroidView(
         modifier = Modifier.fillMaxWidth().height(T.messageHtmlHeight),
         factory = { context ->
-            WebView(context).apply {
+            MessageWebView(context).apply {
                 settings.javaScriptEnabled = false
                 settings.allowFileAccess = false
                 settings.allowContentAccess = false

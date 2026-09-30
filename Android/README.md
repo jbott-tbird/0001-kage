@@ -12,7 +12,7 @@ From this directory:
 ```sh
 ./gradlew :app:assembleDebug
 ./gradlew :app:testDebugUnitTest
-./gradlew :app:connectedInstrumentedAndroidTest  # emulator or device required
+python3 ../scripts/android_device_tests.py  # dedicated test emulator required
 ./gradlew :app:lintDebug
 ```
 
@@ -25,21 +25,21 @@ JAVA_HOME='/Applications/Android Studio.app/Contents/jbr/Contents/Home' ./gradle
 Debug APK: `app/build/outputs/apk/debug/app-debug.apk`.
 A dedicated `Kage_Isolated_Tests_API30` emulator is used for verification.
 
-Instrumentation uses the **Kage Tests** build (`org.foxred.kage.instrumented`),
-with its own database, preferences, credentials, attachments, and app lifecycle.
-The runner is `org.foxred.kage.instrumented.test`; its target is never the normal
-`org.foxred.kage` app. Google authorization is faked in automated tests; live
-Google sign-in stays on the normal build.
+Instrumentation uses the normal **Kage** debug build (`org.foxred.kage`).
+Isolation comes from the dedicated `Kage_Isolated_Tests_API30` emulator.
+Start that AVD in Device Manager, then run:
 
 ```sh
-./gradlew :app:assembleInstrumented :app:assembleInstrumentedAndroidTest
-ANDROID_SERIAL=emulator-5560 ./gradlew :app:connectedInstrumentedAndroidTest
+python3 ../scripts/android_device_tests.py
+# Optional targeted test:
+python3 ../scripts/android_device_tests.py -Pandroid.testInstrumentationRunnerArguments.class=org.foxred.kage.ui.NavigationRecoveryTest
 ```
 
-The APKs are `app/build/outputs/apk/instrumented/app-instrumented.apk` and
-`app/build/outputs/apk/androidTest/instrumented/app-instrumented-androidTest.apk`.
-Use a dedicated test emulator so UI automation does not interrupt manual use.
-Never clear or uninstall `org.foxred.kage` as part of test setup or cleanup.
+The launcher verifies the AVD name and pins Gradle to its current serial.
+Direct `connectedDebugAndroidTest` runs also require `ANDROID_SERIAL` pointing
+to that exact AVD; missing or incorrect targets are rejected before installation.
+Do not run instrumentation on the Google sign-in emulator used for manual testing.
+Automated Google authorization remains mocked.
 
 ## Organization
 

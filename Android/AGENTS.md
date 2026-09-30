@@ -1,8 +1,8 @@
 # Android test isolation
 
-- The user's app is `org.foxred.kage`. Never clear its data or uninstall it for tests.
-- Instrumentation targets the `instrumented` build type: **Kage Tests**, application ID `org.foxred.kage.instrumented`, runner package `org.foxred.kage.instrumented.test`.
-- Build with `:app:assembleInstrumented :app:assembleInstrumentedAndroidTest`; run with `:app:connectedInstrumentedAndroidTest`.
-- Use a dedicated test emulator and explicitly select its serial (`ANDROID_SERIAL` for Gradle or `adb -s` for device commands). Do not run UI tests on the user's Google sign-in emulator.
-- For direct instrumentation, install only the instrumented APKs and invoke `org.foxred.kage.instrumented.test/androidx.test.runner.AndroidJUnitRunner`.
-- Keep automated Google authorization mocked. Live OAuth verification uses the normal app and requires the user's sign-in.
+- Use the normal Kage debug app (`org.foxred.kage`) for instrumentation; do not create a separate app identity.
+- Run device tests only on the dedicated `Kage_Isolated_Tests_API30` AVD. Never use the Google sign-in emulator or a personal device.
+- Start the test AVD, then run `python3 scripts/android_device_tests.py` from the repository root. Extra arguments are passed to Gradle.
+- The launcher selects the AVD by name, not by a hard-coded serial. Direct `:app:connectedDebugAndroidTest` requires `ANDROID_SERIAL` and verifies that AVD name before installation.
+- Before any direct adb install, instrumentation, data clearing, or uninstall for tests, verify the selected serial with `adb -s SERIAL emu avd name`. Test cleanup is permitted only on the dedicated test AVD.
+- Keep automated Google authorization mocked. Live OAuth verification uses the manual emulator and the user's sign-in.

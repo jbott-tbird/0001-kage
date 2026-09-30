@@ -4,6 +4,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.*
@@ -23,12 +26,13 @@ fun KageApp(vm: MailViewModel) {
     val mail by vm.mailbox.collectAsStateWithLifecycle()
     val error by vm.error.collectAsStateWithLifecycle()
     val notice by vm.notice.collectAsStateWithLifecycle()
+    val outboxCounts by vm.outboxCounts.collectAsStateWithLifecycle()
     val nav = rememberNavController()
     val snackbar = remember { SnackbarHostState() }
     LaunchedEffect(notice) {
         notice?.let {
             snackbar.showSnackbar(it)
-            vm.notice.value = null
+            vm.notice.compareAndSet(it, null)
         }
     }
     Box(Modifier.fillMaxSize()) {
@@ -108,10 +112,29 @@ fun KageApp(vm: MailViewModel) {
                 }
             }
         }
-        SnackbarHost(
-            snackbar,
+        Column(
             Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(T.lg),
-        )
+            verticalArrangement = Arrangement.spacedBy(T.sm),
+        ) {
+            if (outboxCounts.sending > 0 || outboxCounts.queued > 0) {
+                Surface(tonalElevation = T.sm, shape = MaterialTheme.shapes.medium) {
+                    Column(Modifier.fillMaxWidth().padding(T.md)
+                        .semantics { liveRegion = LiveRegionMode.Polite }) {
+                        Text(
+                            if (outboxCounts.sending > 0) "Sending email…"
+                            else if (mail.preferences.offline) "Email queued — offline mode is on"
+                            else "Email queued for sending…",
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                        if (outboxCounts.sending > 0) {
+                            Spacer(Modifier.height(T.sm))
+                            LinearProgressIndicator(Modifier.fillMaxWidth())
+                        }
+                    }
+                }
+            }
+            SnackbarHost(snackbar)
+        }
     }
     error?.let { message ->
         AlertDialog(

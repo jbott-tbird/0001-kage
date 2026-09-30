@@ -56,6 +56,12 @@ class MailViewModel(
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     init {
+        viewModelScope.launch {
+            val feedback = SendFeedback()
+            repository.outboxCounts.collect { counts ->
+                feedback.update(counts)?.let { notice.value = it }
+            }
+        }
         action {
             repository.initialize()
             repository.mailbox.collect {

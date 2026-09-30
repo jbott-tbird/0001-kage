@@ -64,7 +64,7 @@ fun SetupScreen(vm: MailViewModel, close: () -> Unit, finish: () -> Unit, connec
             )
             when (step) {
                 0 -> {
-                    Text("Add your email account", style = MaterialTheme.typography.headlineSmall)
+                    Text("Set up a demo account", style = MaterialTheme.typography.headlineSmall)
                     TextButton(onClick = connectReal) { Text("Connect a real account instead") }
                     OutlinedTextField(
                         email,

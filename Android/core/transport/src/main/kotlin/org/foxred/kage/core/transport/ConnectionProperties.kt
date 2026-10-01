@@ -20,9 +20,9 @@ fun connectionProperties(
             Authorization.Kind.OAUTH2 -> AuthenticationType.OAUTH2
             Authorization.Kind.NONE -> AuthenticationType.NONE
         }
-    require(server.authenticationType == authentication) {
-        "Credentials do not match the server authentication type"
-    }
+    if (server.authenticationType != authentication)
+        throw MailFailure(FailureKind.AUTHENTICATION,
+            "Sign-in method does not match account settings; sign in again")
     if (auth.isExpired())
         throw MailFailure(FailureKind.AUTHENTICATION, "Authorization has expired; refresh required")
     val protocol = server.protocol.name.lowercase()

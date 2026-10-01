@@ -31,6 +31,7 @@ class MainActivity : ComponentActivity() {
                                     container.mailRepository,
                                     container.realAccountSetup,
                                     container.remoteMailRepository,
+                                    container.googleAuthorization,
                                 ) as T
                         }
                 )

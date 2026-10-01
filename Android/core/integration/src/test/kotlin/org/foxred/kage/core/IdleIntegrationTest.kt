@@ -193,6 +193,45 @@ class IdleIntegrationTest {
     }
 
     @Test
+    fun emptyMailboxWithHistoricalUidsNeedsNoMessageLookup() {
+        val transcript = ImapTranscript(uidNextOverride = 1_000_001)
+        LoopbackServer(context(), transcript::serve).use { server ->
+            AngusImapClient().use { client ->
+                client.connect(
+                    Server("localhost", server.port, ServerProtocol.IMAP, username = "user"),
+                    Authorization("password"),
+                )
+                val page = client.messagePage("INBOX", java.time.Instant.EPOCH, limit = 100)
+                assertTrue(page.messages.isEmpty())
+                assertNull(page.next)
+            }
+            server.awaitCompletion()
+        }
+        assertFalse(transcript.commands.any { it in setOf("UID", "FETCH", "SEARCH") })
+    }
+
+    @Test
+    fun boundedUidPageUsesServerDateSearchBeforeFetchingEnvelopes() {
+        val transcript = ImapTranscript(singleMessage = true, uidNextOverride = 1_000_001)
+        LoopbackServer(context(), transcript::serve).use { server ->
+            AngusImapClient().use { client ->
+                client.connect(
+                    Server("localhost", server.port, ServerProtocol.IMAP, username = "user"),
+                    Authorization("password"),
+                )
+                val page = client.messagePage("INBOX",
+                    java.time.Instant.parse("2026-08-26T00:00:00Z"), limit = 100)
+                assertTrue(page.messages.isEmpty())
+                assertNull(page.next)
+            }
+            server.awaitCompletion()
+        }
+        assertTrue(transcript.commands.contains("SEARCH"))
+        assertTrue(transcript.searchQueries.any { it.contains("SINCE 25-Aug-2026") })
+        assertFalse(transcript.commands.contains("UID"))
+    }
+
+    @Test
     fun missingMoveCapabilityNeverChangesMailbox() {
         val transcript = ImapTranscript()
         LoopbackServer(context(), transcript::serve).use { server ->

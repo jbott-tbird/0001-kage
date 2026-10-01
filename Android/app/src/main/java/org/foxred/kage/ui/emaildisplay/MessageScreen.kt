@@ -41,6 +41,7 @@ import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.foxred.kage.ui.MailViewModel
+import org.foxred.kage.ui.MessageLookup
 import org.foxred.kage.ui.shared.MailIconButton
 import org.foxred.kage.ui.theme.DesignTokens as T
 
@@ -48,15 +49,24 @@ import org.foxred.kage.ui.theme.DesignTokens as T
 @Composable
 fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (String) -> Unit) {
     val mail by vm.mailbox.collectAsStateWithLifecycle()
+    val ready by vm.ready.collectAsStateWithLifecycle()
     val bodyLoad by vm.messageLoad.collectAsStateWithLifecycle()
     val transfers by vm.attachmentTransfers.collectAsStateWithLifecycle()
-    val message = mail.messages.find { it.id == id }
+    val resumeGeneration by vm.resumeGeneration.collectAsStateWithLifecycle()
+    val lookup by remember(id) { vm.lookupMessage(id) }
+        .collectAsStateWithLifecycle(initialValue = MessageLookup())
+    val message = lookup.message
     var bodyRetry by remember(id) { mutableIntStateOf(0) }
-    LaunchedEffect(id, message?.bodyDownloaded, mail.preferences.offline, bodyRetry) {
+    var inlineImagesVersion by remember(id) { mutableIntStateOf(0) }
+    LaunchedEffect(id, message?.bodyDownloaded, mail.preferences.offline, bodyRetry,
+        resumeGeneration) {
         if (message != null && !message.bodyDownloaded && !mail.preferences.offline)
             vm.loadBody(id)
-        else if (message?.bodyDownloaded == true && !mail.preferences.offline)
+        else if (message?.bodyDownloaded == true && !mail.preferences.offline) {
             vm.prefetchInlineImages(id)
+            // Re-read embedded files even when their repaired Room metadata is unchanged.
+            inlineImagesVersion++
+        }
     }
     var details by remember { mutableStateOf(false) }
     var finding by rememberSaveable { mutableStateOf(false) }
@@ -71,12 +81,13 @@ fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (Str
     val focusManager = LocalFocusManager.current
     if (message == null) {
         Column(Modifier.safeDrawingPadding().padding(T.xl)) {
-            Text("Message not found")
+            Text(if (ready && lookup.loaded) "Message not found" else "Loading message…")
             TextButton(onClick = back) { Text("Back to inbox") }
         }
         return
     }
-    val htmlText = remember(message.html) { message.html?.let(SafeMessageHtml::searchableText).orEmpty() }
+    val htmlBody = message.html
+    val htmlText = remember(htmlBody) { htmlBody?.let(SafeMessageHtml::searchableText).orEmpty() }
     val findBody = remember(message.body, htmlText) {
         when {
             htmlText.isBlank() || htmlText == message.body -> message.body
@@ -240,7 +251,7 @@ fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (Str
                     ),
             )
             Text(
-                message.receivedAt.replace('T', ' ').removeSuffix("Z"),
+                message.receivedAt.substringBefore('.').replace('T', ' ').removeSuffix("Z"),
                 style = MaterialTheme.typography.bodySmall,
             )
             TextButton(onClick = { details = true }) { Text("To: ${message.to}", maxLines = 2) }
@@ -273,11 +284,11 @@ fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (Str
                     }
                     else -> Text("Loading message…")
                 }
-            } else if (message.html != null && query.isBlank()) {
+            } else if (htmlBody != null && query.isBlank()) {
                 TextButton(onClick = { html = !html }) {
                     Text(if (html) "Show plain text" else "Show formatted message")
                 }
-                if (html) SafeHtml(message.html, message.attachments)
+                if (html) SafeHtml(htmlBody, message.attachments, inlineImagesVersion)
                 else
                     Text(
                         message.body.ifBlank { htmlText },
@@ -398,7 +409,8 @@ fun MessageScreen(vm: MailViewModel, id: String, back: () -> Unit, compose: (Str
                                         "${if (expanded) "Collapse" else "Expand"} related message",
                                     )
                                 }
-                                Text(related.receivedAt, style = MaterialTheme.typography.bodySmall)
+                                Text(related.receivedAt.substringBefore('.'),
+                                    style = MaterialTheme.typography.bodySmall)
                                 Text(
                                     if (expanded) related.body else related.preview,
                                     modifier = Modifier.fillMaxWidth(),
@@ -452,10 +464,11 @@ private fun highlight(
 
 @Suppress("SetJavaScriptEnabled")
 @Composable
-private fun SafeHtml(html: String, attachments: List<org.foxred.kage.domain.model.Attachment>) {
+private fun SafeHtml(html: String, attachments: List<org.foxred.kage.domain.model.Attachment>,
+    inlineImagesVersion: Int) {
     val emailStyle = T.emailCss(MaterialTheme.colorScheme, LocalDensity.current.fontScale)
     val context = LocalContext.current
-    val safeHtml by produceState<String?>(null, html, attachments) {
+    val safeHtml by produceState<String?>(null, html, attachments, inlineImagesVersion) {
         value = withContext(Dispatchers.IO) {
             SafeMessageHtml.render(context, html, attachments)
         }
@@ -466,7 +479,7 @@ private fun SafeHtml(html: String, attachments: List<org.foxred.kage.domain.mode
         return
     }
     AndroidView(
-        modifier = Modifier.fillMaxWidth().height(T.messageHtmlHeight),
+        modifier = Modifier.fillMaxWidth().wrapContentHeight(),
         factory = { context ->
             MessageWebView(context).apply {
                 settings.javaScriptEnabled = false

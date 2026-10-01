@@ -15,6 +15,7 @@ class SmtpTranscript(
     private val startTls: SSLContext? = null,
     private val rejectRecipient: String? = null,
     private val dropAfterData: Boolean = false,
+    private val oauthToken: String? = null,
 ) {
     val commands = mutableListOf<String>()
 
@@ -43,13 +44,21 @@ class SmtpTranscript(
             writer = socket.outputStream.bufferedWriter(Charsets.US_ASCII)
             check(reader.readLine().startsWith("EHLO "))
         }
-        reply("250-localhost\r\n250 AUTH PLAIN")
+        reply("250-localhost\r\n250 AUTH ${if (oauthToken == null) "PLAIN" else "XOAUTH2"}")
         val auth = reader.readLine()
-        check(auth.startsWith("AUTH PLAIN "))
-        check(
-            String(Base64.getDecoder().decode(auth.substringAfterLast(' ')))
-                .endsWith("\u0000password")
-        )
+        if (oauthToken == null) {
+            check(auth.startsWith("AUTH PLAIN "))
+            check(String(Base64.getDecoder().decode(auth.substringAfterLast(' ')))
+                .endsWith("\u0000password"))
+        } else {
+            check(auth.startsWith("AUTH XOAUTH2"))
+            val encoded = auth.removePrefix("AUTH XOAUTH2").trim().ifBlank {
+                reply("334 ")
+                reader.readLine()
+            }
+            check(String(Base64.getDecoder().decode(encoded), Charsets.UTF_8) ==
+                "user=user\u0001auth=Bearer $oauthToken\u0001\u0001")
+        }
         reply("235 Authenticated")
         try {
             while (true) {
@@ -98,10 +107,13 @@ constructor(
     private val idleUntilDisconnect: Boolean = false,
     private val singleMessage: Boolean = false,
     private val additionalCapabilities: String = "",
+    private val uidNextOverride: Long? = null,
+    private val oauthToken: String? = null,
 ) {
     val idling = CountDownLatch(1)
     val change = CountDownLatch(1)
     val commands = mutableListOf<String>()
+    val searchQueries = mutableListOf<String>()
     @Volatile var sawQresync = false
     @Volatile var sawUidExpunge = false
 
@@ -121,7 +133,8 @@ constructor(
             }
         }
         val capabilities =
-            "IMAP4rev1 AUTH=PLAIN $additionalCapabilities" + if (idleEnabled) " IDLE" else ""
+            "IMAP4rev1 AUTH=${if (oauthToken == null) "PLAIN" else "XOAUTH2"} " +
+                additionalCapabilities + if (idleEnabled) " IDLE" else ""
         reply("* OK [CAPABILITY $capabilities] localhost ready")
         while (true) {
             val line = reader.readLine() ?: break
@@ -143,6 +156,14 @@ constructor(
                         String(Base64.getDecoder().decode(reader.readLine()))
                             .endsWith("\u0000password")
                     )
+                    reply("$tag OK authenticated")
+                }
+                command.startsWith("AUTHENTICATE XOAUTH2") -> {
+                    check(oauthToken != null)
+                    val encoded = command.removePrefix("AUTHENTICATE XOAUTH2").trim()
+                        .ifBlank { reply("+"); reader.readLine() }
+                    check(String(Base64.getDecoder().decode(encoded), Charsets.UTF_8) ==
+                        "user=user\u0001auth=Bearer $oauthToken\u0001\u0001")
                     reply("$tag OK authenticated")
                 }
                 command.startsWith("ENABLE ") -> {
@@ -167,12 +188,17 @@ constructor(
                     reply("* ${if (singleMessage) 1 else 0} EXISTS")
                     reply("* 0 RECENT")
                     reply("* OK [UIDVALIDITY 77] generation")
-                    reply("* OK [UIDNEXT ${if (singleMessage) 2 else 1}] next")
+                    reply("* OK [UIDNEXT ${uidNextOverride ?: if (singleMessage) 2 else 1}] next")
                     if (additionalCapabilities.contains("QRESYNC"))
                         reply("* OK [HIGHESTMODSEQ 10] highest")
                     reply(
                         "$tag OK [${if (command.startsWith("SELECT ")) "READ-WRITE" else "READ-ONLY"}] selected"
                     )
+                }
+                command.startsWith("FETCH ") -> {
+                    check(singleMessage && command.endsWith("(UID)"))
+                    reply("* 1 FETCH (UID 1)")
+                    reply("$tag OK fetched")
                 }
                 command.startsWith("UID FETCH ") -> {
                     if (command.contains("CHANGEDSINCE", ignoreCase = true)) {
@@ -193,6 +219,7 @@ constructor(
                     reply("$tag OK expunged")
                 }
                 command.startsWith("SEARCH ") -> {
+                    searchQueries += command
                     reply("* SEARCH")
                     reply("$tag OK search")
                 }

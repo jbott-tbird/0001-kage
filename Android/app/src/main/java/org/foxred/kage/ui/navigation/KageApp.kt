@@ -4,6 +4,7 @@
 
 package org.foxred.kage.ui.navigation
 
+import android.net.Uri
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -13,6 +14,9 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.compose.*
 import kotlinx.coroutines.flow.first
 import org.foxred.kage.ui.MailViewModel
@@ -31,6 +35,23 @@ fun KageApp(vm: MailViewModel) {
     val error by vm.error.collectAsStateWithLifecycle()
     val notice by vm.notice.collectAsStateWithLifecycle()
     val outboxCounts by vm.outboxCounts.collectAsStateWithLifecycle()
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val selectedFolder by rememberUpdatedState(mail.preferences.selectedFolder)
+    val canRefresh by rememberUpdatedState(ready)
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                vm.onAppResumed()
+                if (canRefresh) {
+                    vm.refreshRecentInboxes()
+                    vm.refreshFolder(selectedFolder)
+                }
+            }
+            if (event == Lifecycle.Event.ON_STOP) vm.onAppStopped()
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
     val nav = rememberNavController()
     val snackbar = remember { SnackbarHostState() }
     LaunchedEffect(notice) {
@@ -84,7 +105,7 @@ fun KageApp(vm: MailViewModel) {
                             )
                         },
                         { nav.navigate("compose/new/none") },
-                        { nav.navigate("setup") },
+                        { nav.navigate("setup-real") },
                         { nav.navigate("settings") },
                     )
                 }
@@ -110,9 +131,19 @@ fun KageApp(vm: MailViewModel) {
                     SettingsScreen(
                         vm,
                         { nav.popBackStackFrom(entry) },
-                        { nav.navigate("setup") },
+                        { nav.navigate("setup-real") },
                         { welcome() },
+                        { id -> nav.navigate("update-password/${Uri.encode(id)}") },
+                        { id -> nav.navigate("update-google/${Uri.encode(id)}") },
                     )
+                }
+                composable("update-password/{id}") { entry ->
+                    UpdateAppPasswordScreen(vm, entry.arguments?.getString("id").orEmpty(),
+                        { nav.popBackStackFrom(entry) })
+                }
+                composable("update-google/{id}") { entry ->
+                    UpdateGoogleAuthorizationScreen(vm, entry.arguments?.getString("id").orEmpty(),
+                        { nav.popBackStackFrom(entry) })
                 }
             }
         }

@@ -25,6 +25,7 @@ import org.foxred.kage.ui.theme.DesignTokens as T
 @Composable
 fun AccountDrawer(
     mail: Mailbox,
+    unreadCounts: Map<String, Long>,
     select: (String) -> Unit,
     addAccount: () -> Unit,
     settings: () -> Unit,
@@ -46,9 +47,7 @@ fun AccountDrawer(
                     icon = { Icon(Icons.Outlined.AllInbox, null) },
                     badge = {
                         val unread = mail.folders.filter { it.role == "inbox" }.sumOf { folder ->
-                            folder.serverUnreadCount ?: mail.messages.count {
-                                it.folderId == folder.id && !it.isRead
-                            }
+                            folder.serverUnreadCount?.toLong() ?: unreadCounts[folder.id] ?: 0L
                         }
                         if (unread > 0) Text(unread.toString())
                     },
@@ -75,6 +74,10 @@ fun AccountDrawer(
                         Column {
                             Text(account.name)
                             Text(account.address, style = MaterialTheme.typography.bodySmall)
+                            Text(
+                                if (account.mode == "REAL") "Real mailbox" else "Demo mailbox",
+                                style = MaterialTheme.typography.labelSmall,
+                            )
                         }
                     },
                     selected = false,
@@ -87,9 +90,7 @@ fun AccountDrawer(
                         ) {
                             val unread =
                                 mail.folders.filter { it.accountId == account.id }.sumOf { folder ->
-                                    folder.serverUnreadCount ?: mail.messages.count {
-                                        it.folderId == folder.id && !it.isRead
-                                    }
+                                    folder.serverUnreadCount?.toLong() ?: unreadCounts[folder.id] ?: 0L
                                 }
                             if (!expanded && unread > 0) Text(unread.toString())
                             Icon(
@@ -104,13 +105,13 @@ fun AccountDrawer(
                     val folders = mail.folders.filter { it.accountId == account.id }
                     folders
                         .filter { it.parentId == null }
-                        .forEach { folder -> DrawerFolder(folder, mail, select) }
+                        .forEach { folder -> DrawerFolder(folder, mail, unreadCounts, select) }
                 }
                 HorizontalDivider(Modifier.padding(T.md))
             }
             TextButton(onClick = addAccount, modifier = Modifier.padding(T.sm)) {
                 Icon(Icons.Outlined.Add, null)
-                Text("Add account")
+                Text("Connect a real account")
             }
         }
         TextButton(onClick = settings, modifier = Modifier.padding(T.lg)) {
@@ -122,7 +123,8 @@ fun AccountDrawer(
 }
 
 @Composable
-private fun DrawerFolder(folder: Folder, mail: Mailbox, select: (String) -> Unit, depth: Int = 0) {
+private fun DrawerFolder(folder: Folder, mail: Mailbox, unreadCounts: Map<String, Long>,
+    select: (String) -> Unit, depth: Int = 0) {
     val children = mail.folders.filter { it.parentId == folder.id }
     var expanded by
         rememberSaveable(folder.id) {
@@ -135,9 +137,7 @@ private fun DrawerFolder(folder: Folder, mail: Mailbox, select: (String) -> Unit
         .flatMap { listOf(it) + descendants(it.id) }
     val countedFolders = listOf(folder) + descendants(folder.id)
     val unread = countedFolders.sumOf { candidate ->
-        candidate.serverUnreadCount ?: mail.messages.count {
-            it.folderId == candidate.id && !it.isRead
-        }
+        candidate.serverUnreadCount?.toLong() ?: unreadCounts[candidate.id] ?: 0L
     }
     Row(
         Modifier.padding(start = T.sm + T.lg * depth, end = T.sm),
@@ -160,5 +160,5 @@ private fun DrawerFolder(folder: Folder, mail: Mailbox, select: (String) -> Unit
                 expanded = !expanded
             }
     }
-    if (expanded) children.forEach { DrawerFolder(it, mail, select, depth + 1) }
+    if (expanded) children.forEach { DrawerFolder(it, mail, unreadCounts, select, depth + 1) }
 }

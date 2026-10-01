@@ -49,14 +49,18 @@ class AngusMimeCodec(
             .also { AngusPartReader(maxBytes, maxDepth).attachment(parse(raw), partId, it) }
             .toByteArray()
 
-    override fun encode(email: OutgoingEmail): ByteArray {
+    override fun encode(email: OutgoingEmail): ByteArray = encode(email, draft = false)
+
+    override fun encodeDraft(email: OutgoingEmail): ByteArray = encode(email, draft = true)
+
+    private fun encode(email: OutgoingEmail, draft: Boolean): ByteArray {
         fun safe(value: String): String {
             require(!value.contains('\r') && !value.contains('\n')) { "Invalid header" }
             return value
         }
         fun address(a: EmailAddress) =
             InternetAddress(safe(a.address), safe(a.name), "UTF-8").apply { validate() }
-        require(email.to.isNotEmpty() || email.cc.isNotEmpty() || email.bcc.isNotEmpty())
+        if (!draft) require(email.to.isNotEmpty() || email.cc.isNotEmpty() || email.bcc.isNotEmpty())
         if (email.attachments.sumOf { it.data.size.toLong() } > maxBytes)
             throw MailFailure(FailureKind.LIMIT_EXCEEDED, "Attachments exceed message limit")
         val usedBoundaries = mutableSetOf<String>()
@@ -81,7 +85,9 @@ class AngusMimeCodec(
         msg.setFrom(address(email.from))
         msg.setRecipients(Message.RecipientType.TO, email.to.map(::address).toTypedArray())
         msg.setRecipients(Message.RecipientType.CC, email.cc.map(::address).toTypedArray())
-        // Bcc is deliberately carried only by the SMTP envelope.
+        if (draft)
+            msg.setRecipients(Message.RecipientType.BCC, email.bcc.map(::address).toTypedArray())
+        // Submitted MIME omits Bcc; its separate SMTP envelope holds those recipients.
         msg.setSubject(safe(email.subject), "UTF-8")
         msg.sentDate = Date.from(email.sentAt)
         fun body(): MimeBodyPart =

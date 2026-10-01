@@ -15,10 +15,12 @@ import org.foxred.kage.core.transport.connectionProperties
 class AngusSmtpClient(
     private val codec: MimeCodec = AngusMimeCodec(),
     private val timeoutMillis: Int = 15000,
-) : MailSubmission {
+) : MailSubmission, RawMailSubmission {
     @Volatile private var control: ConnectionControl? = null
+    @Volatile private var cancellationRequested = false
 
     override fun cancel() {
+        cancellationRequested = true
         control?.cancel()
     }
 
@@ -55,20 +57,58 @@ class AngusSmtpClient(
 
     @Synchronized
     override fun send(server: Server, authorization: Authorization, email: OutgoingEmail) {
-        require(server.protocol == ServerProtocol.SMTP)
+        sendRaw(server, authorization, codec.encode(email), email.to + email.cc + email.bcc)
+    }
+
+    @Synchronized
+    override fun sendRaw(
+        server: Server,
+        authorization: Authorization,
+        raw: ByteArray,
+        recipients: List<EmailAddress>,
+    ) = sendRaw(server, authorization, raw, recipients) { }
+
+    @Synchronized
+    override fun sendRaw(
+        server: Server,
+        authorization: Authorization,
+        raw: ByteArray,
+        recipients: List<EmailAddress>,
+        onSubmissionStart: () -> Unit,
+    ) {
+        if (server.protocol != ServerProtocol.SMTP)
+            throw MailFailure(FailureKind.PROTOCOL, "Outgoing server is not SMTP")
+        if (recipients.isEmpty())
+            throw MailFailure(FailureKind.INVALID_MESSAGE, "At least one recipient is required")
+        if (cancellationRequested)
+            throw MailFailure(FailureKind.CANCELLED, "SMTP submission was cancelled")
         val operation = ConnectionControl()
         val properties = connectionProperties(server, authorization, timeoutMillis)
-        operation.install(properties, "smtp")
-        val session = Session.getInstance(properties)
-        val raw = codec.encode(email)
-        val message = MimeMessage(session, raw.inputStream())
-        val recipients =
-            (email.to + email.cc + email.bcc)
+        val session = try {
+            operation.install(properties, "smtp")
+            Session.getInstance(properties)
+        } catch (error: Exception) {
+            throw MailFailure(FailureKind.PROTOCOL, "SMTP transport could not be prepared", error)
+        }
+        // Parsing and address validation happen before any SMTP command is sent.
+        val message = try { MimeMessage(session, raw.inputStream()) }
+            catch (error: Exception) {
+                throw MailFailure(FailureKind.INVALID_MESSAGE, "Queued message is invalid", error)
+            }
+        val addresses = try {
+            recipients
                 .map { InternetAddress(it.address).apply { validate() } }
                 .toTypedArray()
-        val transport = session.getTransport("smtp")
+        } catch (error: Exception) {
+            throw MailFailure(FailureKind.INVALID_MESSAGE, "Recipient address is invalid", error)
+        }
+        val transport = try { session.getTransport("smtp") }
+            catch (error: Exception) {
+                throw MailFailure(FailureKind.PROTOCOL, "SMTP transport is unavailable", error)
+            }
         var submitting = false
         control = operation
+        if (cancellationRequested) operation.cancel()
         try {
             transport.connect(
                 server.hostname,
@@ -77,7 +117,8 @@ class AngusSmtpClient(
                 authorization.secret.takeUnless { authorization.kind == Authorization.Kind.NONE },
             )
             submitting = true
-            transport.sendMessage(message, recipients)
+            onSubmissionStart()
+            transport.sendMessage(message, addresses)
         } catch (e: AuthenticationFailedException) {
             throw MailFailure(FailureKind.AUTHENTICATION, "SMTP authentication failed", e)
         } catch (e: SendFailedException) {

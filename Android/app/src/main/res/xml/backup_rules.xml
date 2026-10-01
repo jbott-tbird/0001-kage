@@ -8,4 +8,5 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/
 <full-backup-content>
     <!-- Credentials also reside in noBackupFilesDir, independently excluded by Android. -->
     <exclude domain="root" path="no_backup/mail-credentials/" />
+    <exclude domain="sharedpref" path="background-mail.xml" />
 </full-backup-content>

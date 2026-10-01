@@ -23,7 +23,10 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
 import java.io.File
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.first
 import org.foxred.kage.data.local.MailDatabase
+import org.foxred.kage.data.local.OutboxEntity
+import org.foxred.kage.data.repository.DurableOutbox
 import org.foxred.kage.data.repository.RoomMailRepository
 import org.foxred.kage.data.seed.DemoMail
 import org.foxred.kage.ui.navigation.KageApp
@@ -61,7 +64,7 @@ class MailJourneyTest {
 
     @Test
     fun setupRequiresEmailAndCreatesPopulatedMailbox() {
-        compose.onNodeWithText("Get started").performClick()
+        compose.onNodeWithText("Set up a demo account").performClick()
         compose.onNodeWithText("Next").assertIsNotEnabled()
         compose.onNodeWithText("Email address").performTextInput("my-address@example.net")
         compose.onNodeWithText("Next").performScrollTo().performClick()
@@ -135,6 +138,44 @@ class MailJourneyTest {
     }
 
     @Test
+    fun outboxPagerReachesOlderFailedSend() {
+        compose.onNodeWithText("Explore the demo inbox").performClick()
+        kotlinx.coroutines.runBlocking {
+            val dao = db.remoteMailDao()
+            fun row(id: String, state: String, copyState: String) = OutboxEntity(
+                id = id, accountId = "personal", draftId = null,
+                messageId = "<$id@example.test>", rawMessagePath = "/unused/$id.eml",
+                envelopeJson = """{"to":[{"address":"$id@example.test"}],"cc":[],"bcc":[],"sentCopyState":"$copyState"}""",
+                state = state, createdAt = 1, updatedAt = 1,
+            )
+            dao.saveOutbox(row("older-failed", DurableOutbox.State.FAILED, "WAITING"))
+            repeat(50) { index ->
+                dao.saveOutbox(row("confirmed-$index", DurableOutbox.State.SENT, "CONFIRMED"))
+            }
+        }
+        compose.waitUntil(10000) {
+            vm.outboxCounts.value.actionable == 1L && vm.outboxPage.value.items.size == 50
+        }
+        compose.onNodeWithContentDescription("Inbox options").performClick()
+        compose.onNodeWithText("Outbox (1)").performClick()
+        compose.onNodeWithContentDescription("Next Outbox page").performScrollTo()
+            .performClick()
+        compose.waitUntil(10000) {
+            vm.outboxPage.value.pageNumber == 2 &&
+                vm.outboxPage.value.items.singleOrNull()?.id == "older-failed"
+        }
+        compose.waitForIdle()
+        compose.onNodeWithText("older-failed@example.test").assertExists()
+        compose.onNodeWithText("Failed").assertExists()
+        compose.onNodeWithContentDescription("Previous Outbox page").performClick()
+        compose.waitUntil(10000) {
+            vm.outboxPage.value.pageNumber == 1 && vm.outboxPage.value.items.size == 50
+        }
+        compose.waitForIdle()
+        compose.onNodeWithText("older-failed@example.test").assertDoesNotExist()
+    }
+
+    @Test
     fun selectionMarksOnlyChosenMessagesAndSortCanBeReversed() {
         compose.onNodeWithText("Explore the demo inbox").performClick()
         val before = vm.mailbox.value.messages.filter { it.folderId == "personal-inbox" }
@@ -169,7 +210,8 @@ class MailJourneyTest {
         compose.onNode(hasText("This account") and hasClickAction()).assertIsSelected()
         compose.onNodeWithText("Search mail").performTextInput("Coffee this weekend?")
         compose.onNodeWithText("All accounts").performClick()
-        compose.onNodeWithText("3 results").assertIsDisplayed()
+        compose.waitUntil(10000) { vm.pageReady.value && vm.messages.value.size == 3 }
+        compose.onNodeWithText("3 results on page 1").assertIsDisplayed()
         compose.onNodeWithText("rhea@example.com · Inbox").assertIsDisplayed()
         compose.onNodeWithText("rhea@example.org · Inbox").assertIsDisplayed()
         compose.onNodeWithText("rhea@community.example.net · Inbox").assertIsDisplayed()
@@ -213,6 +255,56 @@ class MailJourneyTest {
         } finally {
             Intents.release()
             source.delete()
+        }
+    }
+
+    @Test
+    fun composeCanCorrectAnInvalidRecipientAfterSendFails() {
+        compose.onNodeWithText("Explore the demo inbox").performClick()
+        compose.onNodeWithContentDescription("Compose a message", useUnmergedTree = true).performClick()
+        compose.onNodeWithText("To").performTextInput("bad@@example.test")
+        compose.onNodeWithText("Subject").performTextInput("Corrected recipient")
+        onView(withContentDescription("Message")).perform(replaceText("Body"))
+        compose.onNodeWithContentDescription("Send message").performClick()
+        compose.onNodeWithText("Enter valid recipient email addresses.").assertExists()
+        compose.onNodeWithText("OK").performClick()
+        compose.onNodeWithText("To")
+            .performTextReplacement("Friend <friend@example.test>")
+        compose.onNodeWithContentDescription("Send message").performClick()
+        compose.waitUntil(10000) {
+            vm.mailbox.value.messages.any {
+                it.subject == "Corrected recipient" && !it.draft &&
+                    it.to == "Friend <friend@example.test>"
+            }
+        }
+    }
+
+    @Test
+    fun savedDraftRecipientEditCanBeReopenedAndDiscarded() {
+        compose.onNodeWithText("Explore the demo inbox").performClick()
+        compose.onNodeWithContentDescription("Open account drawer").performClick()
+        compose.onNodeWithText("Drafts").performScrollTo().performClick()
+        compose.onNodeWithContentDescription("Compose a message").performClick()
+        compose.onNodeWithText("To").performTextInput("first@example.test")
+        compose.onNodeWithText("Subject").performTextInput("Editable draft journey")
+        compose.onNodeWithText("Save", substring = false).performClick()
+        compose.waitUntil(10000) {
+            vm.mailbox.value.messages.any { it.subject == "Editable draft journey" && it.draft }
+        }
+        compose.onNodeWithText("Editable draft journey").performClick()
+        compose.onNodeWithText("To").performTextReplacement("second@example.test")
+        compose.onNodeWithText("Save", substring = false).performClick()
+        compose.waitUntil(10000) {
+            vm.mailbox.value.messages.any {
+                it.subject == "Editable draft journey" && it.to == "second@example.test"
+            }
+        }
+        compose.onNodeWithText("Editable draft journey").performClick()
+        compose.onNodeWithText("second@example.test").assertExists()
+        compose.onNodeWithContentDescription("Close compose").performClick()
+        compose.onNodeWithText("Discard").performClick()
+        compose.waitUntil(10000) {
+            vm.mailbox.value.messages.none { it.subject == "Editable draft journey" }
         }
     }
 
@@ -270,7 +362,39 @@ class MailJourneyTest {
         compose.onNodeWithText("This account").assertIsNotEnabled()
         compose.onNode(hasText("All accounts") and hasClickAction()).assertIsSelected()
         compose.onNodeWithText("Search mail").performTextInput("Coffee this weekend?")
-        compose.onNodeWithText("3 results").assertIsDisplayed()
+        compose.waitUntil(10000) { vm.pageReady.value && vm.messages.value.size == 3 }
+        compose.onNodeWithText("3 results on page 1").assertIsDisplayed()
+    }
+
+    @Test
+    fun unifiedPagingRestartsWhenAnInboxIsAdded() {
+        compose.onNodeWithText("Explore the demo inbox").performClick()
+        vm.preferences { it.copy(selectedFolder = "unified", unified = true, started = true) }
+        compose.waitUntil(10000) { vm.pageReady.value &&
+            vm.mailbox.value.preferences.selectedFolder == "unified" }
+        kotlinx.coroutines.runBlocking {
+            val base = checkNotNull(db.mailDao().message("m04"))
+            db.mailDao().saveMessages((0 until 55).map { index ->
+                base.copy(id = "page-membership-$index", accountId = "personal",
+                    folderId = "personal-inbox", receivedAt = "2100-01-01T00:00:00Z")
+            })
+        }
+        compose.waitUntil(10000) { vm.pageReady.value && vm.messagePage.value.page.next != null }
+        vm.nextMessagePage()
+        compose.waitUntil(10000) { vm.pageReady.value && vm.messagePage.value.pageNumber == 2 }
+
+        kotlinx.coroutines.runBlocking {
+            val account = db.mailDao().accounts().first().first()
+            val inbox = db.mailDao().folders().first().first { it.role == "inbox" }
+            db.mailDao().insertAccounts(listOf(account.copy(
+                id = "page-added", address = "page-added@example.test")))
+            db.mailDao().insertFolders(listOf(inbox.copy(
+                id = "page-added-inbox", accountId = "page-added")))
+        }
+        compose.waitUntil(10000) {
+            vm.pageReady.value && vm.messagePage.value.pageNumber == 1 &&
+                "page-added-inbox" in vm.messagePage.value.folderIds
+        }
     }
 
     @Test

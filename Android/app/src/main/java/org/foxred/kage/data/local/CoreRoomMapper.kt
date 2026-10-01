@@ -141,7 +141,7 @@ object CoreRoomMapper {
             from?.name?.ifEmpty { from.address } ?: "", from?.address.orEmpty(),
             value.to.joinToString(", ") { it.address }, value.cc.joinToString(", ") { it.address },
             value.bcc.joinToString(", ") { it.address }, value.subject, value.body.text.orEmpty(), value.body.html,
-            (value.receivedAt ?: Instant.EPOCH).toString(), value.read, false, value.flagged, false,
+            mailTimestampKey(value.receivedAt ?: Instant.EPOCH), value.read, false, value.flagged, false,
             folder.role == "drafts", null, value.body.preview.orEmpty(), identity.uidValidity, identity.uid,
             envelopeJson = metadata.toString(), bodyDownloaded = value.bodyDownloaded)
     }

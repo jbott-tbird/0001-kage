@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -28,15 +29,15 @@ class MessageScrollingTest {
     @get:Rule val compose = createComposeRule()
 
     @Test
-    fun bodySwipesScrollLongEmailAndHandOffAtBottom() {
+    fun bodySwipesMoveHeaderAndEmailTogether() {
         lateinit var webView: MessageWebView
         lateinit var scroll: androidx.compose.foundation.ScrollState
         compose.setContent {
             scroll = rememberScrollState()
-            Column(Modifier.fillMaxSize().verticalScroll(scroll)) {
+            Column(Modifier.fillMaxSize().testTag("reader").verticalScroll(scroll)) {
                 Spacer(Modifier.height(40.dp))
                 AndroidView(
-                    modifier = Modifier.fillMaxWidth().height(240.dp).testTag("email"),
+                    modifier = Modifier.fillMaxWidth().wrapContentHeight().testTag("email"),
                     factory = { context ->
                         MessageWebView(context).also {
                             webView = it
@@ -52,19 +53,20 @@ class MessageScrollingTest {
         }
         compose.waitUntil(20_000) {
             var ready = false
-            compose.runOnIdle { ready = webView.canScrollVertically(1) }
+            compose.runOnIdle { ready = webView.height > 2 * webView.resources.displayMetrics.heightPixels }
             ready
         }
-        compose.onNodeWithTag("email").performTouchInput { swipeUp() }
+        compose.onNodeWithTag("reader").performTouchInput { swipeUp() }
+        var firstScroll = 0
         compose.runOnIdle {
-            assertTrue("Swipe should scroll the email body", webView.scrollY > 0)
-            assertTrue("Outer screen should remain still inside the body", scroll.value == 0)
-            webView.flingScroll(0, 0)
-            webView.scrollTo(0, Int.MAX_VALUE)
+            assertTrue("Header and body should scroll together", scroll.value > 0)
+            assertTrue("Email must not have an independent scroll offset", webView.scrollY == 0)
+            firstScroll = scroll.value
         }
-        compose.onNodeWithTag("email").performTouchInput { swipeUp() }
+        compose.onNodeWithTag("reader").performTouchInput { swipeUp() }
         compose.runOnIdle {
-            assertTrue("At the email bottom, swipe should reach the outer content", scroll.value > 0)
+            assertTrue("Further body swipes should keep moving the whole page", scroll.value > firstScroll)
+            assertTrue("Email must remain expanded", webView.scrollY == 0)
         }
     }
 }

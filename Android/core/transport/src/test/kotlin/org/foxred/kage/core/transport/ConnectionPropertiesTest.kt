@@ -58,9 +58,10 @@ class ConnectionPropertiesTest {
                 )
             }
         assertEquals(FailureKind.AUTHENTICATION, error.kind)
-        assertThrows(IllegalArgumentException::class.java) {
+        val mismatch = assertThrows(MailFailure::class.java) {
             connectionProperties(server, Authorization("password"))
         }
+        assertEquals(FailureKind.AUTHENTICATION, mismatch.kind)
     }
 
     @Test

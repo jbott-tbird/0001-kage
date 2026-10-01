@@ -41,6 +41,28 @@ to that exact AVD; missing or incorrect targets are rejected before installation
 Do not run instrumentation on the Google sign-in emulator used for manual testing.
 Automated Google authorization remains mocked.
 
+## Google Mail authorization setup
+
+The debug Android OAuth client ID is configured in `gradle.properties` for
+package `org.foxred.kage` and this machine's debug signing certificate
+(`<your signing certificate SHA-1>`).
+Override `kageGoogleAndroidClientId` for builds signed with another certificate;
+register each debug, pilot, and release certificate in Google Cloud. Google Mail
+requires the `https://mail.google.com/` scope, consent configuration, and the
+account under test on the OAuth test-user list. Public release may require scope
+verification.
+
+Google Play services handles account selection, consent, and foreground access
+token renewal. Kage stores only the short-lived access token in Android
+Keystore-backed private storage; new on-device refresh tokens are rejected.
+An existing app-password Gmail account can switch to Google sign-in from its
+Settings details without deleting cached mail or Outbox entries. Demo accounts
+remain available in the drawer after connecting a real account. The drawer and
+Settings now open real-account setup directly. The Google SDK build passes; live Gmail verification remains open.
+Google authorization uses `imap.gmail.com:993` with TLS and either
+`smtp.gmail.com:465` with TLS or `smtp.gmail.com:587` with required STARTTLS.
+An account with other server settings must be corrected before switching.
+
 ## Organization
 
 | Layer | Location | Responsibility |
@@ -74,34 +96,79 @@ destructive migration fallback.
 - Native modal drawer, message reading, details, archive/trash, flag/pin actions
 - Plain text and sandboxed HTML rendering with shared typography/colors (JavaScript, remote loads, and file access disabled)
 - Search selected account, all accounts, or active message text (highlight/count/previous/next)
+- Fixed-size folder and search result pages; the UI reads real mail bodies and attachments for the selected message
+- Draft sync and automatic attachment caching scan bounded database pages
+- Account removal stages attachment file cleanup so interrupted deletion can resume on next launch
 - Compose, reply/all, forward, account selection, To/Cc/Bcc, draft save/discard
-- Local send to Sent; native file picker, durable file attachments, and on-demand download/open
+- Durable real-account Outbox and Sent reconciliation; native file picker, durable file attachments, and on-demand download/open
 - Persistent selection, offline preview, attachment policy, unified/thread previews
+- Opt-in periodic refresh for app-password inboxes with a separate generic new-mail notification setting
 - Account removal and reset with confirmation
 - Emoji, long names/subjects, RTL, Japanese, missing subject/body, legacy encoding examples
 
-## Deliberate prototype boundaries
+## Pilot boundaries
 
-This is an offline native prototype. Setup validates input and creates sample
-mailboxes; it does not verify a provider. Passwords remain transient and are never
-written to Room or saved-instance state. "Send" writes to local Sent only.
-The system file picker imports selected file bytes into private app storage; draft
-metadata survives saved-state restoration. The reader opens imported files or
-bundled demonstration attachments through an installed viewer. The find view
-highlights matches and provides previous/next controls that scroll to the active match.
+Sample accounts remain local. Real accounts use IMAP/SMTP and save credentials
+encrypted with Android Keystore, outside Room and Android backup. Drafts, pending
+actions, and queued MIME persist on the device. A disconnected send is reconciled
+against Sent before retry. The system file picker imports selected files into
+private app storage. The reader opens imported files or downloaded attachments
+through an installed viewer.
 
-The next production layer is an IMAP/SMTP transport behind repository interfaces,
-with secure authentication/token storage, MIME parsing/sanitization, background
-sync/work scheduling, conflict handling, notifications, real attachment downloads,
-and provider integration tests. JMAP remains planned for v2. Related conversations
-and unified inbox are opt-in previews. UI text is currently English; multilingual
-mail fixtures exercise display behavior, not complete app localization.
+Real Gmail and physical-device acceptance remain open. Full-history download now
+has a separate resumable checkpoint and foreground controls, but still needs physical-device validation. Background refresh checks app-password inboxes roughly hourly
+when Android permits, requires network and sufficient battery, and pauses in Offline
+preview. Google-authorized accounts remain foreground-only until their background
+authorization path is decided. Notifications require a second opt-in and show no sender, subject or body;
+Android 13+ also asks for notification permission. The first background check sets
+the notification baseline without alerting. Disabling background refresh clears
+its notification setting and checkpoints. Settings shows the last check time and
+a fixed success, connection-retry or needs-attention label without server errors
+or message details. Scheduling, Doze, reboot and battery
+behavior still need emulator and physical-device validation. Google account
+authorization now has a foreground implementation but still needs registered
+release client registration and live Gmail verification.
+JMAP is planned for a later release. Related conversations
+and unified inbox are opt-in
+previews. UI text is currently English; multilingual mail fixtures exercise display
+behavior, not complete app localization.
 
-[Architecture outline](docs/architecture.html)
+[Pilot recovery and support guide](docs/pilot-recovery.html)
 
-## Verification
+[iOS ↔ Android architecture and code map](docs/architecture.html)
 
-- Debug APK builds successfully.
+## Current validation
+
+- Debug app and instrumentation APKs build successfully.
+- All 54 app unit tests and 84 core tests pass, including OAuth protocol and IMAP pagination coverage.
+- Android lint passes with zero errors and 12 warnings.
+- All eight Python tooling tests, mail provenance verification, and the Room schema check pass.
+- The SQLite benchmark smoke test completes with 10,000 synthetic messages.
+- Dedicated API 30 emulator: 250 tests, 15 failures, 0 errors, 0 skipped. This checkpoint does not pass device acceptance.
+
+Failing instrumentation cases (follow-up required):
+
+- `DurableOutboxTest.cancellationDuringSmtpConnectionLeavesTheClaimQueued`
+- `RemoteMailRepositoryTest.shortenedLocalDraftAttachmentCannotBeOpenedSavedOrQueued`
+- `RemoteMailRepositoryTest.fullScanRemovesExpungesOnlyAfterResumedPassCompletes`
+- `RoomMailRepositoryTest.reopeningDatabaseKeepsLastFolderReadStateAndPreferences`
+- `MailJourneyTest.readerAlignsArabicAndHebrewParagraphsByContent`
+- `MailJourneyTest.unifiedInboxSearchUsesAllAccounts`
+- `MailJourneyTest.backFromReaderRetainsListPosition`
+- `MailJourneyTest.allAccountSearchShowsAccountAndFolderForResults`
+- `MailJourneyTest.relatedMessagesExpandAndCollapse`
+- `MailJourneyTest.outboxPagerReachesOlderFailedSend`
+- `MessageScrollingTest.bodySwipesMoveHeaderAndEmailTogether`
+- `RealSetupJourneyTest.failedValidationStaysOnSetupThenRetryOpensRealInbox`
+- `RealSetupJourneyTest.settingsReplacesAppPasswordWithoutDeletingCachedMail`
+- `RealSetupJourneyTest.acceptedSendOffersAnExplicitSentCopyForOtherSmtpServers`
+- `RealSetupJourneyTest.realComposeQueuesMailWhileOfflineWithoutSubmittingSmtp`
+
+- Live Google sign-in, real-mail sending, and physical-device behavior remain manual acceptance checks.
+
+## Earlier prototype verification
+
+- A debug APK built at the earlier prototype checkpoint; current mail-engine changes still require an Android build and device run.
 - Five domain unit tests cover folder/account/unified search and all four filters.
 - Seventeen emulator tests cover Room seeding, account isolation/removal, drafts,
   attachments, preferences, prefilled setup, native drawer/filters, reopening drafts, selection/sorting,

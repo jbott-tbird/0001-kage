@@ -104,6 +104,30 @@ class AngusMimeCodecTest {
     }
 
     @Test
+    fun draftMimeAllowsNoRecipientsAndRetainsBcc() {
+        val empty = sample().copy(to = emptyList(), bcc = emptyList())
+        val raw = codec.encodeDraft(empty)
+        assertEquals(empty.subject, codec.decode(raw).subject)
+        assertTrue(codec.decode(raw).to.isEmpty())
+        assertThrows(IllegalArgumentException::class.java) { codec.encode(empty) }
+
+        val withBcc = codec.encodeDraft(sample())
+        assertTrue(withBcc.toString(Charsets.UTF_8).contains("hidden@example.net"))
+        assertEquals(sample().bcc, codec.decode(withBcc).bcc)
+        assertFalse(codec.encode(sample()).toString(Charsets.UTF_8).contains("hidden@example.net"))
+    }
+
+    @Test
+    fun submittedBccOnlyMessageKeepsRecipientOutOfMime() {
+        val raw = codec.encode(sample().copy(to = emptyList(), cc = emptyList()))
+        val decoded = codec.decode(raw)
+        assertTrue(decoded.to.isEmpty())
+        assertTrue(decoded.cc.isEmpty())
+        assertTrue(decoded.bcc.isEmpty())
+        assertFalse(raw.toString(Charsets.UTF_8).contains("hidden@example.net"))
+    }
+
+    @Test
     fun decodesFoldedEncodedHeaderAndQuotedPrintable() {
         val raw =
             "From: =?UTF-8?B?Um9j?= <roc@example.net>\r\nSubject: =?UTF-8?Q?caf=C3=A9?=\r\n =?UTF-8?Q?_review?=\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\ncaf=C3=A9\r\n"

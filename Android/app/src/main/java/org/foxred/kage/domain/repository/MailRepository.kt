@@ -9,12 +9,36 @@ import org.foxred.kage.domain.model.*
 
 interface MailRepository {
     val mailbox: Flow<Mailbox>
+    val outbox: Flow<List<OutboxItem>>
+    val outboxCounts: Flow<OutboxCounts>
+    val messageListRevision: Flow<Long>
+    val unreadCounts: Flow<Map<String, Long>>
+
+    /** Load the selected message and its attachments independently of list paging. */
+    fun observeMessage(id: String): Flow<Message?>
+
+    suspend fun messagePage(
+        folderIds: List<String>, cursor: MessagePageCursor?, oldestFirst: Boolean,
+        limit: Int = 50,
+    ): MessagePage
+
+    suspend fun filteredPage(
+        folderIds: List<String>, accountId: String?, query: MailQuery,
+        cursor: MessagePageCursor?, oldestFirst: Boolean, limit: Int = 50,
+    ): MessagePage
+
+    suspend fun cacheCounts(): MailCacheCounts
+
+    /** Observe one bounded Outbox page, newest rowids first. */
+    fun observeOutboxPage(beforeRowId: Long = Long.MAX_VALUE,
+        limit: Int = 50): Flow<OutboxPage>
 
     suspend fun initialize()
 
     suspend fun addAccount(account: Account)
 
     suspend fun removeAccount(id: String)
+    suspend fun revokeAndRemoveGoogleAccount(id: String)
 
     suspend fun updatePreferences(preferences: Preferences)
 
@@ -28,13 +52,20 @@ interface MailRepository {
 
     suspend fun saveDraft(message: Message)
 
-    suspend fun sendDemo(message: Message)
+    suspend fun send(message: Message): SendDisposition
 
-    suspend fun deleteDraft(id: String)
+    suspend fun retryOutbox(id: String): String
+
+    suspend fun deleteDraft(id: String, looseAttachments: List<Attachment> = emptyList())
 
     suspend fun importAttachment(messageId: String, sourceUri: String): Attachment
+
+    /** Delete private imports that no saved message still references. */
+    suspend fun cleanupLooseAttachments(attachments: List<Attachment>)
 
     suspend fun cacheAttachment(id: String, progress: (Long) -> Unit = {}): String
 
     suspend fun resetDemo()
 }
+
+enum class SendDisposition { DEMO_SAVED, QUEUED, SENDING, FAILED, UNCERTAIN, SENT }

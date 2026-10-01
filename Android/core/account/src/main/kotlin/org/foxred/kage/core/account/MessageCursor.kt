@@ -12,9 +12,11 @@ data class MessageCursor(
     val uidValidity: Long,
     val beforeUid: Long,
     val since: Instant,
+    /** Inclusive lower UID boundary for an incremental pass. */
+    val atOrAboveUid: Long = 1,
 ) {
     init {
-        require(uidValidity > 0 && beforeUid > 0)
+        require(uidValidity > 0 && beforeUid > 0 && atOrAboveUid in 1..beforeUid)
     }
 }
 

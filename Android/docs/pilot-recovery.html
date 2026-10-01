@@ -1,0 +1,65 @@
+<!doctype html>
+<!--
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at http://mozilla.org/MPL/2.0/
+-->
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kage Android pilot recovery</title>
+  <style>
+    body { max-width: 54rem; margin: 2rem auto; padding: 0 1rem; font: 1rem/1.55 system-ui, sans-serif; color: #202127; }
+    h1, h2 { line-height: 1.2; }
+    section { border-top: 1px solid #d6d9df; margin-top: 1.5rem; padding-top: .5rem; }
+    .status { background: #fff3ce; border-left: .25rem solid #b26c00; padding: .6rem 1rem; }
+    code { background: #f0f1f4; padding: .1rem .2rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Kage Android pilot recovery</h1>
+    <p class="status">Pilot guide, 26 September 2026. Physical device and live Gmail acceptance have not been run. Record observed outcomes before using this as release support guidance.</p>
+    <section>
+      <h2>Before changing an account</h2>
+      <p>Check Drafts and Outbox first. A queued or uncertain send contains a durable copy of the submitted message. When delivery is uncertain, use Check Sent in Outbox, then verify with the provider or recipient if no copy appears. Kage does not automatically retry an uncertain send. Retrying an accepted message can deliver a duplicate.</p>
+      <p>For an SMTP-accepted message without a Sent copy, use Check Sent first. Gmail <a href="https://support.google.com/mail/answer/78892?hl=en">automatically files messages sent through its SMTP service</a>, so Kage does not upload another copy there. Other providers offer an explicit Save copy to Sent action. If that upload is interrupted, Kage holds it for review and will not repeat it automatically. After checking the provider, use Review and retry Sent copy only if no copy exists; this never resends the email to recipients.</p>
+      <p>A draft marked “On this device” has not been confirmed on the server. A draft marked “Review before retrying” needs an explicit server check; keep the app online and use its review action. Export any important unsent text or attachments before removing an account or clearing app data.</p>
+    </section>
+    <section>
+      <h2>Connection, restart, and storage recovery</h2>
+      <ol>
+        <li>Return online, open the affected folder, and refresh. Cached messages remain available while offline.</li>
+        <li>If authentication fails, confirm the provider credential outside Kage. For an app-password account, open Settings, select the account, then choose Update app password. For a Google-authorized account, choose Reauthorize Google. Kage checks IMAP and SMTP before replacing either credential; the existing account and cached mail remain in place. An existing Gmail app-password account can choose Use Google sign-in from its Settings details. If Google consent is canceled, retry from the same screen; Kage has not saved the new authorization.</li>
+        <li>After a restart, inspect Outbox, Drafts, and Sent before retrying. Pending operations and unsent MIME are stored locally.</li>
+        <li>If storage is full, free device space before refreshing or downloading attachments. Do not clear Kage app data to make space unless local drafts and Outbox contents have been preserved elsewhere.</li>
+      </ol>
+    </section>
+    <section>
+      <h2>Remove an account or revoke access</h2>
+      <p>In Settings, select Remove beside the account and confirm. Kage removes its local account rows, cached mail, local attachments, outbox files, and saved credential. Server messages remain at the provider. Removing an account does not revoke a password or app password at the provider; revoke it in the provider account settings when access should end.</p>
+      <p>If local removal fails, check available device storage and retry. When Kage can confirm the account row remains, it restores readable saved credentials. Check Outbox before retrying removal so queued mail is not lost unexpectedly. If the app closes after account removal, reopening it retries cleanup of unreferenced local attachment and outbox files.</p>
+      <p>For a Google-authorized account, the removal dialog offers Revoke Kage's Google access. Keep it selected to revoke the stored grant before local removal; this requires internet access. If Google revocation fails, the account and its local mail remain so you can retry. You can clear the selection to remove only local data, then revoke Kage's access in your Google Account settings. <a href="https://developers.google.com/identity/protocols/oauth2/web-server#tokenrevoke">Google's revocation guidance</a> explains that revoking a grant removes the scopes granted to Kage for that Google account.</p>
+      <p>Reset sample data affects only sample accounts. It does not remove a real account.</p>
+    </section>
+    <section>
+      <h2>Data, backup, and schema recovery</h2>
+      <p>Room stores account settings, message caches, drafts, pending actions, and Outbox metadata. Attachments and queued MIME live in app-private files. Credential ciphertext lives in <code>noBackupFilesDir</code> and its key stays in Android Keystore. The current manifest allows Android app-data backup for other files, so a device restore can recover local mail without a usable credential. For a restored app-password account, use Settings → account → Update app password. For a restored Google-authorized account, use Settings → account → Reauthorize Google. Both paths keep cached mail while checking the replacement against IMAP and SMTP. Preserve unsent content before removing and re-adding an account.</p>
+      <p>Schema upgrades use explicit Room migrations. A migration failure is not resolved by destructive fallback. Preserve app data and collect a redacted failure report before reinstalling, clearing data, or attempting manual database repair.</p>
+    </section>
+    <section>
+      <h2>Background mail checks</h2>
+      <p>Settings → Background lets you opt in to periodic checks for app-password inboxes. Google-authorized accounts stay foreground-only until their background authorization design is settled. Android chooses the actual run time. Offline preview pauses the job, and disabling background refresh clears its notification choice and last-check status. New-mail alerts require a separate switch; they show only generic text and need notification permission on Android 13 or later.</p>
+      <p>Settings shows the last check time and a fixed outcome label. “Retry pending” means the connection failed and the system may run the job again. “Needs attention” means a later scheduled check will still occur; open the inbox while online to see the foreground error, then correct credentials or storage if needed. The label contains no server error text, account address, sender, or subject.</p>
+    </section>
+    <section>
+      <h2>Support evidence and known limits</h2>
+      <p>In Settings, Copy support summary produces app and Android version numbers plus account, cache, draft, and Outbox counts. It excludes addresses, subjects, bodies, attachment names, credentials, tokens, message IDs, and error text. Review the copied text before sharing it. Raw app or protocol logs are not exported because they may contain mail or credentials and have no verified redaction path.</p>
+      <p>Also record device model, account type, affected folder, approximate time, action taken, visible error, and whether a matching server copy exists. Redact addresses, subjects, bodies, attachment names and contents, credentials, tokens, Message-ID values, and raw protocol transcripts before sharing screenshots or manually collected logs.</p>
+      <p>Acceptance still requires a dedicated Gmail account, provider revocation, large mailbox and MIME cases, Wi-Fi/cellular changes, restart, low storage, and a physical device. Full-history download has foreground controls but is not device validated. Background scheduling and notifications are implemented but still need emulator and device checks. Google authorization has a foreground implementation and a configured debug client ID, but its SDK build, emulator execution, and live Gmail verification remain open before pilot use.</p>
+    </section>
+  </main>
+</body>
+</html>

@@ -11,7 +11,19 @@ import org.jsoup.safety.Safelist
 object SearchText {
     fun fromHtml(html: String): String =
         Jsoup.parseBodyFragment(Jsoup.clean(html, Safelist.none())).text()
+
+    fun matches(message: Message, needle: String): Boolean =
+        sequenceOf(message.sender, message.senderAddress, message.to, message.subject,
+            message.preview, message.body,
+            message.attachments.joinToString { it.filename })
+            .any { it.contains(needle, ignoreCase = true) } ||
+            (message.bodyDownloaded && message.html?.let(::fromHtml)
+                ?.contains(needle, ignoreCase = true) == true)
 }
+
+fun MailFilter.matches(message: Message): Boolean =
+    (!unread || !message.isRead) && (!flagged || message.flagged) &&
+        (!pinned || message.pinned) && (!attachments || message.hasAttachments)
 
 /** Search spans the selected account or all accounts; ordinary browsing stays in its folder. */
 class FilterMessages {
@@ -27,17 +39,8 @@ class FilterMessages {
                     else if (folder == "unified")
                         mailbox.folders.any { it.id == m.folderId && it.role == "inbox" }
                     else m.folderId == folder
-                location &&
-                    (!query.filter.unread || !m.isRead) &&
-                    (!query.filter.flagged || m.flagged) &&
-                    (!query.filter.pinned || m.pinned) &&
-                    (!query.filter.attachments || m.attachments.isNotEmpty()) &&
-                    (needle.isEmpty() ||
-                        sequenceOf(m.sender, m.senderAddress, m.to, m.subject, m.preview, m.body,
-                            m.attachments.joinToString { it.filename })
-                            .any { it.contains(needle, ignoreCase = true) } ||
-                        (m.bodyDownloaded && m.html?.let(SearchText::fromHtml)
-                            ?.contains(needle, ignoreCase = true) == true))
+                location && query.filter.matches(m) &&
+                    (needle.isEmpty() || SearchText.matches(m, needle))
             }
             .sortedByDescending { it.receivedAt }
     }

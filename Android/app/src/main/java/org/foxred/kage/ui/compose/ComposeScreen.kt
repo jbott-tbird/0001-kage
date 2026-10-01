@@ -18,97 +18,93 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import java.io.File
 import java.time.Instant
 import java.util.UUID
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
 import org.foxred.kage.domain.model.*
+import org.foxred.kage.domain.usecase.ComposePreparation
 import org.foxred.kage.ui.MailViewModel
+import org.foxred.kage.ui.MessageLookup
 import org.foxred.kage.ui.shared.MailIconButton
 import org.foxred.kage.ui.theme.DesignTokens as T
+import org.foxred.kage.domain.repository.SendDisposition
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ComposeScreen(vm: MailViewModel, sourceId: String?, mode: String, back: () -> Unit) {
     val mail by vm.mailbox.collectAsStateWithLifecycle()
-    val source = mail.messages.find { it.id == sourceId }
+    val ready by vm.ready.collectAsStateWithLifecycle()
+    val bodyLoad by vm.messageLoad.collectAsStateWithLifecycle()
+    val resumeGeneration by vm.resumeGeneration.collectAsStateWithLifecycle()
+    val sourceLookup by remember(sourceId) { vm.lookupMessage(sourceId.orEmpty()) }
+        .collectAsStateWithLifecycle(initialValue = MessageLookup())
+    val source = sourceLookup.message
+    var bodyRetry by remember { mutableIntStateOf(0) }
+    LaunchedEffect(mode, source?.id, source?.bodyDownloaded, mail.preferences.offline, bodyRetry,
+        resumeGeneration) {
+        if (mode in setOf("draft", "reply", "replyAll", "forward") &&
+            source != null && !source.bodyDownloaded && !mail.preferences.offline)
+            vm.loadBody(source.id)
+    }
+    if (mode in setOf("draft", "reply", "replyAll", "forward") && source == null) {
+        Text(if (ready && sourceLookup.loaded) "Message is no longer available."
+            else "Loading message…")
+        return
+    }
+    if (source != null && !source.bodyDownloaded) {
+        Column {
+            Text(when {
+                mail.preferences.offline -> "Connect to download this message before composing."
+                bodyLoad.messageId == source.id && bodyLoad.error != null -> bodyLoad.error!!
+                else -> "Loading message…"
+            })
+            if (!mail.preferences.offline && bodyLoad.messageId == source.id &&
+                bodyLoad.error != null)
+                TextButton(onClick = { bodyRetry++ }) { Text("Retry download") }
+        }
+        return
+    }
     val initialAccount =
         source?.accountId
             ?: mail.folders.find { it.id == mail.preferences.selectedFolder }?.accountId
             ?: mail.accounts.firstOrNull()?.id
     var accountId by rememberSaveable { mutableStateOf(initialAccount.orEmpty()) }
-    val account = mail.accounts.find { it.id == accountId } ?: mail.accounts.firstOrNull()
+    val account = mail.accounts.find { it.id == accountId }
+        ?: if (accountId.isEmpty()) mail.accounts.firstOrNull() else null
+    LaunchedEffect(account?.id) {
+        if (accountId.isEmpty() && account != null) accountId = account.id
+    }
     if (account == null) {
-        Text("Add an account before composing.")
+        Text(if (accountId.isNotEmpty()) "The selected sending account is no longer available."
+            else "Add an account before composing.")
         return
     }
     val id = rememberSaveable {
         if (mode == "draft" && source != null) source.id else UUID.randomUUID().toString()
     }
-    var to by rememberSaveable {
-        mutableStateOf(
-            when (mode) {
-                "draft" -> source?.to.orEmpty()
-                "reply",
-                "replyAll" -> source?.senderAddress.orEmpty()
-                else -> ""
-            }
-        )
+    val initial = remember(mode, source, account.address, id) {
+        ComposePreparation.prepare(mode, source, account.address, id)
     }
-    var cc by rememberSaveable {
-        mutableStateOf(
-            when (mode) {
-                "draft" -> source?.cc.orEmpty()
-                "replyAll" ->
-                    listOf(source?.to.orEmpty(), source?.cc.orEmpty())
-                        .flatMap { it.split(',', ';') }
-                        .map { it.trim() }
-                        .filter {
-                            it.isNotEmpty() &&
-                                !it.equals(account.address, true) &&
-                                !it.equals(source?.senderAddress, true)
-                        }
-                        .distinct()
-                        .joinToString(", ")
-                else -> ""
-            }
-        )
-    }
-    var bcc by rememberSaveable {
-        mutableStateOf(if (mode == "draft") source?.bcc.orEmpty() else "")
-    }
+    var to by rememberSaveable { mutableStateOf(initial.to) }
+    var cc by rememberSaveable { mutableStateOf(initial.cc) }
+    var bcc by rememberSaveable { mutableStateOf(initial.bcc) }
     var recipientsExpanded by rememberSaveable { mutableStateOf(false) }
     var editedHtml by rememberSaveable { mutableStateOf<String?>(null) }
-    var subject by rememberSaveable {
-        mutableStateOf(
-            when (mode) {
-                "draft" -> source?.subject.orEmpty()
-                "reply",
-                "replyAll" -> "Re: ${source?.subject.orEmpty().removePrefix("Re: ")}"
-                "forward" -> "Fwd: ${source?.subject.orEmpty()}"
-                else -> ""
-            }
-        )
-    }
-    var body by rememberSaveable {
-        mutableStateOf(
-            when (mode) {
-                "draft" -> source?.body.orEmpty()
-                "reply",
-                "replyAll",
-                "forward" ->
-                    "\n\nOn ${source?.receivedAt}, ${source?.sender} wrote:\n${source?.body.orEmpty()}"
-                else -> ""
-            }
-        )
-    }
+    var subject by rememberSaveable { mutableStateOf(initial.subject) }
+    var body by rememberSaveable { mutableStateOf(initial.body) }
+    // The source draft is in Room; keeping its HTML out of saved instance state avoids
+    // duplicating a potentially large MIME part in the Activity bundle.
+    val initialBody = remember(id) { initial.body }
+    val initialHtml = remember(id) { initial.html }
     var attachments: List<Attachment> by
         rememberSaveable(stateSaver = AttachmentListSaver) {
-            mutableStateOf<List<Attachment>>(
-                if (mode in listOf("draft", "forward"))
-                    source?.attachments.orEmpty().map {
-                        it.copy(id = if (mode == "draft") it.id else "$id-${it.id}", messageId = id)
-                    }
-                else emptyList()
-            )
+            mutableStateOf(initial.attachments)
+        }
+    var imported: List<Attachment> by
+        rememberSaveable(stateSaver = AttachmentListSaver) {
+            mutableStateOf(emptyList())
         }
     var importing by remember { mutableStateOf(false) }
     val filePicker =
@@ -117,8 +113,11 @@ fun ComposeScreen(vm: MailViewModel, sourceId: String?, mode: String, back: () -
                 importing = true
                 vm.action {
                     try {
-                        for (uri in uris) attachments =
-                            attachments + vm.repository.importAttachment(id, uri.toString())
+                        for (uri in uris) {
+                            val attachment = vm.repository.importAttachment(id, uri.toString())
+                            attachments = attachments + attachment
+                            imported = imported + attachment
+                        }
                     } finally {
                         importing = false
                     }
@@ -127,9 +126,11 @@ fun ComposeScreen(vm: MailViewModel, sourceId: String?, mode: String, back: () -
         }
     var accountMenu by remember { mutableStateOf(false) }
     var discard by remember { mutableStateOf(false) }
+    var retryDraftSync by remember { mutableStateOf(false) }
     var busy by remember { mutableStateOf(false) }
     val close = {
-        if (
+        if (busy || importing) Unit
+        else if (
             to.isNotBlank() ||
                 cc.isNotBlank() ||
                 bcc.isNotBlank() ||
@@ -138,6 +139,8 @@ fun ComposeScreen(vm: MailViewModel, sourceId: String?, mode: String, back: () -
                 attachments.isNotEmpty()
         )
             discard = true
+        else if (imported.isNotEmpty())
+            vm.action(success = back) { vm.repository.cleanupLooseAttachments(imported) }
         else back()
     }
     BackHandler { close() }
@@ -153,19 +156,78 @@ fun ComposeScreen(vm: MailViewModel, sourceId: String?, mode: String, back: () -
             bcc.trim(),
             subject.trim(),
             body,
-            html = editedHtml ?: source?.html.takeIf { mode == "draft" && body == source?.body },
+            html = editedHtml ?: ComposePreparation.htmlForBody(initialBody, initialHtml, body),
             receivedAt = Instant.now().toString(),
             draft = true,
             attachments = attachments,
+            inReplyTo = initial.inReplyTo,
+            references = initial.references,
         )
     fun save(send: Boolean) {
         busy = true
         vm.action {
             try {
-                if (send) vm.repository.sendDemo(message()) else vm.repository.saveDraft(message())
-                vm.notice.value = if (send) "Saved to Sent. No email was sent." else "Draft saved"
+                if (mode in setOf("forward", "draft") && source != null) {
+                    val prepared = mutableListOf<Attachment>()
+                    val selectedAttachments = attachments
+                    try {
+                        for (selected in selectedAttachments) {
+                            val original = source.attachments.firstOrNull {
+                                selected.id == if (mode == "forward") "$id-${it.id}" else it.id
+                            }
+                            prepared += if (original == null ||
+                                (mode == "forward" && selected.localFile == selected.id) ||
+                                (mode == "draft" && selected.localFile != null))
+                                selected
+                            else {
+                                if (mode == "forward") require(selected.sizeBytes <= 25L * 1024 * 1024) {
+                                    "Forwarded attachment exceeds 25 MB"
+                                }
+                                val originalFile = File(vm.repository.cacheAttachment(original.id) { })
+                                val copy = if (mode == "draft") originalFile
+                                    else copyForwardAttachment(originalFile, selected.id)
+                                selected.copy(localFile = copy.name, cached = true,
+                                    sizeBytes = copy.length()).also { preparedCopy ->
+                                    if (mode == "forward" &&
+                                        imported.none { it.id == preparedCopy.id })
+                                        imported = imported + preparedCopy
+                                }
+                            }
+                        }
+                        attachments = prepared
+                    } catch (failure: Exception) {
+                        attachments = prepared + selectedAttachments.filterNot { selected ->
+                            prepared.any { it.id == selected.id }
+                        }
+                        throw failure
+                    }
+                }
+                val disposition = if (send) vm.repository.send(message()) else {
+                    vm.repository.saveDraft(message())
+                    null
+                }
+                vm.notice.value = when (disposition) {
+                    SendDisposition.DEMO_SAVED -> "Saved to Sent. No email was sent."
+                    SendDisposition.QUEUED -> "Queued for sending. Check Outbox for status."
+                    SendDisposition.SENDING -> "This message is already sending. Check Outbox for status."
+                    SendDisposition.FAILED -> "Sending previously failed. Retry it from Outbox."
+                    SendDisposition.UNCERTAIN -> "Delivery may have succeeded. Review Outbox before retrying."
+                    SendDisposition.SENT -> "This message was already accepted by SMTP."
+                    null -> "Draft saved on this device"
+                }
                 back()
+                if (disposition == SendDisposition.QUEUED) vm.flushOutgoing(account.id)
+                if (disposition == null) vm.syncDrafts(account.id)
             } finally {
+                val selectedIds = attachments.mapTo(mutableSetOf()) { it.id }
+                withContext(NonCancellable) {
+                    try {
+                        vm.repository.cleanupLooseAttachments(
+                            imported.filterNot { it.id in selectedIds })
+                    } catch (_: Exception) {
+                        // A saved draft or queued send remains valid if optional cleanup fails.
+                    }
+                }
                 busy = false
             }
         }
@@ -181,9 +243,10 @@ fun ComposeScreen(vm: MailViewModel, sourceId: String?, mode: String, back: () -
                     }
                     IconButton(
                         onClick = { save(true) },
-                        enabled = !busy && !importing && to.isNotBlank(),
+                        enabled = !busy && !importing &&
+                            (to.isNotBlank() || cc.isNotBlank() || bcc.isNotBlank()),
                     ) {
-                        Icon(Icons.AutoMirrored.Outlined.Send, "Send demo message")
+                        Icon(Icons.AutoMirrored.Outlined.Send, "Send message")
                     }
                 },
             )
@@ -197,8 +260,40 @@ fun ComposeScreen(vm: MailViewModel, sourceId: String?, mode: String, back: () -
                 .padding(T.lg),
             verticalArrangement = Arrangement.spacedBy(T.sm),
         ) {
+            if (mode == "draft" && source != null) {
+                when (source.draftSyncState) {
+                    DraftSyncState.UNCERTAIN -> {
+                        Text("Server draft sync needs review. Your edits remain on this device.")
+                        source.draftSyncError?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
+                        val savedFieldsVisible = to == source.to && cc == source.cc &&
+                            bcc == source.bcc && subject == source.subject && body == source.body &&
+                            editedHtml == null &&
+                            attachments.map { it.id } == source.attachments.map { it.id }
+                        TextButton(onClick = { retryDraftSync = true },
+                            enabled = savedFieldsVisible && !busy && !importing &&
+                                !mail.preferences.offline) {
+                            Text("Check and retry draft sync")
+                        }
+                        if (!savedFieldsVisible)
+                            Text("Save your current edits before retrying sync.",
+                                style = MaterialTheme.typography.bodySmall)
+                    }
+                    DraftSyncState.SYNCING -> Text("Checking the server draft copy…",
+                        style = MaterialTheme.typography.bodySmall)
+                    DraftSyncState.SYNCED -> Text("Draft synced to the mail server.",
+                        style = MaterialTheme.typography.bodySmall)
+                    DraftSyncState.DEVICE_ONLY -> Text("Draft saved on this device.",
+                        style = MaterialTheme.typography.bodySmall)
+                    null -> Unit
+                }
+                if (source.draftSyncState != DraftSyncState.UNCERTAIN)
+                    source.draftSyncError?.let {
+                        Text(it, style = MaterialTheme.typography.bodySmall)
+                    }
+            }
             Box {
-                TextButton(onClick = { accountMenu = true }) {
+                TextButton(onClick = { accountMenu = true },
+                    enabled = mode != "draft" || source == null) {
                     Text("From: ${account.address}")
                     Icon(Icons.Outlined.ExpandMore, null)
                 }
@@ -270,7 +365,7 @@ fun ComposeScreen(vm: MailViewModel, sourceId: String?, mode: String, back: () -
                 Text(if (importing) "Adding attachments…" else "Attach files")
             }
             Text(
-                "Demo only. Messages stay on this device.",
+                "Drafts save on this device and sync to a real account when available. Demo messages stay here.",
                 style = MaterialTheme.typography.bodySmall,
             )
         }
@@ -293,12 +388,29 @@ fun ComposeScreen(vm: MailViewModel, sourceId: String?, mode: String, back: () -
             dismissButton = {
                 TextButton(
                     onClick = {
-                        vm.action(success = back) { vm.repository.deleteDraft(id) }
+                        vm.action(success = back) {
+                            vm.repository.deleteDraft(id, attachments + imported)
+                        }
                         discard = false
                     }
                 ) {
                     Text("Discard")
                 }
+            },
+        )
+    if (retryDraftSync && source != null)
+        AlertDialog(
+            onDismissRequest = { retryDraftSync = false },
+            title = { Text("Retry draft sync?") },
+            text = { Text("The earlier server save may have succeeded. Check Drafts in another mail app first; retrying could create a second copy.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    retryDraftSync = false
+                    vm.retryDraftSync(source.id)
+                }, enabled = !mail.preferences.offline) { Text("Check and retry") }
+            },
+            dismissButton = {
+                TextButton(onClick = { retryDraftSync = false }) { Text("Cancel") }
             },
         )
 }

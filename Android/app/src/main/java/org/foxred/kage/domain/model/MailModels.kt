@@ -16,6 +16,8 @@ data class Account(
     val security: String = "SSL/TLS",
     val outgoingSecurity: String = "SSL/TLS",
     val requireAuth: Boolean = true,
+    val mode: String = "DEMO",
+    val usesOAuth: Boolean = false,
 )
 
 data class Folder(
@@ -64,7 +66,26 @@ data class Message(
     val attachments: List<Attachment> = emptyList(),
     val preview: String = body.replace('\n', ' '),
     val bodyDownloaded: Boolean = true,
+    val rfcMessageId: String? = null,
+    val replyToAddress: String = "",
+    val inReplyTo: String? = null,
+    val references: List<String> = emptyList(),
+    val draftSyncState: DraftSyncState? = null,
+    val draftSyncError: String? = null,
+    val attachmentCount: Int = 0,
+) {
+    val hasAttachments: Boolean get() = attachments.isNotEmpty() || attachmentCount > 0
+}
+
+data class MessagePageCursor(val receivedAt: String, val id: String)
+
+/** One bounded folder-list page. A cursor exists only when another page follows. */
+data class MessagePage(
+    val items: List<Message> = emptyList(),
+    val next: MessagePageCursor? = null,
 )
+
+enum class DraftSyncState { DEVICE_ONLY, SYNCING, UNCERTAIN, SYNCED }
 
 data class Preferences(
     val selectedFolder: String = "personal-inbox",
@@ -78,9 +99,52 @@ data class Preferences(
 data class Mailbox(
     val accounts: List<Account> = emptyList(),
     val folders: List<Folder> = emptyList(),
+    /** Small sample conversations only; real account mail is paged or opened by ID. */
     val messages: List<Message> = emptyList(),
     val preferences: Preferences = Preferences(),
 )
+
+data class MailCacheCounts(
+    val cachedMessages: Long = 0,
+    val downloadedBodies: Long = 0,
+    val cachedAttachments: Long = 0,
+    val drafts: Long = 0,
+)
+
+enum class OutboxStatus { QUEUED, SENDING, FAILED, UNCERTAIN, SENT }
+
+enum class SentCopyStatus { WAITING, PENDING, CONFIRMED }
+
+data class OutboxItem(
+    val id: String,
+    val accountId: String,
+    val recipient: String,
+    val status: OutboxStatus,
+    val error: String? = null,
+    val createdAt: Long,
+    val sentCopyStatus: SentCopyStatus = SentCopyStatus.WAITING,
+    val sentCopyUploadNeedsReview: Boolean = false,
+    val sentCopyUploadCanRetry: Boolean = false,
+)
+
+data class OutboxPage(
+    val items: List<OutboxItem> = emptyList(),
+    val beforeRowId: Long = Long.MAX_VALUE,
+    val nextCursor: Long? = null,
+    val pageNumber: Int = 1,
+)
+
+data class OutboxCounts(
+    val queued: Long = 0,
+    val sending: Long = 0,
+    val failed: Long = 0,
+    val uncertain: Long = 0,
+    val sent: Long = 0,
+    val sentUnconfirmed: Long = 0,
+    val sentCopyNeedsReview: Long = 0,
+) {
+    val actionable: Long get() = queued + sending + failed + uncertain + sentUnconfirmed
+}
 
 data class MailFilter(
     val unread: Boolean = false,

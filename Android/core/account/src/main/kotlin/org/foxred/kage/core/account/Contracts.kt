@@ -42,7 +42,12 @@ interface MailStore : AutoCloseable {
     fun changes(mailbox: String, uidValidity: Long, sinceModSeq: Long?): MailboxChanges? = null
 
     /** Server-confirmed APPEND; identity may be unavailable when UIDPLUS is not supported. */
-    fun append(mailbox: String, raw: ByteArray, read: Boolean = false): MessageIdentity?
+    fun append(
+        mailbox: String, raw: ByteArray, read: Boolean = false, draft: Boolean = false,
+    ): MessageIdentity?
+
+    /** Exact Message-ID lookup for reconciling an uncertain submission with Sent. */
+    fun findByMessageId(mailbox: String, messageId: String): MessageIdentity?
 
     /** Convenience first window; sync consumers must continue messagePage until next is null. */
     fun messages(mailbox: String, since: Instant, limit: Int = 100): List<Email> =
@@ -82,6 +87,9 @@ interface MimeCodec {
 
     fun encode(email: OutgoingEmail): ByteArray
 
+    /** Unsent drafts may have no recipients; preserve Bcc in their private server copy. */
+    fun encodeDraft(email: OutgoingEmail): ByteArray
+
     fun attachment(raw: ByteArray, partId: String): ByteArray
 }
 
@@ -92,4 +100,29 @@ interface MailSubmission {
     fun cancel()
 
     fun send(server: Server, authorization: Authorization, email: OutgoingEmail)
+}
+
+/** Submits a previously encoded MIME file with its separately stored SMTP envelope. */
+interface RawMailSubmission {
+    /** Cancel an active or immediately upcoming call to [sendRaw]. */
+    fun cancel()
+
+    fun sendRaw(
+        server: Server,
+        authorization: Authorization,
+        raw: ByteArray,
+        recipients: List<EmailAddress>,
+    )
+
+    /** Signal before the first possible SMTP envelope command. Opaque transports signal early. */
+    fun sendRaw(
+        server: Server,
+        authorization: Authorization,
+        raw: ByteArray,
+        recipients: List<EmailAddress>,
+        onSubmissionStart: () -> Unit,
+    ) {
+        onSubmissionStart()
+        sendRaw(server, authorization, raw, recipients)
+    }
 }

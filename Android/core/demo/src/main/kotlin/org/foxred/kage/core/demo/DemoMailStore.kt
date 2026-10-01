@@ -6,6 +6,8 @@ package org.foxred.kage.core.demo
 
 import java.io.OutputStream
 import java.time.Instant
+import java.util.NavigableMap
+import java.util.TreeMap
 import org.foxred.kage.core.account.*
 import org.foxred.kage.core.mime.AngusMimeCodec
 import org.foxred.kage.core.mime.BoundedOutputStream
@@ -25,7 +27,7 @@ class DemoMailStore(
         val generation: Long,
         var next: Long = 1,
         var subscribed: Boolean = true,
-        val messages: MutableMap<Long, Stored> = linkedMapOf(),
+        val messages: NavigableMap<Long, Stored> = TreeMap(),
     )
 
     private val boxes = linkedMapOf<String, Box>()
@@ -164,7 +166,7 @@ class DemoMailStore(
     @Synchronized override fun poll(mailbox: String): MailboxStatus = status(mailbox)
 
     @Synchronized
-    override fun append(mailbox: String, raw: ByteArray, read: Boolean): MessageIdentity {
+    override fun append(mailbox: String, raw: ByteArray, read: Boolean, draft: Boolean): MessageIdentity {
         val target = box(mailbox)
         if (raw.size > maxBytes)
             throw MailFailure(FailureKind.LIMIT_EXCEEDED, "Message exceeds limit")
@@ -173,6 +175,13 @@ class DemoMailStore(
         target.messages[identity.uid] =
             Stored(raw.copyOf(), decoded.copy(identity = identity, receivedAt = now(), read = read))
         return identity
+    }
+
+    @Synchronized
+    override fun findByMessageId(mailbox: String, messageId: String): MessageIdentity? {
+        val target = box(mailbox)
+        return target.messages.entries.firstOrNull { it.value.email.messageId == messageId }
+            ?.key?.let { MessageIdentity(mailbox, target.generation, it) }
     }
 
     @Synchronized
@@ -188,24 +197,27 @@ class DemoMailStore(
         if (cursor != null && cursor.uidValidity != box.generation)
             fail("Mailbox identity changed; restart pagination")
         val before = cursor?.beforeUid ?: box.next
-        val lower = maxOf(1, before - limit)
-        val messages =
-            box.messages
-                .filterKeys { it in lower until before }
-                .values
-                .map { it.email }
-                .filter { it.receivedAt?.isBefore(since) == false }
-                .sortedByDescending { it.identity!!.uid }
+        val floor = cursor?.atOrAboveUid ?: 1L
+        if (before <= floor) return MessagePage(emptyList(), null)
+        // Page existing messages before applying the date filter, as the IMAP client does.
+        // Older windows can therefore return no messages while retaining a forward cursor.
+        val window = box.messages.subMap(floor, true, before, false)
+            .descendingMap().entries.asSequence()
+            .take(limit + 1)
+            .toList()
+        val selected = window.take(limit)
+        val nextBefore = selected.lastOrNull()?.key?.takeIf { window.size > limit }
+        return MessagePage(
+            selected.map { it.value.email }
+                .filter { since <= Instant.EPOCH || it.receivedAt?.isBefore(since) == false }
                 .map {
                     it.copy(
                         body = EmailBody(null, null),
                         attachments = emptyList(),
                         bodyDownloaded = false,
                     )
-                }
-        return MessagePage(
-            messages,
-            if (lower > 1) MessageCursor(mailbox, box.generation, lower, since) else null,
+                },
+            nextBefore?.let { MessageCursor(mailbox, box.generation, it, since, floor) },
         )
     }
 

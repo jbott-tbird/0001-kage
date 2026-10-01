@@ -22,6 +22,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        val googleClientId = (findProperty("kageGoogleAndroidClientId") as? String).orEmpty()
+        require(googleClientId.matches(Regex("[A-Za-z0-9._-]*"))) {
+            "kageGoogleAndroidClientId must be an Android OAuth client ID"
+        }
+        buildConfigField("String", "GOOGLE_ANDROID_CLIENT_ID", "\"$googleClientId\"")
     }
 
     buildTypes {
@@ -52,6 +57,7 @@ dependencies {
     implementation(project(":core:imap"))
     implementation(project(":core:smtp"))
     implementation(project(":core:mime"))
+    implementation(libs.angus.mail)
     implementation(libs.jsoup)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -70,8 +76,10 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
+    implementation("com.google.android.gms:play-services-auth:22.0.0")
     implementation(libs.androidx.lifecycle.runtime.ktx)
     testImplementation(libs.junit)
+    testImplementation(project(":core:demo"))
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -80,7 +88,12 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
-tasks.matching { it.name == "mergeDebugAndroidTestAssets" }.configureEach {
+// Lint reads the same generated certificate assets as the instrumentation APK.
+tasks.matching { it.name in setOf(
+    "mergeDebugAndroidTestAssets",
+    "generateDebugAndroidTestLintModel",
+    "lintAnalyzeDebugAndroidTest",
+) }.configureEach {
     dependsOn(":core:integration:createTestCertificate")
 }
 

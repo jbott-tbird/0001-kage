@@ -10,7 +10,13 @@ import jakarta.mail.internet.MimeMessage
 import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 import java.time.Instant
+import java.time.ZoneOffset
+import java.time.ZoneId
 import java.util.Properties
+import java.util.Date
+import jakarta.mail.search.ComparisonTerm
+import jakarta.mail.search.ReceivedDateTerm
+import jakarta.mail.search.HeaderTerm
 import org.eclipse.angus.mail.iap.BadCommandException
 import org.eclipse.angus.mail.iap.CommandFailedException
 import org.eclipse.angus.mail.imap.IMAPFolder
@@ -194,17 +200,30 @@ class AngusImapClient(
     }
 
     @Synchronized
-    override fun append(mailbox: String, raw: ByteArray, read: Boolean): MessageIdentity? {
+    override fun append(mailbox: String, raw: ByteArray, read: Boolean, draft: Boolean): MessageIdentity? {
         if (raw.size > maxPartBytes)
             throw MailFailure(FailureKind.LIMIT_EXCEEDED, "Draft exceeds message limit")
         try {
             val message = MimeMessage(Session.getInstance(Properties()), raw.inputStream())
             message.setFlag(Flags.Flag.SEEN, read)
+            message.setFlag(Flags.Flag.DRAFT, draft)
             val target = connected().getFolder(mailbox) as IMAPFolder
             val result = target.appendUIDMessages(arrayOf(message))?.firstOrNull()
             return result?.let { MessageIdentity(mailbox, it.uidvalidity, it.uid) }
         } catch (e: Exception) {
             throw failure(e)
+        }
+    }
+
+    @Synchronized
+    override fun findByMessageId(mailbox: String, messageId: String): MessageIdentity? {
+        require(messageId.isNotBlank() && '\r' !in messageId && '\n' !in messageId)
+        return folder(mailbox) { f ->
+            f.search(HeaderTerm("Message-ID", messageId)).firstNotNullOfOrNull { candidate ->
+                if (candidate.getHeader("Message-ID")?.any { it.trim() == messageId } != true)
+                    null
+                else MessageIdentity(mailbox, f.uidValidity, f.getUID(candidate))
+            }
         }
     }
 
@@ -231,6 +250,28 @@ class AngusImapClient(
         AngusEnvelopeReader.read(m)
             .copy(identity = MessageIdentity(f.fullName, f.uidValidity, f.getUID(m)))
 
+    /** IMAP sequence order follows UID order; locate the last live message below a saved UID. */
+    private fun precedingSequence(f: IMAPFolder, beforeUid: Long): Int {
+        if (beforeUid <= 1 || f.messageCount == 0) return 0
+        // UIDNEXT is above every live UID, so no lookup is needed for the first page.
+        if (f.uidNext > 0 && beforeUid >= f.uidNext) return f.messageCount
+        f.getMessageByUID(beforeUid)?.let { return it.messageNumber - 1 }
+        var low = 1
+        var high = f.messageCount
+        var preceding = 0
+        while (low <= high) {
+            val middle = low + (high - low) / 2
+            val uid = f.getUID(f.getMessage(middle))
+            if (uid < 1) throw MailFailure(FailureKind.PROTOCOL,
+                "Mailbox changed during pagination; retry")
+            if (uid < beforeUid) {
+                preceding = middle
+                low = middle + 1
+            } else high = middle - 1
+        }
+        return preceding
+    }
+
     @Synchronized
     override fun messagePage(
         mailbox: String,
@@ -247,31 +288,50 @@ class AngusImapClient(
                     "Mailbox identity changed; restart pagination",
                 )
             val before = cursor?.beforeUid ?: f.uidNext
+            val floor = cursor?.atOrAboveUid ?: 1L
             if (before < 1)
                 throw MailFailure(FailureKind.PROTOCOL, "Server did not provide UIDNEXT")
-            if (before == 1L) return@folder MessagePage(emptyList(), null)
-            val lower = maxOf(1, before - limit)
-            // A bounded UID range remains stable through expunges and arrivals. Empty pages may
-            // have a cursor.
-            val messages = f.getMessagesByUID(lower, before - 1).filterNotNull().toTypedArray()
-            f.fetch(
-                messages,
-                FetchProfile().apply {
-                    add(FetchProfile.Item.ENVELOPE)
-                    add(FetchProfile.Item.FLAGS)
-                    add(UIDFolder.FetchProfileItem.UID)
-                    listOf("Message-ID", "Sender", "Reply-To", "References", "In-Reply-To")
-                        .forEach { add(it) }
-                },
-            )
+            if (before <= floor) return@folder MessagePage(emptyList(), null)
+            // Sequence windows bound memory by existing messages even when UID values have gaps.
+            // The next cursor remains a UID so a restarted pass survives sequence renumbering.
+            val topSequence = precedingSequence(f, before)
+            val precedingFloor = precedingSequence(f, floor)
+            if (topSequence <= precedingFloor) return@folder MessagePage(emptyList(), null)
+            val lowerSequence = maxOf(precedingFloor + 1, topSequence - limit + 1)
+            val window = f.getMessages(lowerSequence, topSequence)
+            f.fetch(window, FetchProfile().apply { add(UIDFolder.FetchProfileItem.UID) })
+            val bounded = window.filter { f.getUID(it) in floor until before }.toTypedArray()
+            val nextBefore = if (lowerSequence > precedingFloor + 1) {
+                bounded.minOfOrNull(f::getUID) ?: throw MailFailure(FailureKind.PROTOCOL,
+                    "Mailbox changed during pagination; retry")
+            } else null
+            val messages = if (since <= Instant.EPOCH) bounded else {
+                // IMAP SINCE compares calendar days. Search one day early, then apply the exact
+                // instant below so a timezone boundary cannot hide a message from the window.
+                val coarseDay = since.atZone(ZoneOffset.UTC).toLocalDate().minusDays(1)
+                // Angus formats Date search terms in the device's default timezone.
+                val coarseDate = Date.from(coarseDay.atStartOfDay(ZoneId.systemDefault()).toInstant())
+                f.search(ReceivedDateTerm(ComparisonTerm.GE, coarseDate), bounded)
+            }
+            if (messages.isNotEmpty())
+                f.fetch(
+                    messages,
+                    FetchProfile().apply {
+                        add(FetchProfile.Item.ENVELOPE)
+                        add(FetchProfile.Item.FLAGS)
+                        add(UIDFolder.FetchProfileItem.UID)
+                        listOf("Message-ID", "Sender", "Reply-To", "References", "In-Reply-To")
+                            .forEach { add(it) }
+                    },
+                )
             val result =
                 messages
                     .map { envelope(f, it) }
-                    .filter { it.receivedAt?.isBefore(since) == false }
+                    .filter { since <= Instant.EPOCH || it.receivedAt?.isBefore(since) == false }
                     .sortedByDescending { it.identity!!.uid }
             MessagePage(
                 result,
-                if (lower > 1) MessageCursor(mailbox, f.uidValidity, lower, since) else null,
+                nextBefore?.let { MessageCursor(mailbox, f.uidValidity, it, since, floor) },
             )
         }
     }

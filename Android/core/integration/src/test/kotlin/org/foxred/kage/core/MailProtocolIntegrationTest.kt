@@ -7,6 +7,10 @@ package org.foxred.kage.core
 import com.icegreen.greenmail.util.GreenMail
 import com.icegreen.greenmail.util.ServerSetup
 import java.time.Instant
+import java.util.Properties
+import jakarta.mail.Flags
+import jakarta.mail.Folder
+import jakarta.mail.Session
 import org.foxred.kage.core.account.*
 import org.foxred.kage.core.imap.AngusImapClient
 import org.foxred.kage.core.smtp.AngusSmtpClient
@@ -144,6 +148,22 @@ class MailProtocolIntegrationTest {
     }
 
     @Test
+    fun storedMimeSubmitsWithItsSeparateBccEnvelope() {
+        val outgoing = email().copy(messageId = "<durable-raw@example.net>")
+        val raw = org.foxred.kage.core.mime.AngusMimeCodec().encode(outgoing)
+        var submissionStarts = 0
+        AngusSmtpClient().sendRaw(
+            outgoing(), Authorization("password"), raw,
+            outgoing.to + outgoing.cc + outgoing.bcc,
+        ) { submissionStarts++ }
+        assertEquals(1, submissionStarts)
+        assertTrue(mail.waitForIncomingEmail(5000, 2))
+        assertEquals("<durable-raw@example.net>",
+            mail.receivedMessages.first().getHeader("Message-ID")?.single())
+        assertNull(mail.receivedMessages.first().getHeader("Bcc"))
+    }
+
+    @Test
     fun uidPagesContinueWithoutDuplicatesAndIgnoreLaterArrivals() {
         repeat(7) { i ->
             AngusSmtpClient()
@@ -182,6 +202,13 @@ class MailProtocolIntegrationTest {
             assertEquals(7, seen.size)
             assertEquals(7, seen.map { it.identity }.distinct().size)
             assertFalse(seen.any { it.subject == "Late" })
+            val floor = seen[4].identity!!.uid
+            val bounded = client.messagePage("INBOX", since,
+                MessageCursor("INBOX", first.next!!.uidValidity,
+                    first.messages.first().identity!!.uid + 1, since, floor), 100)
+            assertEquals(5, bounded.messages.size)
+            assertTrue(bounded.messages.all { it.identity!!.uid >= floor })
+            assertNull(bounded.next)
             val reset =
                 assertThrows(MailFailure::class.java) {
                     client.messagePage(
@@ -192,9 +219,16 @@ class MailProtocolIntegrationTest {
                     )
                 }
             assertEquals(FailureKind.PROTOCOL, reset.kind)
-            val empty = client.messagePage("INBOX", Instant.now().plusSeconds(86400), limit = 2)
-            assertTrue(empty.messages.isEmpty())
-            assertNotNull(empty.next)
+            val future = Instant.now().plusSeconds(86400)
+            var empty = client.messagePage("INBOX", future, limit = 2)
+            var previousBefore = Long.MAX_VALUE
+            while (true) {
+                assertTrue(empty.messages.isEmpty())
+                val next = empty.next ?: break
+                assertTrue(next.beforeUid >= 1 && next.beforeUid < previousBefore)
+                previousBefore = next.beforeUid
+                empty = client.messagePage("INBOX", future, next, 2)
+            }
         }
     }
 
@@ -251,10 +285,22 @@ class MailProtocolIntegrationTest {
             assertTrue(client.namespaces().isNotEmpty())
             client.createMailbox("Draft Test")
             client.subscribe("Draft Test", true)
-            val raw = org.foxred.kage.core.mime.AngusMimeCodec().encode(email())
-            client.append("Draft Test", raw, true)
+            val raw = org.foxred.kage.core.mime.AngusMimeCodec()
+                .encodeDraft(email().copy(to = emptyList()))
+            client.append("Draft Test", raw, read = true, draft = true)
             assertEquals(1, client.status("Draft Test").messageCount)
             assertEquals(0, client.status("Draft Test").unreadCount)
+            val inspection = Session.getInstance(Properties().apply {
+                setProperty("mail.imaps.ssl.trust", "*")
+                setProperty("mail.imaps.ssl.checkserveridentity", "false")
+            }).getStore("imaps")
+            try {
+                inspection.connect("localhost", mail.imaps.port, "test", "password")
+                val saved = inspection.getFolder("Draft Test")
+                saved.open(Folder.READ_ONLY)
+                try { assertTrue(saved.messages.single().isSet(Flags.Flag.DRAFT)) }
+                finally { saved.close(false) }
+            } finally { inspection.close() }
             assertEquals(1, client.poll("Draft Test").messageCount)
             client.renameMailbox("Draft Test", "Draft Renamed")
             assertTrue(client.mailboxes().any { it.name == "Draft Renamed" })
@@ -263,6 +309,23 @@ class MailProtocolIntegrationTest {
             client.subscribe("Draft Renamed", false)
             client.deleteMailbox("Draft Renamed")
             assertFalse(client.mailboxes().any { it.name == "Draft Renamed" })
+        }
+    }
+
+    @Test
+    fun sentLookupRequiresExactMessageIdWithinTheChosenMailbox() {
+        AngusImapClient().use { client ->
+            client.connect(incoming(), Authorization("password"))
+            client.createMailbox("Sent Copy")
+            val codec = org.foxred.kage.core.mime.AngusMimeCodec()
+            val exactId = "<copy-1@example.net>"
+            client.append("Sent Copy", codec.encode(email().copy(messageId = exactId)))
+            client.append("Sent Copy", codec.encode(email().copy(messageId = "<copy-1-extra@example.net>")))
+            val expected = client.messages("Sent Copy", Instant.EPOCH)
+                .single { it.messageId == exactId }.identity
+            assertEquals(expected, client.findByMessageId("Sent Copy", exactId))
+            assertNull(client.findByMessageId("Sent Copy", "copy-1"))
+            assertNull(client.findByMessageId("INBOX", exactId))
         }
     }
 

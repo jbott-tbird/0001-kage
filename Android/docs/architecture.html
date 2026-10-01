@@ -1,14 +1,204 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kage Android architecture</title><style>img{max-width:100%;border-radius:14px}.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px}body{margin:0;background:#f4f7fb;color:#203047;font:16px/1.6 system-ui}main{max-width:1000px;margin:auto;padding:40px 24px}h1{font-size:38px}h2{margin-top:36px}section{background:white;border:1px solid #dce4ee;padding:24px;border-radius:20px;margin:16px 0}code{background:#edf3fb;padding:3px 5px;border-radius:4px}nav{display:flex;flex-wrap:wrap;gap:12px}a{color:#1376dc}.layers{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}.layers div{background:#eaf3ff;padding:20px;border-radius:14px}li{margin:8px 0}.muted{color:#5f6e82}</style></head><body><main>
+<!doctype html>
 <!--
 This Source Code Form is subject to the terms of the Mozilla Public
 License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at http://mozilla.org/MPL/2.0/
 -->
 
-<p class="muted">KAGE / ANDROID / IMPLEMENTATION OUTLINE</p><h1>A native home for mail</h1><p>Material 3 screens, domain models, repository operations, and durable local mail in Room.</p>
-<nav><a href="#screens">Screens</a><a href="#layers">Layers</a><a href="#design">Design system</a><a href="#data">Storage</a><a href="#roadmap">Next steps</a></nav>
-<section id="screens"><h2>Screen map</h2><p>Welcome → Credentials → Protocol → Server settings → Confirmation → Inbox</p><p>Inbox ↔ Account drawer → Account / folder → Inbox<br>Inbox → Message → Reply / Reply all / Forward → Compose<br>Inbox → Compose → Drafts or local Sent<br>Drawer → Settings → Account setup / storage policy / roadmap previews</p><ul><li><b>Account management:</b> prefilled manual setup, IMAP/SMTP server fields, removal, local account details.</li><li><b>Drawer:</b> accounts, standard folders, custom folders and nested Projects/Design; optional unified inbox.</li><li><b>Messages:</b> read/new indicators; Unread, Flagged, Pinned, Has attachments; reader actions and editable drafts.</li><li><b>Search:</b> current account, all accounts, and highlighted text within a message.</li></ul></section>
-<section id="layers"><h2>Responsibility flow</h2><div class="layers"><div><b>Compose UI</b><p>Feature screens, Material controls, navigation, shared components.</p><code>ui/</code></div><div><b>Presentation and domain</b><p>ViewModel exposes state; pure filtering and models define mail behavior.</p><code>domain/</code></div><div><b>Repository</b><p>Transactional actions, first-run seeding, attachment caching, preferences.</p><code>data/repository/</code></div><div><b>Room</b><p>Indexed tables, DAO queries, foreign keys, versioned schema.</p><code>data/local/</code></div></div><p>Changes flow from UI → ViewModel → repository → Room. Database Flow updates return through domain models to the UI. The application container constructs the concrete dependencies.</p></section>
-<section id="design"><h2>One design definition</h2><p><code>ui/theme/DesignTokens.kt</code> defines the light/dark palette, typography, spacing scale, shapes, and component dimensions. <code>Theme.kt</code> applies them to Material 3. Screens use Material themes and shared tokens instead of defining individual palettes.</p></section>
-<section id="data"><h2>Durable mock mail</h2><p>Accounts → Folders → Messages → Attachments. Account removal cascades through the hierarchy. Preferences hold the selected folder, first-run state, attachment policy, offline mode, and preview options.</p><p>Three sample accounts include normal folders and custom folders. Sample messages exercise international text, missing fields, long strings, HTML, and attachments. Bodies live in Room; PDFs are cached in private app storage and shared through FileProvider.</p><p>Seed data never overwrites user changes on ordinary startup. Room schema exports establish the baseline for explicit migrations.</p></section>
-<section id="verification"><h2>Verified native port</h2><p>The Android build passes 5 domain unit tests and 17 emulator tests. Room migration and database reopening preserve existing data; native journeys cover setup, filters, sorting, selected-message actions, search, reader controls, drafts, file picking, and saved-state restoration. Lint reports zero errors. The website remains in <code>web/</code> and passes all 11 tests and its build.</p><p>Both apps start from the same exported fixtures: three accounts and 66 messages. Imported attachments are stored privately on the device; no real email is sent.</p><div class="gallery"><a href="screenshots/welcome.png"><img src="screenshots/welcome.png" alt="Android welcome screen" loading="lazy"><p>Welcome</p></a><a href="screenshots/inbox.png"><img src="screenshots/inbox.png" alt="Android inbox screen" loading="lazy"><p>Inbox</p></a><a href="screenshots/filters.png"><img src="screenshots/filters.png" alt="Android filters screen" loading="lazy"><p>Filters</p></a><a href="screenshots/drawer.png"><img src="screenshots/drawer.png" alt="Android drawer screen" loading="lazy"><p>Drawer</p></a><a href="screenshots/message.png"><img src="screenshots/message.png" alt="Android message screen" loading="lazy"><p>Message</p></a></div></section><section id="roadmap"><h2>From prototype to connected mail</h2><ol><li>IMAP/SMTP transport and provider authentication behind repository contracts.</li><li>Secure token storage, MIME parsing and HTML sanitization.</li><li>Background sync, folder reconciliation, retries and notifications.</li><li>Provider attachment downloads, server-side search and scalable paging.</li><li>Conversation grouping between v1 and v2; JMAP in v2.</li></ol><p>This build operates on local sample data and does not send network email.</p></section></main></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>iOS ↔ Android code map · Kage</title>
+  <style>
+    :root { color-scheme: light; font: 16px/1.5 system-ui, sans-serif; background: #f5f7fb; color: #18283b; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    main { max-width: 1120px; margin: auto; padding: 32px 20px 64px; }
+    h1 { font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; margin: 8px 0 12px; }
+    h2 { font-size: 1.45rem; margin: 0 0 12px; }
+    p { margin: 8px 0 14px; }
+    a { color: #075ab6; }
+    a:focus-visible { outline: 3px solid #ef9d2c; outline-offset: 2px; }
+    code { font: .88em/1.4 ui-monospace, SFMono-Regular, monospace; overflow-wrap: anywhere; }
+    .eyebrow { color: #526680; font-size: .8rem; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
+    .lede { max-width: 78ch; font-size: 1.12rem; }
+    nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0; }
+    nav a { border: 1px solid #cbd8e8; border-radius: 999px; padding: 7px 12px; background: white; text-decoration: none; font-weight: 650; }
+    section, aside { background: white; border: 1px solid #d6e1ed; border-radius: 14px; padding: 22px; margin: 18px 0; }
+    .note { border-left: 5px solid #d6861e; background: #fff8e9; }
+    figure { margin: 20px 0; }
+    figcaption { color: #526680; font-size: .9rem; margin-top: 9px; }
+    .diagram-title { font-size: 1rem; margin: 0 0 12px; }
+    .layer-diagram { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .layer-stack { list-style: none; margin: 0; padding: 0; counter-reset: layer; }
+    .layer-stack li { position: relative; min-height: 81px; margin: 0 0 26px; padding: 11px 14px; border: 1px solid #bdd1e7; border-radius: 10px; background: #edf5ff; }
+    .layer-stack li:last-child { margin-bottom: 0; }
+    .layer-stack li:not(:last-child)::after { content: "↓"; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); color: #526680; font-size: 1.25rem; line-height: 26px; }
+    .layer-stack.android li { border-color: #c5dacf; background: #eff8f2; }
+    .layer-stack strong, .layer-stack small { display: block; }
+    .layer-stack small { color: #40566d; margin-top: 3px; }
+    .module-chart { display: flex; height: 38px; overflow: hidden; border-radius: 8px; background: #f0f2f6; }
+    .module-chart span { display: grid; place-items: center; color: #15283a; font-weight: 750; }
+    .module-chart .direct { width: 57.1429%; background: #a7d9b8; }
+    .module-chart .moved { width: 28.5714%; background: #f7d88f; }
+    .module-chart .deferred { width: 14.2857%; background: #e4b5b5; }
+    .chart-key { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+    .chart-key div { border-left: 5px solid; padding-left: 9px; }
+    .chart-key .direct { border-color: #64b580; } .chart-key .moved { border-color: #e8b94a; } .chart-key .deferred { border-color: #d98d8d; }
+    .chart-key strong, .chart-key small { display: block; }
+    .chart-key small { color: #526680; }
+    .entity-tree, .entity-tree ul { list-style: none; padding-left: 0; }
+    .entity-tree ul { margin: 8px 0 0 13px; padding-left: 18px; border-left: 2px solid #cbd8e8; }
+    .entity-tree li { margin: 10px 0; }
+    .entity-tree li > span { display: inline-block; padding: 5px 9px; border: 1px solid #d5e2ef; border-radius: 7px; background: #f5f9fe; }
+    .entity-tree small { color: #526680; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 700px; text-align: left; }
+    th, td { vertical-align: top; padding: 10px 12px; border-bottom: 1px solid #e2e9f2; }
+    th { background: #edf3fa; font-size: .84rem; }
+    tr:last-child td { border-bottom: 0; }
+    td:first-child { width: 27%; } td:nth-child(2) { width: 33%; }
+    .tag { display: inline-block; border-radius: 5px; padding: 1px 6px; background: #eaf2fc; font-size: .78rem; font-weight: 700; white-space: nowrap; }
+    .tag.partial { background: #fff0cf; } .tag.none { background: #f4e4e4; }
+    ul { padding-left: 1.35rem; } li { margin: 7px 0; }
+    footer { color: #526680; font-size: .88rem; }
+    @media (max-width: 640px) { main { padding: 22px 12px 45px; } section, aside { padding: 16px; } .layer-diagram, .chart-key { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="eyebrow">Kage · cross-platform onboarding</div>
+    <h1>iOS ↔ Android code map</h1>
+    <p class="lede">Find the equivalent code quickly, then check the difference before porting behavior. This maps the local Thunderbird iOS checkout at <code>5322c9dda2bbec1eb68ce59828346d95b34a3f8b</code> to the current Kage Android worktree.</p>
+    <p>iOS links assume <code>thunderbird-ios</code> is beside <code>0001-kage</code> under the same parent directory. The <a href="../core/ios-parity.json">declaration and field ledger</a> has deeper mappings; its pending statuses and null fully adopted revision mean this page is a navigation aid, not a parity certificate.</p>
+  </header>
+  <nav aria-label="Page sections">
+    <a href="#architecture">Architecture</a><a href="#views">Views</a><a href="#entities">Entities</a><a href="#frameworks">Frameworks</a><a href="#differences">Other areas</a><a href="#first-steps">First steps</a>
+  </nav>
+
+  <section id="architecture">
+    <h2>Architecture in one minute</h2>
+    <p><strong>iOS:</strong> SwiftUI views use observable Account, Folder, Mailbox and Email managers from Swift packages. Account objects select an IMAP or JMAP client; protocol and MIME packages sit below those managers. The checked-out inbox and compose UI still contain sample data and placeholder actions.</p>
+    <p><strong>Android:</strong> Compose screens collect state from <a href="../app/src/main/java/org/foxred/kage/ui/MailViewModel.kt"><code>MailViewModel</code></a>. Domain models and repository interfaces separate screens from Room persistence and Angus-backed IMAP/SMTP/MIME adapters. Room owns cached mail and durable work; credentials live separately in Android Keystore storage.</p>
+    <figure aria-labelledby="layers-title">
+      <h3 class="diagram-title" id="layers-title">Responsibility layers · follow the arrows down</h3>
+      <div class="layer-diagram">
+        <div><strong>iOS</strong><ol class="layer-stack">
+          <li><strong>SwiftUI views</strong><small>Inbox, reader, compose, setup</small></li>
+          <li><strong>Observable managers</strong><small>AccountManager · FolderManager · EmailManager</small></li>
+          <li><strong>Core models and clients</strong><small>Account · Mailbox · Email · IMAP/JMAP/SMTP/MIME</small></li>
+          <li><strong>Platform services</strong><small>Keychain and network APIs</small></li>
+        </ol></div>
+        <div><strong>Android</strong><ol class="layer-stack android">
+          <li><strong>Compose screens</strong><small>Inbox, reader, compose, setup</small></li>
+          <li><strong><a href="../app/src/main/java/org/foxred/kage/ui/MailViewModel.kt">MailViewModel</a></strong><small>Screen state and user actions</small></li>
+          <li><strong><a href="../app/src/main/java/org/foxred/kage/domain/repository/MailRepository.kt">Domain + repository</a></strong><small>Models, orchestration, sync and outbox</small></li>
+          <li><strong>Storage + protocol adapters</strong><small>Room · Keystore · Angus IMAP/SMTP/MIME</small></li>
+        </ol></div>
+      </div>
+      <figcaption>Arrows show the usual direction of a screen request. Background work and notifications also enter the Android repository layer.</figcaption>
+    </figure>
+    <figure aria-labelledby="module-chart-title">
+      <h3 class="diagram-title" id="module-chart-title">Where the seven iOS core areas land in Android</h3>
+      <div class="module-chart" role="img" aria-label="Four have same-named core modules, two moved to another layer, and one is deferred"><span class="direct">4</span><span class="moved">2</span><span class="deferred">1</span></div>
+      <div class="chart-key">
+        <div class="direct"><strong>4 · Same-named core module</strong><small>Account, IMAP, SMTP, MIME</small></div>
+        <div class="moved"><strong>2 · Different placement</strong><small>EmailAddress in Account; Autoconfiguration in app setup</small></div>
+        <div class="deferred"><strong>1 · Deferred</strong><small>JMAP</small></div>
+      </div>
+      <figcaption>This chart counts module placement only. It does not measure behavior, test coverage or completion; see the <a href="../core/ios-parity.json">parity ledger</a> for pending declaration mappings.</figcaption>
+    </figure>
+    <p>Start at <a href="../app/src/main/java/org/foxred/kage/ui/navigation/KageApp.kt"><code>KageApp.kt</code></a> for routes, <a href="../app/src/main/java/org/foxred/kage/di/AppContainer.kt"><code>AppContainer.kt</code></a> for wiring, and <a href="../app/src/main/java/org/foxred/kage/data/local/CoreRoomMapper.kt"><code>CoreRoomMapper.kt</code></a> for wire-to-database conversion. Android models retain iOS concepts, but an Android Account fixes one IMAP incoming and one SMTP outgoing server rather than iOS's general server list.</p>
+  </section>
+
+  <section id="views">
+    <h2>1 · View map</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th scope="col">iOS SwiftUI</th><th scope="col">Android Compose</th><th scope="col">How they differ</th></tr></thead>
+      <tbody>
+        <tr><td><a href="../../../thunderbird-ios/Thunderbird/Thunderbird/ContentView.swift"><code>ContentView</code></a></td><td><a href="../app/src/main/java/org/foxred/kage/ui/navigation/KageApp.kt"><code>KageApp</code></a></td><td><span class="tag">same role</span> Root routing; Android also starts foreground refresh on resume.</td></tr>
+        <tr><td><a href="../../../thunderbird-ios/Thunderbird/Thunderbird/WelcomeScreen.swift"><code>WelcomeScreen</code></a>; <a href="../../../thunderbird-ios/Thunderbird/Thunderbird/Account/AccountAuth/ManualAccount.swift"><code>ManualAccount</code></a>; <a href="../../../thunderbird-ios/Thunderbird/Thunderbird/Account/AccountAuth/ManualServerSetup.swift"><code>ManualServerSetup</code></a></td><td><a href="../app/src/main/java/org/foxred/kage/ui/welcome/WelcomeScreen.kt"><code>WelcomeScreen</code></a>; <a href="../app/src/main/java/org/foxred/kage/ui/account/auth/SetupScreen.kt"><code>SetupScreen</code></a>; <a href="../app/src/main/java/org/foxred/kage/ui/account/auth/RealSetupScreen.kt"><code>RealSetupScreen</code></a></td><td><span class="tag partial">adapted</span> Both gather account/server details; Android verifies IMAP and SMTP before saving. Google consent uses a separate Android flow.</td></tr>
+        <tr><td><a href="../../../thunderbird-ios/Thunderbird/Thunderbird/AccountList/DrawerView.swift"><code>DrawerView</code></a>; <a href="../../../thunderbird-ios/Thunderbird/Thunderbird/AccountList/AccountFolderDisclosureView.swift"><code>AccountFolderDisclosureView</code></a></td><td><a href="../app/src/main/java/org/foxred/kage/ui/accountlist/AccountDrawer.kt"><code>AccountDrawer</code></a></td><td><span class="tag">same role</span> Account and folder navigation; Android reads persisted folders.</td></tr>
+        <tr><td><a href="../../../thunderbird-ios/Thunderbird/Thunderbird/EmailDisplay/EmailListView.swift"><code>EmailListView</code></a>; <a href="../../../thunderbird-ios/Thunderbird/Thunderbird/EmailDisplay/EmailCellView.swift"><code>EmailCellView</code></a></td><td><a href="../app/src/main/java/org/foxred/kage/ui/emaildisplay/InboxScreen.kt"><code>InboxScreen</code></a></td><td><span class="tag partial">adapted</span> iOS list uses <code>TempEmail.sampleData</code>; Android pages Room summaries and exposes filters, search and Outbox.</td></tr>
+        <tr><td><a href="../../../thunderbird-ios/Thunderbird/Thunderbird/EmailDisplay/ReadEmailView.swift"><code>ReadEmailView</code></a>; <a href="../../../thunderbird-ios/Thunderbird/Thunderbird/EmailDisplay/EmailBodyView.swift"><code>EmailBodyView</code></a></td><td><a href="../app/src/main/java/org/foxred/kage/ui/emaildisplay/MessageScreen.kt"><code>MessageScreen</code></a>; <a href="../app/src/main/java/org/foxred/kage/ui/emaildisplay/SafeMessageHtml.kt"><code>SafeMessageHtml</code></a></td><td><span class="tag partial">adapted</span> Android fetches bodies/parts on demand and sanitizes HTML; several iOS reader menu handlers are placeholders in this revision.</td></tr>
+        <tr><td><a href="../../../thunderbird-ios/Thunderbird/Thunderbird/ComposeView/ComposeView.swift"><code>ComposeView</code></a>; <a href="../../../thunderbird-ios/Thunderbird/Thunderbird/ComposeView/ComposeToolbar.swift"><code>ComposeToolbar</code></a></td><td><a href="../app/src/main/java/org/foxred/kage/ui/compose/ComposeScreen.kt"><code>ComposeScreen</code></a></td><td><span class="tag partial">adapted</span> iOS has a rich HTML editor but no working send action here; Android uses a plain-text editor with drafts, attachments and durable sending.</td></tr>
+        <tr><td><a href="../../../thunderbird-ios/Thunderbird/Thunderbird/Settings/GeneralSettingsView.swift"><code>GeneralSettingsView</code></a>; <a href="../../../thunderbird-ios/Thunderbird/Thunderbird/Account/AccountsView.swift"><code>AccountsView</code></a></td><td><a href="../app/src/main/java/org/foxred/kage/ui/settings/SettingsScreen.kt"><code>SettingsScreen</code></a>; <a href="../app/src/main/java/org/foxred/kage/ui/account/auth/UpdateGoogleAuthorizationScreen.kt"><code>UpdateGoogleAuthorizationScreen</code></a></td><td><span class="tag partial">adapted</span> Android adds cache, background and credential recovery settings; iOS has account editing and feature-flag UI without exact Android matches.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="entities">
+    <h2>2 · Entity map</h2>
+    <p>Android has both framework-free wire/domain objects and Room rows. Read the mapper before assuming two similarly named types have identical fields.</p>
+    <figure aria-labelledby="entity-tree-title">
+      <h3 class="diagram-title" id="entity-tree-title">Mail object hierarchy · corresponding concepts on both platforms</h3>
+      <ul class="entity-tree">
+        <li><span><strong>Account</strong> <small>→ identity and incoming/outgoing servers</small></span>
+          <ul>
+            <li><span><strong>Mailbox / Folder</strong> <small>→ remote path, role and counts</small></span>
+              <ul>
+                <li><span><strong>Email / Message</strong> <small>→ headers, flags and UID identity</small></span>
+                  <ul>
+                    <li><span><strong>EmailBody</strong> <small>→ text or HTML</small></span></li>
+                    <li><span><strong>EmailAttachment</strong> <small>→ MIME part and optional cached file</small></span></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <figcaption>The tree shows containment in the mail model. On Android, <a href="../app/src/main/java/org/foxred/kage/data/local/CoreRoomMapper.kt">CoreRoomMapper</a> converts core objects into Room rows; bodies and attachment files may arrive after headers.</figcaption>
+    </figure>
+    <div class="table-wrap"><table>
+      <thead><tr><th scope="col">iOS model</th><th scope="col">Android model → storage</th><th scope="col">Important translation</th></tr></thead>
+      <tbody>
+        <tr><td><a href="../../../thunderbird-ios/Core/Sources/Account/Account.swift"><code>Account</code></a>; <a href="../../../thunderbird-ios/Core/Sources/Account/Server.swift"><code>Server</code></a></td><td><a href="../core/account/src/main/kotlin/org/foxred/kage/core/account/Account.kt"><code>Account</code></a> / <a href="../core/account/src/main/kotlin/org/foxred/kage/core/account/Server.kt"><code>Server</code></a> → <a href="../app/src/main/java/org/foxred/kage/data/local/AccountEntity.kt"><code>AccountEntity</code></a> + <a href="../app/src/main/java/org/foxred/kage/data/local/ServerEntity.kt"><code>ServerEntity</code></a></td><td>iOS accepts a server list including JMAP; Android currently stores one IMAP and one SMTP server. Secrets are outside Room.</td></tr>
+        <tr><td><a href="../../../thunderbird-ios/Core/Sources/EmailAddress/EmailAddress.swift"><code>EmailAddress</code></a></td><td><a href="../core/account/src/main/kotlin/org/foxred/kage/core/account/EmailAddress.kt"><code>EmailAddress</code></a> inside <code>:core:account</code></td><td>Same address/name purpose; iOS's separate package is folded into Android's account module. Group labels are flattened.</td></tr>
+        <tr><td><a href="../../../thunderbird-ios/Core/Sources/Account/Mailbox.swift"><code>Mailbox</code></a>; <a href="../../../thunderbird-ios/Core/Sources/Account/Folder.swift"><code>Folder</code></a></td><td><a href="../core/account/src/main/kotlin/org/foxred/kage/core/account/Mailbox.kt"><code>Mailbox</code></a> / <a href="../core/account/src/main/kotlin/org/foxred/kage/core/account/Folder.kt"><code>Folder</code></a> → <a href="../app/src/main/java/org/foxred/kage/data/local/FolderEntity.kt"><code>FolderEntity</code></a></td><td>Android materializes parent folders in Room and retains remote path, roles, rights and counts.</td></tr>
+        <tr><td><a href="../../../thunderbird-ios/Core/Sources/Account/Email.swift"><code>Email</code></a>; <a href="../../../thunderbird-ios/Core/Sources/Account/EmailBody.swift"><code>EmailBody</code></a></td><td><a href="../core/account/src/main/kotlin/org/foxred/kage/core/account/Email.kt"><code>Email</code></a> / <a href="../core/account/src/main/kotlin/org/foxred/kage/core/account/EmailBody.kt"><code>EmailBody</code></a> → <a href="../app/src/main/java/org/foxred/kage/data/local/MessageEntity.kt"><code>MessageEntity</code></a> → <a href="../app/src/main/java/org/foxred/kage/domain/model/MailModels.kt"><code>Message</code></a></td><td>Headers can be stored before body hydration; iOS JMAP-specific IDs remain reserved or provider-specific on Android.</td></tr>
+        <tr><td><a href="../../../thunderbird-ios/Core/Sources/Account/EmailAttachment.swift"><code>EmailAttachment</code></a></td><td><a href="../core/account/src/main/kotlin/org/foxred/kage/core/account/EmailAttachment.kt"><code>EmailAttachment</code></a> → <a href="../app/src/main/java/org/foxred/kage/data/local/AttachmentEntity.kt"><code>AttachmentEntity</code></a></td><td>Android tracks cached private-file location and download state separately from MIME metadata.</td></tr>
+        <tr><td><a href="../../../thunderbird-ios/Core/Sources/IMAP/UID.swift"><code>UID</code></a></td><td><a href="../core/account/src/main/kotlin/org/foxred/kage/core/account/Email.kt"><code>MessageIdentity</code></a> → message UID/UIDVALIDITY and <a href="../app/src/main/java/org/foxred/kage/data/local/SyncCursorEntity.kt"><code>SyncCursorEntity</code></a></td><td>Android binds UID to mailbox generation and persists restart cursors; a separate history cursor supports backfill.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="frameworks">
+    <h2>3 · Framework and protocol map</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th scope="col">iOS package</th><th scope="col">Android counterpart</th><th scope="col">Implementation choice</th></tr></thead>
+      <tbody>
+        <tr><td><a href="../../../thunderbird-ios/Core/Sources/IMAP/IMAPClient.swift"><code>IMAP</code></a></td><td><a href="../core/imap/src/main/kotlin/org/foxred/kage/core/imap/AngusImapClient.kt"><code>:core:imap</code></a> + <a href="../app/src/main/java/org/foxred/kage/data/sync/AccountSessions.kt"><code>AccountSessions</code></a></td><td><span class="tag partial">adapted</span> SwiftNIO versus Angus/Jakarta Mail; Android owns session cancellation, paging and Room reconciliation.</td></tr>
+        <tr><td><a href="../../../thunderbird-ios/Core/Sources/SMTP/SMTPClient.swift"><code>SMTP</code></a></td><td><a href="../core/smtp/src/main/kotlin/org/foxred/kage/core/smtp/AngusSmtpClient.kt"><code>:core:smtp</code></a> + <a href="../app/src/main/java/org/foxred/kage/data/repository/OutboxSender.kt"><code>OutboxSender</code></a></td><td><span class="tag partial">adapted</span> Angus transport submits durable MIME; ambiguous delivery stays reviewable in Outbox.</td></tr>
+        <tr><td><a href="../../../thunderbird-ios/Core/Sources/MIME/Part.swift"><code>MIME</code></a></td><td><a href="../core/mime/src/main/kotlin/org/foxred/kage/core/mime/AngusMimeCodec.kt"><code>:core:mime</code></a></td><td><span class="tag partial">adapted</span> Custom Swift MIME types versus Jakarta Mail codec; shared iOS message fixtures exercise parsing.</td></tr>
+        <tr><td><a href="../../../thunderbird-ios/Core/Sources/Autoconfiguration/URLSession.swift"><code>Autoconfiguration</code></a></td><td><a href="../app/src/main/java/org/foxred/kage/data/setup/ProviderAutoconfig.kt"><code>ProviderAutoconfig</code></a> + <a href="../app/src/main/java/org/foxred/kage/data/setup/RealAccountSetup.kt"><code>RealAccountSetup</code></a></td><td><span class="tag partial">partial</span> Android uses HTTPS Thunderbird settings and manual fallback; iOS also has DNS/SRV and a separate CLI.</td></tr>
+        <tr><td><a href="../../../thunderbird-ios/Core/Sources/JMAP/JMAPClient.swift"><code>JMAP</code></a></td><td>—</td><td><span class="tag none">deferred</span> No Android JMAP adapter or account type in this port.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="differences">
+    <h2>4 · Other areas and deliberate gaps</h2>
+    <ul>
+      <li><strong>Managers and persistence.</strong> iOS <a href="../../../thunderbird-ios/Core/Sources/Account/AccountManager.swift"><code>AccountManager</code></a>, <a href="../../../thunderbird-ios/Core/Sources/Account/FolderManager.swift"><code>FolderManager</code></a> and <a href="../../../thunderbird-ios/Core/Sources/Account/EmailManager.swift"><code>EmailManager</code></a> are not copied as manager classes. Android uses <a href="../app/src/main/java/org/foxred/kage/data/repository/RoomMailRepository.kt"><code>RoomMailRepository</code></a>, <a href="../app/src/main/java/org/foxred/kage/data/repository/RemoteMailRepository.kt"><code>RemoteMailRepository</code></a>, Room Flow and the ViewModel.</li>
+      <li><strong>Credentials and OAuth.</strong> iOS uses Keychain and <a href="../../../thunderbird-ios/Thunderbird/Thunderbird/Account/OAuthButton.swift"><code>OAuthButton</code></a>; Android uses <a href="../app/src/main/java/org/foxred/kage/data/security/AndroidCredentialStore.kt"><code>AndroidCredentialStore</code></a> and <a href="../app/src/main/java/org/foxred/kage/data/security/GooglePlayAuthorization.kt"><code>GooglePlayAuthorization</code></a>. A debug Android client ID is configured; the SDK build, emulator and live Gmail checks remain open.</li>
+      <li><strong>Android-only durability.</strong> <a href="../app/src/main/java/org/foxred/kage/data/local/PendingOperationEntity.kt"><code>pending_operations</code></a>, <a href="../app/src/main/java/org/foxred/kage/data/local/OutboxEntity.kt"><code>outbox</code></a>, <a href="../app/src/main/java/org/foxred/kage/data/local/SyncCursorEntity.kt"><code>sync_cursors</code></a> and <a href="../app/src/main/java/org/foxred/kage/data/local/HistoryCursorEntity.kt"><code>history_cursors</code></a> make actions, sending and backfill restartable. <a href="../app/src/main/java/org/foxred/kage/data/background/"><code>data/background</code></a> adds optional Android scheduling and generic notifications. These have no direct counterpart in the captured iOS UI baseline.</li>
+      <li><strong>Android support modules.</strong> <a href="../core/transport/"><code>:core:transport</code></a> controls sockets; <a href="../core/demo/"><code>:core:demo</code></a> supplies an offline adapter; <a href="../core/testkit/"><code>:core:testkit</code></a> and <a href="../core/integration/"><code>:core:integration</code></a> hold protocol fixtures and cross-module tests.</li>
+      <li><strong>Presentation gaps.</strong> iOS's <a href="../../../thunderbird-ios/Thunderbird/Thunderbird/ComposeView/ComposeToolbar.swift">rich HTML compose toolbar</a> and broad <code>Localization/*.lproj</code> resources are not mirrored by Android's plain-text compose UI and English-only strings. iOS's feature-flag debug screen has no direct Android equivalent.</li>
+    </ul>
+  </section>
+
+  <aside class="note" id="first-steps">
+    <h2>First steps for a cross-platform change</h2>
+    <ol>
+      <li>Find the iOS view or core declaration above, then follow its Android screen → ViewModel → repository → model/adapter path.</li>
+      <li>Check <a href="../core/ios-parity.json"><code>ios-parity.json</code></a> for field and public-operation mappings, and <a href="../../plans/0001%20-%20android_mail_engine_port.html">the current port plan</a> for acceptance and open gates. The ledger is a baseline inventory; verify present source before trusting a pending status.</li>
+      <li>Use <a href="../README.md">Android build and test commands</a> and the relevant module tests. The newest Android changes still need an actual build, emulator run, and live Gmail/device checks; source presence or direct Kotlin compilation alone does not establish parity.</li>
+    </ol>
+  </aside>
+  <footer>Source baseline: Thunderbird iOS <code>5322c9dda2bbec1eb68ce59828346d95b34a3f8b</code>. Android paths describe the current local worktree. This page replaces the earlier local-only prototype architecture outline.</footer>
+</main>
+</body>
+</html>

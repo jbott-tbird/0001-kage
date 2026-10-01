@@ -8,8 +8,10 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/
 <data-extraction-rules>
     <cloud-backup>
         <exclude domain="root" path="no_backup/mail-credentials/" />
+        <exclude domain="sharedpref" path="background-mail.xml" />
     </cloud-backup>
     <device-transfer>
         <exclude domain="root" path="no_backup/mail-credentials/" />
+        <exclude domain="sharedpref" path="background-mail.xml" />
     </device-transfer>
 </data-extraction-rules>

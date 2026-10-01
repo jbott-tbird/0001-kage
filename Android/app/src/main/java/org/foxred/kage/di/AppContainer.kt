@@ -6,9 +6,15 @@ package org.foxred.kage.di
 
 import android.content.Context
 import org.foxred.kage.data.local.buildMailDatabase
+import org.foxred.kage.data.local.CoreRoomMapper
 import org.foxred.kage.data.repository.RoomMailRepository
 import org.foxred.kage.data.repository.RemoteMailRepository
 import org.foxred.kage.data.repository.DurableOutbox
+import org.foxred.kage.data.background.BackgroundMailRunner
+import org.foxred.kage.data.security.OAuthCredentialResolver
+import org.foxred.kage.data.security.GooglePlayAuthorization
+import org.foxred.kage.data.security.GoogleAuthorizationStep
+import org.foxred.kage.data.security.googleAuthorizationAccountName
 import org.foxred.kage.data.setup.RealAccountSetup
 import org.foxred.kage.data.sync.AccountSessions
 import org.foxred.kage.core.imap.AngusImapClient
@@ -22,10 +28,28 @@ class AppContainer(context: Context) {
     private val database = buildMailDatabase(context)
     private val credentials =
         org.foxred.kage.data.security.AndroidCredentialStore(context.applicationContext)
-    private val sessions = AccountSessions(RemoteMailRepository.incomingServer(database), credentials) { AngusImapClient() }
+    val googleAuthorization = GooglePlayAuthorization(context.applicationContext)
+    private val oauthCredentials = OAuthCredentialResolver(credentials, renewFromDevice = { accountId ->
+        val row = database.remoteMailDao().account(accountId) ?: return@OAuthCredentialResolver null
+        val email = googleAuthorizationAccountName(
+            CoreRoomMapper.account(row, database.remoteMailDao().servers(accountId)))
+        (googleAuthorization.authorize(email) as? GoogleAuthorizationStep.Granted)?.credential
+    })
+    private val sessions = AccountSessions(RemoteMailRepository.incomingServer(database),
+        credentials, { AngusImapClient() }, authorization = oauthCredentials::authorization,
+        onRejectedAuthorization = { accountId, rejected ->
+            if (oauthCredentials.invalidateRejectedToken(accountId, rejected))
+                googleAuthorization.clearCachedToken(rejected.secret)
+        })
     val remoteMailRepository = RemoteMailRepository(
         database, sessions, credentials,
         DurableOutbox(database, context.applicationContext, AngusMimeCodec()),
+        authorization = oauthCredentials::authorization,
+        clearCachedAccessToken = googleAuthorization::clearCachedToken,
+        onRejectedAuthorization = { accountId, rejected ->
+            if (oauthCredentials.invalidateRejectedToken(accountId, rejected))
+                googleAuthorization.clearCachedToken(rejected.secret)
+        },
     )
     val realAccountSetup = RealAccountSetup(remoteMailRepository, { AngusImapClient() }, { server, authorization ->
         AngusSmtpClient().verifyConnection(server, authorization)
@@ -38,4 +62,6 @@ class AppContainer(context: Context) {
             credentials,
             remoteMailRepository,
         )
+    val backgroundMailRunner = BackgroundMailRunner(mailRepository, remoteMailRepository,
+        database.remoteMailDao())
 }

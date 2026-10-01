@@ -31,7 +31,6 @@ object DesignTokens {
     val drawerMax = 360.dp
     val dot = 8.dp
     val bodyMinHeight = 240.dp
-    val messageHtmlHeight = 440.dp
     val newColor = Color(0xFF1376DC)
     val flagColor = Color(0xFFD27B12)
     val light =

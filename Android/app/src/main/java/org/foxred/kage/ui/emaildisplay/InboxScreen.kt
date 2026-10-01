@@ -25,6 +25,7 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import org.foxred.kage.domain.model.*
@@ -43,18 +44,29 @@ fun InboxScreen(
     settings: () -> Unit,
 ) {
     val mail by vm.mailbox.collectAsStateWithLifecycle()
-    val messages by vm.messages.collectAsStateWithLifecycle()
+    val page by vm.messagePage.collectAsStateWithLifecycle()
+    val observedPageReady by vm.pageReady.collectAsStateWithLifecycle()
+    val oldestFirst by vm.oldestFirst.collectAsStateWithLifecycle()
     val query by vm.query.collectAsStateWithLifecycle()
     val sync by vm.folderSync.collectAsStateWithLifecycle()
+    val refreshProgress by vm.refreshProgress.collectAsStateWithLifecycle()
+    val history by vm.historyDownload.collectAsStateWithLifecycle()
+    val outboxCounts by vm.outboxCounts.collectAsStateWithLifecycle()
+    val outboxPage by vm.outboxPage.collectAsStateWithLifecycle()
+    val unreadCounts by vm.unreadCounts.collectAsStateWithLifecycle()
     val drawer = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     BackHandler(drawer.isOpen) { scope.launch { drawer.close() } }
     var searching by rememberSaveable { mutableStateOf(false) }
     var filters by remember { mutableStateOf(false) }
     var options by remember { mutableStateOf(false) }
+    var showingOutbox by remember { mutableStateOf(false) }
+    LaunchedEffect(showingOutbox) {
+        if (showingOutbox) vm.firstOutboxPage()
+    }
+    var saveSentCopyRequest by remember { mutableStateOf<Pair<String, Boolean>?>(null) }
     val listState = rememberLazyListState()
     var resetScroll by remember { mutableStateOf(false) }
-    var oldestFirst by rememberSaveable { mutableStateOf(false) }
     var selecting by rememberSaveable { mutableStateOf(false) }
     var selectedIds by rememberSaveable { mutableStateOf(listOf<String>()) }
     LaunchedEffect(oldestFirst) {
@@ -63,23 +75,37 @@ fun InboxScreen(
             resetScroll = false
         }
     }
-    val displayed = if (oldestFirst) messages.reversed() else messages
-    val visibleIds = messages.map { it.id }.toSet()
+    val pageReady = observedPageReady && vm.isCurrentPage(page)
+    val displayed = if (pageReady) page.page.items else emptyList()
+    LaunchedEffect(page.folderId, page.folderIds, page.pageNumber, page.query,
+        page.oldestFirst, pageReady) {
+        if (pageReady)
+            listState.scrollToItem(0)
+    }
+    val threadSizes = remember(mail.messages, mail.preferences.threads) {
+        if (mail.preferences.threads)
+            mail.messages.asSequence().mapNotNull { it.relatedGroup }
+                .groupingBy { it }.eachCount()
+        else emptyMap()
+    }
+    val visibleIds = displayed.map { it.id }.toSet()
     val selectedVisible = selectedIds.filter { it in visibleIds }
     fun markRead(ids: List<String>) {
-        vm.action {
-            ids.forEach { vm.repository.markRead(it, true) }
-            vm.notice.value = "${ids.size} messages marked read"
+        vm.markRead(ids) {
             selectedIds = emptyList()
             selecting = false
         }
     }
-    LaunchedEffect(mail.preferences.selectedFolder) {
+    val unifiedInboxIds = if (mail.preferences.selectedFolder == "unified")
+        mail.folders.filter { it.role == "inbox" }.map { it.id }
+    else emptyList()
+    LaunchedEffect(mail.preferences.selectedFolder, unifiedInboxIds) {
         selectedIds = emptyList()
         selecting = false
         if (mail.preferences.selectedFolder == "unified")
             vm.query.value = vm.query.value.copy(scope = SearchScope.AllAccounts)
         vm.refreshFolder(mail.preferences.selectedFolder)
+        vm.loadHistoryProgress(mail.preferences.selectedFolder)
     }
     DisposableEffect(mail.preferences.selectedFolder) {
         val current = mail.preferences.selectedFolder
@@ -98,6 +124,7 @@ fun InboxScreen(
         drawerContent = {
             AccountDrawer(
                 mail,
+                unreadCounts,
                 {
                     vm.selectFolder(it)
                     scope.launch { drawer.close() }
@@ -223,6 +250,13 @@ fun InboxScreen(
                             }
                             DropdownMenu(options, { options = false }) {
                                 DropdownMenuItem(
+                                    text = { Text("Outbox (${outboxCounts.actionable})") },
+                                    onClick = {
+                                        options = false
+                                        showingOutbox = true
+                                    },
+                                )
+                                DropdownMenuItem(
                                     text = {
                                         Text(
                                             if (selecting) "Cancel selection" else "Select messages"
@@ -240,14 +274,15 @@ fun InboxScreen(
                                     },
                                     onClick = {
                                         resetScroll = true
-                                        oldestFirst = !oldestFirst
+                                        vm.setOldestFirst(!oldestFirst)
                                         options = false
                                     },
                                 )
                                 DropdownMenuItem(
                                     text = { Text("Mark all read") },
+                                    enabled = displayed.isNotEmpty(),
                                     onClick = {
-                                        markRead(messages.map { it.id })
+                                        markRead(displayed.map { it.id })
                                         options = false
                                     },
                                 )
@@ -273,7 +308,18 @@ fun InboxScreen(
                 if (sync.remote && sync.folderId == mail.preferences.selectedFolder) {
                     if (sync.loading)
                         LinearProgressIndicator(Modifier.fillMaxWidth())
-                    Text("Last 30 days · cached locally", Modifier.padding(horizontal = T.lg),
+                    val progressTargets = if (mail.preferences.selectedFolder == "unified")
+                        unifiedInboxIds else listOf(mail.preferences.selectedFolder)
+                    val activeProgress = progressTargets.mapNotNull { id ->
+                        refreshProgress[id]?.let { progress ->
+                            if (progressTargets.size > 1)
+                                "${mail.folders.firstOrNull { it.id == id }?.name ?: "Inbox"} · $progress"
+                            else progress
+                        }
+                    }
+                    Text(if (sync.loading) activeProgress.joinToString("\n")
+                        .ifEmpty { "Waiting to refresh…" }
+                        else "Recent mail · cached locally", Modifier.padding(horizontal = T.lg),
                         style = MaterialTheme.typography.bodySmall)
                     sync.error?.let { problem ->
                         Row(Modifier.fillMaxWidth().padding(T.md),
@@ -283,6 +329,42 @@ fun InboxScreen(
                                 Text("Retry")
                             }
                         }
+                    }
+                    if (folder != null) {
+                        val current = history.takeIf { it.folderId == folder.id }
+                        val progress = current?.progress
+                        if (current?.running == true)
+                            LinearProgressIndicator(Modifier.fillMaxWidth())
+                        if (progress != null)
+                            Text(
+                                if (progress.scanComplete && progress.remainingBodies == 0)
+                                    "Full history downloaded · ${progress.scannedMessages} messages scanned"
+                                else "Full history · ${progress.scannedMessages} scanned" +
+                                    " · about ${progress.estimatedTotal} in this folder at start" +
+                                    (if (progress.remainingBodies > 0)
+                                        " · ${progress.remainingBodies} bodies pending"
+                                    else ""),
+                                Modifier.padding(horizontal = T.lg),
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        current?.error?.let { problem ->
+                            Text(problem, Modifier.padding(horizontal = T.lg),
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodySmall)
+                        }
+                        if (current?.running == true)
+                            TextButton(onClick = vm::pauseHistory) { Text("Pause folder download") }
+                        else
+                            TextButton(onClick = { vm.downloadHistory(folder.id,
+                                restartCompleted = progress?.scanComplete == true &&
+                                    (progress?.remainingBodies ?: 0) == 0) },
+                                enabled = !mail.preferences.offline) {
+                                Text(if (progress == null) "Download full folder history"
+                                    else if (progress.scanComplete && progress.remainingBodies == 0)
+                                        "Check folder history again"
+                                    else if (progress.scanComplete) "Retry body downloads"
+                                    else "Resume folder download")
+                            }
                     }
                 }
                 if (mail.preferences.offline)
@@ -322,7 +404,7 @@ fun InboxScreen(
                         )
                     }
                     Text(
-                        "Searches mail saved on this device. Real account results cover fetched headers and downloaded bodies from the last 30 days.",
+                        "Searches mail saved on this device. Real accounts cache the last 30 days by default and any full folder history you download. Attachments download when opened.",
                         Modifier.padding(horizontal = T.lg),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -334,7 +416,8 @@ fun InboxScreen(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            "${messages.size} results",
+                            if (pageReady) "${displayed.size} results on page ${page.pageNumber}"
+                            else "Searching…",
                             Modifier.weight(1f),
                             style = MaterialTheme.typography.bodySmall,
                         )
@@ -352,9 +435,9 @@ fun InboxScreen(
                     ) {
                         Checkbox(
                             checked =
-                                messages.isNotEmpty() && selectedVisible.size == messages.size,
+                                displayed.isNotEmpty() && selectedVisible.size == displayed.size,
                             onCheckedChange = {
-                                selectedIds = if (it) messages.map { m -> m.id } else emptyList()
+                                selectedIds = if (it) displayed.map { m -> m.id } else emptyList()
                             },
                             modifier =
                                 Modifier.semantics { contentDescription = "Select all messages" },
@@ -384,7 +467,7 @@ fun InboxScreen(
                     onRefresh = refreshMailbox,
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    if (messages.isEmpty())
+                    if (displayed.isEmpty())
                         Column(
                             Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(T.xl),
                             verticalArrangement = Arrangement.Center,
@@ -392,7 +475,8 @@ fun InboxScreen(
                         ) {
                             Icon(Icons.Outlined.Inbox, null)
                             Text(
-                                if (query.filter.active || query.text.isNotBlank())
+                                if (!pageReady) "Loading messages…"
+                                else if (query.filter.active || query.text.isNotBlank())
                                     "No matching messages"
                                 else if (sync.loading && sync.folderId == mail.preferences.selectedFolder)
                                     "Loading mail…"
@@ -401,6 +485,10 @@ fun InboxScreen(
                                 else "You’re all caught up",
                                 style = MaterialTheme.typography.titleLarge,
                             )
+                            if (pageReady && page.pageNumber > 1)
+                                TextButton(onClick = vm::previousMessagePage) {
+                                    Text("Previous page")
+                                }
                         }
                     else
                         LazyColumn(
@@ -434,9 +522,7 @@ fun InboxScreen(
                                     MessageRow(
                                         message,
                                         if (mail.preferences.threads && message.relatedGroup != null)
-                                            mail.messages.count {
-                                                it.relatedGroup == message.relatedGroup
-                                            }
+                                            threadSizes[message.relatedGroup] ?: 0
                                         else 0,
                                         location,
                                         if (selecting) message.id in selectedVisible else null,
@@ -453,16 +539,142 @@ fun InboxScreen(
                                 }
                             }
                             item {
-                                Text(
-                                    "${messages.size} messages · ● new since last visit",
-                                    Modifier.padding(T.xl),
-                                    style = MaterialTheme.typography.bodySmall,
-                                )
+                                if (pageReady) {
+                                    Row(Modifier.fillMaxWidth().padding(T.lg),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically) {
+                                        if (page.pageNumber > 1)
+                                            TextButton(onClick = vm::previousMessagePage) {
+                                                Text("Previous")
+                                            }
+                                        Text("Page ${page.pageNumber} · ${displayed.size} messages",
+                                            style = MaterialTheme.typography.bodySmall)
+                                        if (page.page.next != null)
+                                            TextButton(onClick = vm::nextMessagePage) {
+                                                Text("Next")
+                                            }
+                                    }
+                                }
                             }
                         }
                 }
             }
         }
+    }
+    if (showingOutbox)
+        AlertDialog(
+            onDismissRequest = { showingOutbox = false },
+            title = { Text("Outbox") },
+            text = {
+                if (!vm.isCurrentOutboxPage(outboxPage)) Text("Loading Outbox…")
+                else if (outboxPage.items.isEmpty()) Column {
+                    Text(if (outboxPage.pageNumber == 1) "No queued messages"
+                        else "No messages remain on this page")
+                    if (outboxPage.pageNumber > 1)
+                        TextButton(onClick = vm::previousOutboxPage,
+                            modifier = Modifier.semantics {
+                                contentDescription = "Previous Outbox page"
+                            }) { Text("Previous") }
+                }
+                else LazyColumn(Modifier.heightIn(max = 400.dp)) {
+                    items(outboxPage.items, key = { it.id }) { item ->
+                        Column(Modifier.fillMaxWidth().padding(vertical = T.sm)) {
+                            Text(item.recipient.ifBlank { "Recipient unavailable" },
+                                style = MaterialTheme.typography.titleSmall)
+                            Text(when (item.status) {
+                                OutboxStatus.QUEUED -> "Queued"
+                                OutboxStatus.SENDING -> "Sending"
+                                OutboxStatus.FAILED -> "Failed"
+                                OutboxStatus.UNCERTAIN -> "Needs review: delivery may have succeeded"
+                                OutboxStatus.SENT ->
+                                    if (item.sentCopyStatus == SentCopyStatus.CONFIRMED)
+                                        "SMTP accepted · copy found in Sent"
+                                    else if (item.sentCopyUploadCanRetry)
+                                        "SMTP accepted · Sent copy needs review"
+                                    else if (item.sentCopyUploadNeedsReview)
+                                        "SMTP accepted · saving Sent copy"
+                                    else "SMTP accepted · checking Sent copy"
+                            })
+                            item.error?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
+                            if (item.status in setOf(OutboxStatus.SENT, OutboxStatus.UNCERTAIN) &&
+                                item.sentCopyStatus != SentCopyStatus.CONFIRMED)
+                                TextButton(onClick = { vm.checkSentCopy(item.accountId) },
+                                    enabled = !mail.preferences.offline) {
+                                    Text("Check Sent")
+                                }
+                            if (item.status == OutboxStatus.QUEUED)
+                                TextButton(onClick = { vm.flushOutgoing(item.accountId) },
+                                    enabled = !mail.preferences.offline) {
+                                    Text("Send queued mail")
+                                }
+                            if (item.status == OutboxStatus.FAILED)
+                                TextButton(onClick = { vm.retryOutbox(item.id) },
+                                    enabled = !mail.preferences.offline) {
+                                    Text("Retry failed send")
+                                }
+                            if (item.status == OutboxStatus.SENT &&
+                                item.sentCopyStatus == SentCopyStatus.PENDING &&
+                                (!item.sentCopyUploadNeedsReview || item.sentCopyUploadCanRetry) &&
+                                mail.folders.any { it.accountId == item.accountId && it.role == "sent" } &&
+                                mail.accounts.any { account ->
+                                    account.id == item.accountId &&
+                                        !org.foxred.kage.domain.usecase.gmailAutomaticallyFilesSent(
+                                            account.outgoing)
+                                })
+                                TextButton(onClick = {
+                                    showingOutbox = false
+                                    saveSentCopyRequest = item.id to item.sentCopyUploadCanRetry
+                                }, enabled = !mail.preferences.offline) {
+                                    Text(if (item.sentCopyUploadCanRetry)
+                                        "Review and retry Sent copy" else "Save copy to Sent")
+                                }
+                        }
+                    }
+                    item {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (outboxPage.pageNumber > 1)
+                                TextButton(onClick = vm::previousOutboxPage,
+                                    modifier = Modifier.semantics {
+                                        contentDescription = "Previous Outbox page"
+                                    }) { Text("Previous") }
+                            Text("Page ${outboxPage.pageNumber}",
+                                style = MaterialTheme.typography.bodySmall)
+                            if (outboxPage.nextCursor != null)
+                                TextButton(onClick = vm::nextOutboxPage,
+                                    modifier = Modifier.semantics {
+                                        contentDescription = "Next Outbox page"
+                                    }) { Text("Next") }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showingOutbox = false }) { Text("Close") }
+            },
+        )
+    saveSentCopyRequest?.let { (id, retryAfterReview) ->
+        AlertDialog(
+            onDismissRequest = {
+                saveSentCopyRequest = null
+                showingOutbox = true
+            },
+            title = { Text(if (retryAfterReview) "Retry saving a Sent copy?"
+                else "Save a Sent copy?") },
+            text = { Text("Check Sent and your provider first. If it files this message later, saving another copy could create a duplicate. This action does not resend the message.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    saveSentCopyRequest = null
+                    showingOutbox = true
+                    vm.saveSentCopy(id, retryAfterReview)
+                }) { Text(if (retryAfterReview) "Retry copy" else "Save copy") }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    saveSentCopyRequest = null
+                    showingOutbox = true
+                }) { Text("Cancel") }
+            },
+        )
     }
 }
 
@@ -514,7 +726,7 @@ private fun MessageRow(
                     style = MaterialTheme.typography.bodyLarge,
                 )
                 if (threadCount > 1) Badge { Text(threadCount.toString()) }
-                if (message.attachments.isNotEmpty())
+                if (message.hasAttachments)
                     Icon(Icons.Outlined.AttachFile, "Has attachments", Modifier.size(T.lg))
             }
             if (message.preview.isNotBlank())

@@ -3,6 +3,7 @@ dist/
 .DS_Store
 *.tsbuildinfo
 z_ignore/
+/discussions/
 .vercel
 .env*
 

@@ -71,6 +71,8 @@ fun ComposeScreen(vm: MailViewModel, sourceId: String?, mode: String, back: () -
     var bcc by rememberSaveable {
         mutableStateOf(if (mode == "draft") source?.bcc.orEmpty() else "")
     }
+    var recipientsExpanded by rememberSaveable { mutableStateOf(false) }
+    var editedHtml by rememberSaveable { mutableStateOf<String?>(null) }
     var subject by rememberSaveable {
         mutableStateOf(
             when (mode) {
@@ -147,6 +149,7 @@ fun ComposeScreen(vm: MailViewModel, sourceId: String?, mode: String, back: () -
             bcc.trim(),
             subject.trim(),
             body,
+            html = editedHtml ?: source?.html.takeIf { mode == "draft" && body == source?.body },
             receivedAt = Instant.now().toString(),
             draft = true,
             attachments = attachments,
@@ -213,29 +216,42 @@ fun ComposeScreen(vm: MailViewModel, sourceId: String?, mode: String, back: () -
                 label = { Text("To") },
                 modifier = Modifier.fillMaxWidth(),
             )
-            OutlinedTextField(
-                cc,
-                { cc = it },
-                label = { Text("Cc") },
-                modifier = Modifier.fillMaxWidth(),
-            )
-            OutlinedTextField(
-                bcc,
-                { bcc = it },
-                label = { Text("Bcc") },
-                modifier = Modifier.fillMaxWidth(),
-            )
+            TextButton(onClick = { recipientsExpanded = !recipientsExpanded }) {
+                Text(if (recipientsExpanded) "Hide Cc / Bcc"
+                    else if (cc.isNotBlank() || bcc.isNotBlank()) "Show Cc / Bcc · recipients added"
+                    else "Add Cc / Bcc")
+                Icon(if (recipientsExpanded) Icons.Outlined.ExpandLess
+                    else Icons.Outlined.ExpandMore, null)
+            }
+            // Collapsing only hides the fields; draft and reply-all recipients stay intact.
+            if (recipientsExpanded) {
+                OutlinedTextField(
+                    cc,
+                    { cc = it },
+                    label = { Text("Cc") },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                OutlinedTextField(
+                    bcc,
+                    { bcc = it },
+                    label = { Text("Bcc") },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
             OutlinedTextField(
                 subject,
                 { subject = it },
                 label = { Text("Subject") },
                 modifier = Modifier.fillMaxWidth(),
             )
-            OutlinedTextField(
-                body,
-                { body = it },
-                label = { Text("Message") },
-                modifier = Modifier.fillMaxWidth().heightIn(min = T.bodyMinHeight),
+            RichMessageEditor(
+                initialText = body,
+                initialHtml = editedHtml ?: source?.html.takeIf { mode == "draft" },
+                enabled = !busy,
+                onChange = { text, html ->
+                    body = text
+                    editedHtml = html
+                },
             )
             attachments.forEach { attachment ->
                 InputChip(

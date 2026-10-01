@@ -11,6 +11,9 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.viewModelScope
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.replaceText
+import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
@@ -96,15 +99,35 @@ class MailJourneyTest {
         compose.onNodeWithContentDescription("Compose a message").performClick()
         compose.onNodeWithText("To").performTextInput("friend@example.net")
         compose.onNodeWithText("Subject").performTextInput("Native draft test")
-        compose
-            .onNodeWithText("Message", substring = false)
-            .performTextInput("Persist this draft through Room.")
+        compose.onNodeWithText("Cc", substring = false).assertDoesNotExist()
+        compose.onNodeWithText("Bcc", substring = false).assertDoesNotExist()
+        compose.onNodeWithText("Add Cc / Bcc").performClick()
+        compose.onNodeWithText("Cc", substring = false).performTextInput("copy@example.net")
+        compose.onNodeWithText("Bcc", substring = false).performTextInput("private@example.net")
+        compose.onNodeWithText("Hide Cc / Bcc").performClick()
+        compose.onNodeWithText("Cc", substring = false).assertDoesNotExist()
+        compose.onNodeWithText("Show Cc / Bcc · recipients added").assertExists()
+        onView(withContentDescription("Message")).perform(replaceText("Persist this draft through Room."))
         compose.onNodeWithText("Save", substring = false).performClick()
         compose.waitUntil(10000) {
             vm.mailbox.value.messages.any { it.subject == "Native draft test" }
         }
+        compose.runOnIdle {
+            val saved = vm.mailbox.value.messages.single { it.subject == "Native draft test" }
+            Assert.assertEquals("copy@example.net", saved.cc)
+            Assert.assertEquals("private@example.net", saved.bcc)
+            Assert.assertEquals("Persist this draft through Room.", saved.body)
+            Assert.assertNotNull(saved.html)
+        }
         compose.onNodeWithText("Native draft test").performClick()
-        compose.onNodeWithText("Persist this draft through Room.").assertExists()
+        compose.onNodeWithText("Cc", substring = false).assertDoesNotExist()
+        compose.onNodeWithText("Show Cc / Bcc · recipients added").performClick()
+        compose.onNodeWithText("copy@example.net").assertExists()
+        compose.onNodeWithText("private@example.net").assertExists()
+        onView(withContentDescription("Message")).check(
+            androidx.test.espresso.assertion.ViewAssertions.matches(
+                androidx.test.espresso.matcher.ViewMatchers.withText(
+                    org.hamcrest.Matchers.startsWith("Persist this draft through Room."))))
     }
 
     @Test

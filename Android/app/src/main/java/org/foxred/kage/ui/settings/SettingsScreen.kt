@@ -130,7 +130,9 @@ fun SettingsScreen(vm: MailViewModel, back: () -> Unit, setup: () -> Unit, welco
             confirmButton = {
                 TextButton(
                     onClick = {
-                        vm.action(success = { if (mail.accounts.size == 1) welcome() }) {
+                        vm.action(success = {
+                            if (mail.accounts.none { it.mode == "REAL" && it.id != account.id }) welcome()
+                        }) {
                             vm.repository.removeAccount(account.id)
                         }
                         remove = null

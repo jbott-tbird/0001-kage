@@ -56,4 +56,45 @@ class OnboardingPersistenceTest {
         assertTrue(dao.getPreferences()!!.started)
         assertTrue(repository.mailbox.first().accounts.any { it.id == "real" })
     }
+
+    @Test fun demoOnlyInstallationClearsStaleCompletionOnStartup() = runBlocking {
+        repository.initialize()
+        val dao = db.mailDao()
+        dao.savePreferences(dao.getPreferences()!!.copy(started = true))
+        repository.initialize()
+        assertFalse(dao.getPreferences()!!.started)
+        assertTrue(repository.mailbox.first().accounts.isNotEmpty())
+    }
+
+    @Test fun removingLastRealAccountReturnsToOnboardingWithDemoAccountsRemaining() = runBlocking {
+        repository.initialize()
+        val dao = db.mailDao()
+        val sample = dao.accounts().first().first()
+        dao.insertAccounts(listOf(sample.copy(id = "real", address = "real@example.test", mode = "REAL")))
+        repository.initialize()
+        repository.removeAccount("real")
+        assertFalse(dao.getPreferences()!!.started)
+        assertTrue(repository.mailbox.first().accounts.isNotEmpty())
+    }
+
+    @Test fun removingOneOfTwoRealAccountsKeepsOnboardingComplete() = runBlocking {
+        repository.initialize()
+        val dao = db.mailDao()
+        val sample = dao.accounts().first().first()
+        dao.insertAccounts(listOf(sample.copy(id = "real-one", address = "one@example.test", mode = "REAL"),
+            sample.copy(id = "real-two", address = "two@example.test", mode = "REAL")))
+        repository.initialize()
+        repository.removeAccount("real-one")
+        assertTrue(dao.getPreferences()!!.started)
+    }
+
+    @Test fun emptyInstallationClearsStaleCompletionOnStartup() = runBlocking {
+        repository.initialize()
+        val dao = db.mailDao()
+        dao.accounts().first().forEach { dao.removeAccount(it.id) }
+        dao.savePreferences(dao.getPreferences()!!.copy(started = true))
+        repository.initialize()
+        assertFalse(dao.getPreferences()!!.started)
+    }
+
 }

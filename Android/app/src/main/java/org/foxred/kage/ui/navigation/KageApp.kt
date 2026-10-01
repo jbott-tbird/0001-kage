@@ -39,7 +39,7 @@ fun KageApp(vm: MailViewModel) {
         if (!ready) CircularProgressIndicator(Modifier.align(Alignment.Center))
         else {
             val start = remember {
-                if (mail.preferences.started && mail.accounts.isNotEmpty()) "mail" else "welcome"
+                if (mail.accounts.any { it.mode == "REAL" }) "mail" else "welcome"
             }
             fun inbox() {
                 nav.navigate("mail") {

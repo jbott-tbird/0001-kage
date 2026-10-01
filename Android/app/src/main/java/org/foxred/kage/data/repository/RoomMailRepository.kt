@@ -44,11 +44,10 @@ class RoomMailRepository(
         withContext(Dispatchers.IO) {
             db.withTransaction {
                 if (dao.initialized() == 0) seed()
-                // Recover completion for accounts saved before onboarding was persisted atomically.
-                if (dao.realAccountIds().isNotEmpty()) {
-                    val prefs = dao.getPreferences() ?: Preferences().entity()
-                    if (!prefs.started) dao.savePreferences(prefs.copy(started = true))
-                }
+                // Demo accounts never complete real-account onboarding, including on older installs.
+                val started = dao.realAccountIds().isNotEmpty()
+                val prefs = dao.getPreferences() ?: Preferences().entity()
+                if (prefs.started != started) dao.savePreferences(prefs.copy(started = started))
             }
             cacheAutomaticAttachments()
         }
@@ -106,7 +105,7 @@ class RoomMailRepository(
                 val prefs = dao.getPreferences() ?: Preferences().entity()
                 val inbox = dao.firstInbox()
                 dao.savePreferences(
-                    prefs.copy(selectedFolder = inbox.orEmpty(), started = inbox != null)
+                    prefs.copy(selectedFolder = inbox.orEmpty(), started = dao.realAccountIds().isNotEmpty())
                 )
             }
         }

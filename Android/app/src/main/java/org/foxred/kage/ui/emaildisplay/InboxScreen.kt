@@ -1,5 +1,8 @@
 package org.foxred.kage.ui.emaildisplay
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.foundation.clickable
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
@@ -80,6 +83,12 @@ fun InboxScreen(
     }
     val folder = mail.folders.find { it.id == mail.preferences.selectedFolder }
     val account = mail.accounts.find { it.id == folder?.accountId }
+    val isRefreshing = sync.folderId == mail.preferences.selectedFolder && sync.loading
+    // Both manual entry points reconcile server changes through the same refresh.
+    val refreshMailbox: () -> Unit = {
+        if (!isRefreshing && !mail.preferences.offline)
+            vm.refreshFolder(mail.preferences.selectedFolder, full = true)
+    }
     ModalNavigationDrawer(
         drawerState = drawer,
         drawerContent = {
@@ -136,8 +145,11 @@ fun InboxScreen(
                     },
                     actions = {
                         if (sync.remote && sync.folderId == mail.preferences.selectedFolder)
-                            MailIconButton("Refresh mailbox", Icons.Outlined.Refresh) {
-                                vm.refreshFolder(mail.preferences.selectedFolder, full = true)
+                            IconButton(
+                                onClick = refreshMailbox,
+                                enabled = !isRefreshing && !mail.preferences.offline,
+                            ) {
+                                Icon(Icons.Outlined.Refresh, "Refresh mailbox")
                             }
                         MailIconButton("Search messages", Icons.Outlined.Search) {
                             searching = !searching
@@ -363,82 +375,88 @@ fun InboxScreen(
                             Text("Done")
                         }
                     }
-                if (messages.isEmpty())
-                    Column(
-                        Modifier.fillMaxSize().padding(T.xl),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Icon(Icons.Outlined.Inbox, null)
-                        Text(
-                            if (query.filter.active || query.text.isNotBlank())
-                                "No matching messages"
-                            else if (sync.loading && sync.folderId == mail.preferences.selectedFolder)
-                                "Loading mail…"
-                            else if (sync.remote && sync.folderId == mail.preferences.selectedFolder)
-                                "No messages in this folder"
-                            else "You’re all caught up",
-                            style = MaterialTheme.typography.titleLarge,
-                        )
-                    }
-                else
-                    LazyColumn(
-                        Modifier.fillMaxSize(),
-                        state = listState,
-                        contentPadding = PaddingValues(bottom = T.bodyMinHeight / 3),
-                    ) {
-                        items(displayed, key = { it.id }) { message ->
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                if (selecting)
-                                    Checkbox(
-                                        checked = message.id in selectedVisible,
-                                        onCheckedChange = { checked ->
-                                            selectedIds =
-                                                if (checked) (selectedIds + message.id).distinct()
-                                                else selectedIds - message.id
-                                        },
-                                        modifier =
-                                            Modifier.semantics {
-                                                contentDescription =
-                                                    "Select ${message.subject.ifBlank { "(No subject)" }}"
-                                            },
-                                    )
-                                val location =
-                                    if (
-                                        query.text.isNotBlank() &&
-                                            query.scope == SearchScope.AllAccounts
-                                    )
-                                        "${mail.accounts.find { it.id == message.accountId }?.address.orEmpty()} · ${mail.folders.find { it.id == message.folderId }?.name.orEmpty()}"
-                                    else null
-                                MessageRow(
-                                    message,
-                                    if (mail.preferences.threads && message.relatedGroup != null)
-                                        mail.messages.count {
-                                            it.relatedGroup == message.relatedGroup
-                                        }
-                                    else 0,
-                                    location,
-                                    if (selecting) message.id in selectedVisible else null,
-                                ) {
+                PullToRefreshBox(
+                    isRefreshing = isRefreshing,
+                    onRefresh = refreshMailbox,
+                    modifier = Modifier.fillMaxSize(),
+                ) {
+                    if (messages.isEmpty())
+                        Column(
+                            Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(T.xl),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            Icon(Icons.Outlined.Inbox, null)
+                            Text(
+                                if (query.filter.active || query.text.isNotBlank())
+                                    "No matching messages"
+                                else if (sync.loading && sync.folderId == mail.preferences.selectedFolder)
+                                    "Loading mail…"
+                                else if (sync.remote && sync.folderId == mail.preferences.selectedFolder)
+                                    "No messages in this folder"
+                                else "You’re all caught up",
+                                style = MaterialTheme.typography.titleLarge,
+                            )
+                        }
+                    else
+                        LazyColumn(
+                            Modifier.fillMaxSize(),
+                            state = listState,
+                            contentPadding = PaddingValues(bottom = T.bodyMinHeight / 3),
+                        ) {
+                            items(displayed, key = { it.id }) { message ->
+                                Row(verticalAlignment = Alignment.CenterVertically) {
                                     if (selecting)
-                                        selectedIds =
-                                            if (message.id in selectedIds) selectedIds - message.id
-                                            else selectedIds + message.id
-                                    else {
-                                        vm.read(message.id)
-                                        openMessage(message)
+                                        Checkbox(
+                                            checked = message.id in selectedVisible,
+                                            onCheckedChange = { checked ->
+                                                selectedIds =
+                                                    if (checked) (selectedIds + message.id).distinct()
+                                                    else selectedIds - message.id
+                                            },
+                                            modifier =
+                                                Modifier.semantics {
+                                                    contentDescription =
+                                                        "Select ${message.subject.ifBlank { "(No subject)" }}"
+                                                },
+                                        )
+                                    val location =
+                                        if (
+                                            query.text.isNotBlank() &&
+                                                query.scope == SearchScope.AllAccounts
+                                        )
+                                            "${mail.accounts.find { it.id == message.accountId }?.address.orEmpty()} · ${mail.folders.find { it.id == message.folderId }?.name.orEmpty()}"
+                                        else null
+                                    MessageRow(
+                                        message,
+                                        if (mail.preferences.threads && message.relatedGroup != null)
+                                            mail.messages.count {
+                                                it.relatedGroup == message.relatedGroup
+                                            }
+                                        else 0,
+                                        location,
+                                        if (selecting) message.id in selectedVisible else null,
+                                    ) {
+                                        if (selecting)
+                                            selectedIds =
+                                                if (message.id in selectedIds) selectedIds - message.id
+                                                else selectedIds + message.id
+                                        else {
+                                            vm.read(message.id)
+                                            openMessage(message)
+                                        }
                                     }
                                 }
                             }
+                            item {
+                                Text(
+                                    "${messages.size} messages · ● new since last visit",
+                                    Modifier.padding(T.xl),
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                            }
                         }
-                        item {
-                            Text(
-                                "${messages.size} messages · ● new since last visit",
-                                Modifier.padding(T.xl),
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                        }
-                    }
+                }
             }
         }
     }

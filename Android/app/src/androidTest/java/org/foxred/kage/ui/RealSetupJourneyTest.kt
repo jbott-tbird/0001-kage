@@ -910,6 +910,8 @@ class RealSetupJourneyTest {
         credentials.clear()
     }
 
+    // Gmail-domain identities below exercise provider auto-detection with mocked mail clients.
+    // They are test-only strings; no live Google sign-in or delivery occurs.
     @Test fun failedValidationStaysOnSetupThenRetryOpensRealInbox() {
         compose.onNodeWithText("Get started").performClick()
         compose.onNodeWithText("Email address").performTextInput("kage.test-only.setup@gmail.com")

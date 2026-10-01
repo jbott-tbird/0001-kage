@@ -63,6 +63,7 @@ class RealAccountSetupTest {
     )
 
     @Test fun suggestedGmailSettingsUseSecurePortsAndManualProvidersStayUnspecified() {
+        // A Gmail suffix is required for this pure, network-free auto-detection check.
         val (incoming, outgoing) = ServerSuggestions.gmail(" KAGE.TEST-ONLY.AUTOCONFIG@GMAIL.COM ")!!
         assertEquals("imap.gmail.com", incoming.hostname)
         assertEquals(993, incoming.port)

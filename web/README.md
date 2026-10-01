@@ -52,9 +52,9 @@ The landing, setup, confirmation, inbox, message, drawer, and optional related-m
 
 The Thunderbird logo and welcome wallpaper were copied from the existing iOS project's Welcome asset catalog at `../thunderbird-ios/Thunderbird/Thunderbird/Assets.xcassets/Welcome`. The PDF is a generated fictional sample. Attachment preview downloads use these bundled demonstration files, not uploaded file contents.
 
-Folder and toolbar glyphs currently use Lucide. They are centralized in the shared components for replacement with Zeplin exports. The Zeplin project is `YOUR_DESIGN_PROJECT`; the requested Helium profile is **Thunderbird**. This session had no connected browser extension, and macOS denied native Zeplin inspection because osascript lacked assistive access. No Zeplin assets were downloaded.
-
-Build and interaction tests passed. Browser visual verification remains pending access through the requested Helium profile/extension.
+Folder and toolbar glyphs currently use Lucide. They are centralized in the shared
+components so contributors can replace them with design exports. Design-tool
+account details and browser-session notes belong in private workspace documentation.
 
 ### Populated demo mailboxes
 
@@ -71,14 +71,14 @@ broken legacy encoding. These are display fixtures, not a MIME decoder.
 
 ## Production deployment
 
-The prototype is hosted at your deployment URL on Vercel, project `tfa` in
-scope `YOUR_VERCEL_SCOPE`. `vercel.json` builds with Vite and serves `dist/`.
+`vercel.json` builds with Vite and serves `dist/`. Link the checkout to your own
+Vercel project and account before deploying:
 
 ```sh
-vercel link --yes --project tfa --scope YOUR_VERCEL_SCOPE
+vercel link
 npm test
 npm run build
-vercel deploy --prod --yes --scope YOUR_VERCEL_SCOPE
+vercel deploy --prod
 ```
 
 Local Vercel metadata and environment files are ignored by Git. Design reference

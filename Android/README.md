@@ -43,14 +43,14 @@ Automated Google authorization remains mocked.
 
 ## Google Mail authorization setup
 
-The debug Android OAuth client ID is configured in `gradle.properties` for
-package `org.foxred.kage` and this machine's debug signing certificate
-(`<your signing certificate SHA-1>`).
-Override `kageGoogleAndroidClientId` for builds signed with another certificate;
-register each debug, pilot, and release certificate in Google Cloud. Google Mail
-requires the `https://mail.google.com/` scope, consent configuration, and the
-account under test on the OAuth test-user list. Public release may require scope
-verification.
+Google authorization is disabled until you provide your own Android OAuth client ID.
+Set `kageGoogleAndroidClientId=YOUR_ANDROID_CLIENT_ID` in your user-level
+`~/.gradle/gradle.properties`, or pass `-PkageGoogleAndroidClientId=...` to Gradle.
+Do not commit account-specific client IDs or signing certificate fingerprints.
+Register package `org.foxred.kage` and each debug, pilot, or release signing
+certificate in your Google Cloud project. Google Mail requires the
+`https://mail.google.com/` scope, consent configuration, and an authorized test
+account. Public release may require scope verification.
 
 Google Play services handles account selection, consent, and foreground access
 token renewal. Kage stores only the short-lived access token in Android
